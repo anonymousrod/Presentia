@@ -80,11 +80,11 @@
                                         @csrf
 
                                         <div class="mb-3">
-                                            <label for="email" class="form-label">Adresse Email</label>
-                                            <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                                   id="email" name="email" value="{{ old('email') }}" 
-                                                   placeholder="Entrez votre email" required autofocus>
-                                            @error('email')
+                                            <label for="identifiant" class="form-label">Adresse Email ou Numéro de téléphone</label>
+                                            <input type="text" class="form-control @error('identifiant') is-invalid @enderror" 
+                                                   id="identifiant" name="identifiant" value="{{ old('identifiant') }}" 
+                                                   placeholder="Ex : exemple@mail.com ou +22990000000" required autofocus>
+                                            @error('identifiant')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
