@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use App\Models\AuditLog;
 use App\Enums\UserStatus;
 use App\Jobs\SendEmailCredentials;
 use App\Jobs\SendWhatsAppCredentials;

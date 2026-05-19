@@ -39,7 +39,7 @@ class UserController extends Controller
 
         // 3. Passer le mot de passe en clair à l'Observer via une propriété temporaire
         $user->plain_password = $tempPassword;
-        
+
         // 4. Sauvegarder (déclenche UserObserver::created)
         $user->save();
 
