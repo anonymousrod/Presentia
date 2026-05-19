@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PermissionEnum;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -15,69 +16,9 @@ class RolesAndPermissionsSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // ----------------------------------------------------------------
-        // 1. CRÉATION DE TOUTES LES PERMISSIONS (format resource.action)
+        // 1. CRÉATION DE TOUTES LES PERMISSIONS via PermissionEnum (source de vérité unique)
         // ----------------------------------------------------------------
-        $permissions = [
-            // Membres
-            'member.view',
-            'member.create',
-            'member.edit',
-            'member.delete',
-            'member.restore',
-            'member.export',
-
-            // Groupes
-            'group.view',
-            'group.view_own',       // Chef : son groupe uniquement
-            'group.create',
-            'group.edit',
-            'group.delete',
-            'group.assign_member',
-
-            // Activités
-            'activity.view',
-            'activity.create',
-            'activity.edit',
-            'activity.publish',
-            'activity.cancel',
-            'activity.archive',
-
-            // Présences
-            'attendance.view',
-            'attendance.view_own',  // Chef : son groupe uniquement
-            'attendance.validate_manual',
-            'attendance.scan_qr',
-
-            // Inscriptions
-            'registration.create',
-            'registration.edit_own',
-            'registration.cancel_own',
-
-            // Notifications
-            'notification.send_all',
-            'notification.send_group',
-            'notification.send_role',
-            'notification.send_individual',
-
-            // Statistiques & rapports
-            'stats.view_global',
-            'stats.view_own_group',
-            'report.export_global',
-            'report.export_own_group',
-
-            // Rôles & permissions
-            'role.manage',
-            'permission.manage',
-
-            // Audit
-            'audit.view',
-
-            // QR Code
-            'qrcode.generate',
-            'qrcode.revoke',
-        ];
-
-        foreach ($permissions as $permission) {
+        foreach (PermissionEnum::values() as $permission) {
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
 
