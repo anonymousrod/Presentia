@@ -114,7 +114,7 @@ class LoginTest extends TestCase
         $this->assertGuest();
 
         $errors = session('errors')->get('identifiant');
-        $this->assertStringContainsString('Too many login attempts', $errors[0]);
+        $this->assertStringContainsString('Trop de tentatives de connexion', $errors[0]);
     }
 }
 
