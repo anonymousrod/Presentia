@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\Auditable;
 
 class Activity extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use Auditable;
 
     protected $fillable = [
         'title',
