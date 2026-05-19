@@ -33,6 +33,23 @@
                     </div>
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+                        @can('manage-users')
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#sidebarAdmin" data-bs-toggle="collapse"
+                                role="button" aria-expanded="false" aria-controls="sidebarAdmin">
+                                <i class="mdi mdi-account-cog-outline"></i> <span data-key="t-admin">Administration</span>
+                            </a>
+                            <div class="collapse menu-dropdown" id="sidebarAdmin">
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.users.create') }}" class="nav-link">
+                                            Créer un utilisateur
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        @endcan
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarDashboards" data-bs-toggle="collapse"
                                 role="button" aria-expanded="false" aria-controls="sidebarDashboards">

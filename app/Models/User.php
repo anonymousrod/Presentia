@@ -20,6 +20,12 @@ class User extends Authenticatable
     use SoftDeletes;
     use HasFactory;
     use Notifiable;
+
+    /**
+     * Stockage temporaire du mot de passe en clair (transmis à l'Observer).
+     */
+    public ?string $plain_password = null;
+
     protected $fillable = [
         'name',
         'first_name',
