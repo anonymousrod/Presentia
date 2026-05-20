@@ -23,6 +23,11 @@ Route::middleware(['auth'])->group(function () {
     // Changement de mot de passe obligatoire
     Route::get('password/change', [PasswordChangeController::class, 'showChangeForm'])->name('password.change.show');
     Route::post('password/change', [PasswordChangeController::class, 'update'])->name('password.change.update');
+
+    // Frontend Activities
+    Route::get('activities', [App\Http\Controllers\ActivityController::class, 'index'])->name('activities.index');
+    Route::post('activities/{activity}/register', [App\Http\Controllers\ActivityController::class, 'register'])->name('activities.register');
+    Route::post('activities/{activity}/unregister', [App\Http\Controllers\ActivityController::class, 'unregister'])->name('activities.unregister');
 });
 
 Route::middleware(['auth', 'can:manage-users'])->prefix('admin')->name('admin.')->group(function () {
@@ -36,4 +41,7 @@ Route::middleware(['auth', 'can:manage-users'])->prefix('admin')->name('admin.')
     Route::get('users/export', [App\Http\Controllers\Admin\UserController::class, 'export'])->name('users.export');
     Route::post('users/{user}/restore', [App\Http\Controllers\Admin\UserController::class, 'restore'])->name('users.restore');
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+
+    // Activities Admin
+    Route::resource('activities', App\Http\Controllers\Admin\ActivityController::class);
 });

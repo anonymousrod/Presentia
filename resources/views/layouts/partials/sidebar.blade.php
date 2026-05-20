@@ -33,6 +33,13 @@
                     </div>
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{{ route('activities.index') }}">
+                                <i class="mdi mdi-calendar-text"></i> <span>Activités</span>
+                            </a>
+                        </li>
+
                         @if(auth()->user()->can('manage-users') || auth()->user()->can('audit.view'))
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarAdmin" data-bs-toggle="collapse"
@@ -50,6 +57,11 @@
                                     <li class="nav-item">
                                         <a href="{{ route('admin.users.create') }}" class="nav-link">
                                             Créer un utilisateur
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.activities.index') }}" class="nav-link">
+                                            Gestion des activités
                                         </a>
                                     </li>
                                     @endcan

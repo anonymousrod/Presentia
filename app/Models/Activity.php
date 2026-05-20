@@ -21,6 +21,8 @@ class Activity extends Model
         'type',
         'status',
         'visibility',
+        'visibility_group_id',
+        'visibility_role_id',
         'start_time',
         'end_time',
         'location',
@@ -35,6 +37,7 @@ class Activity extends Model
         'end_time'   => 'datetime',
         'type'       => \App\Enums\ActivityType::class,
         'status'     => \App\Enums\ActivityStatus::class,
+        'visibility' => \App\Enums\ActivityVisibility::class,
     ];
 
     /**
@@ -43,6 +46,22 @@ class Activity extends Model
     public function responsible(): BelongsTo
     {
         return $this->belongsTo(User::class, 'responsible_id');
+    }
+
+    /**
+     * Le groupe ciblé par la visibilité.
+     */
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'visibility_group_id');
+    }
+
+    /**
+     * Le rôle ciblé par la visibilité.
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(\Spatie\Permission\Models\Role::class, 'visibility_role_id');
     }
 
     /**
