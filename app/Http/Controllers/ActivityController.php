@@ -17,13 +17,13 @@ class ActivityController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        
+
         // Retrieve user's active groups
         $groupIds = $user->groups()
             ->wherePivotNull('left_at')
             ->pluck('groups.id')
             ->toArray();
-            
+
         // Retrieve user's roles
         $roleIds = $user->roles()->pluck('id')->toArray();
 
@@ -118,8 +118,8 @@ class ActivityController extends Controller
             ]);
         }
 
-        $msg = $isWaitlisted 
-            ? 'Vous avez été inscrit sur la liste d\'attente de cette activité.' 
+        $msg = $isWaitlisted
+            ? 'Vous avez été inscrit sur la liste d\'attente de cette activité.'
             : 'Inscription enregistrée avec succès.';
 
         return redirect()->back()->with('success', $msg);

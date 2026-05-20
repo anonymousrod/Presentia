@@ -93,7 +93,7 @@ class ActivityController extends Controller
     public function update(UpdateActivityRequest $request, Activity $activity)
     {
         $oldStatus = $activity->status;
-        
+
         $activity->update($request->validated());
 
         // Si le statut passe de DRAFT à PUBLISHED, on dispatch l'event

@@ -283,7 +283,7 @@ class ActivityTest extends TestCase
         // 1. Member 1 registers
         $response = $this->actingAs($this->member)->post(route('activities.register', $activity));
         $response->assertRedirect();
-        
+
         $this->assertDatabaseHas('registrations', [
             'user_id' => $this->member->id,
             'activity_id' => $activity->id,
@@ -303,7 +303,7 @@ class ActivityTest extends TestCase
 
         $response = $this->actingAs($member2)->post(route('activities.register', $activity));
         $response->assertRedirect();
-        
+
         $this->assertDatabaseHas('registrations', [
             'user_id' => $member2->id,
             'activity_id' => $activity->id,

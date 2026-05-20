@@ -8,4 +8,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 use Illuminate\Support\Facades\Schedule;
+
 Schedule::command('activities:archive-old')->daily();
