@@ -1,4 +1,5 @@
 <?php
+
 $dir = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('D:\TFG_Projet\front_back_ecomerce\Projet_Presentia\Presentia\resources\views'));
 foreach ($dir as $file) {
     if ($file->isFile() && str_ends_with($file->getFilename(), '.blade.php')) {

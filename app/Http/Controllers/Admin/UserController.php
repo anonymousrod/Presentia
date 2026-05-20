@@ -25,7 +25,7 @@ class UserController extends Controller
 
         // Recherche textuelle
         if ($search = $request->input('search')) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('first_name', 'like', "%{$search}%")
                   ->orWhere('phone', 'like', "%{$search}%");
@@ -107,7 +107,7 @@ class UserController extends Controller
 
             $file = $request->file('photo');
             $filename = 'photos/' . Str::uuid() . '.' . $file->getClientOriginalExtension();
-            
+
             $manager = new ImageManager(new Driver());
             $image = $manager->read($file->getRealPath());
             $image->scaleDown(800, 800);
@@ -174,7 +174,7 @@ class UserController extends Controller
     public function export(Request $request)
     {
         $query = User::query();
-        
+
         // Filtres similaires à l'index
         if ($status = $request->input('status')) {
             $query->where('status', $status);

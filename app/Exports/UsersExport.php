@@ -2,7 +2,6 @@
 
 namespace App\Exports;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
