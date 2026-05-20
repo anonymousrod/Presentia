@@ -33,7 +33,7 @@
                     </div>
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span data-key="t-menu">Menu</span></li>
-                        @can('manage-users')
+                        @if(auth()->user()->can('manage-users') || auth()->user()->can('audit.view'))
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarAdmin" data-bs-toggle="collapse"
                                 role="button" aria-expanded="false" aria-controls="sidebarAdmin">
@@ -41,15 +41,24 @@
                             </a>
                             <div class="collapse menu-dropdown" id="sidebarAdmin">
                                 <ul class="nav nav-sm flex-column">
+                                    @can('manage-users')
                                     <li class="nav-item">
                                         <a href="{{ route('admin.users.create') }}" class="nav-link">
                                             Créer un utilisateur
                                         </a>
                                     </li>
+                                    @endcan
+                                    @can('audit.view')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.audit-logs.index') }}" class="nav-link">
+                                            Logs d'Audit
+                                        </a>
+                                    </li>
+                                    @endcan
                                 </ul>
                             </div>
                         </li>
-                        @endcan
+                        @endif
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarDashboards" data-bs-toggle="collapse"
                                 role="button" aria-expanded="false" aria-controls="sidebarDashboards">
