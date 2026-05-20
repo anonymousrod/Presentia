@@ -26,11 +26,14 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth', 'can:manage-users'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('users/create', [App\Http\Controllers\Admin\UserController::class, 'create'])->name('users.create');
-    Route::post('users', [App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
-
     // Audit Logs
     Route::get('audit-logs', [App\Http\Controllers\Admin\AuditLogController::class, 'index'])
         ->name('audit-logs.index')
         ->middleware('can:audit.view');
+
+    // Users
+    Route::post('users/bulk-status', [App\Http\Controllers\Admin\UserController::class, 'bulkUpdateStatus'])->name('users.bulk-status');
+    Route::get('users/export', [App\Http\Controllers\Admin\UserController::class, 'export'])->name('users.export');
+    Route::post('users/{user}/restore', [App\Http\Controllers\Admin\UserController::class, 'restore'])->name('users.restore');
+    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
 });

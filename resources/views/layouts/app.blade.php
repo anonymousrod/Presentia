@@ -60,6 +60,7 @@
 
     @include('layouts.partials.afterfooter')
     @include('layouts.partials.scripts')
+    @stack('scripts')
 </body>
     
 </html>

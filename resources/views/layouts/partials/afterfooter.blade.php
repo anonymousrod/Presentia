@@ -700,7 +700,7 @@
                             <input class="form-check-input" type="radio" name="data-sidebar-image" id="sidebarimg-01"
                                 value="img-1">
                             <label class="form-check-label p-0 avatar-sm h-auto" for="sidebarimg-01">
-                                <img src="assets/images/sidebar/img-1.jpg" alt=""
+                                <img src="{{ asset('assets/images/sidebar/img-1.jpg') }}" alt=""
                                     class="avatar-md w-auto object-fit-cover">
                             </label>
                         </div>
@@ -709,7 +709,7 @@
                             <input class="form-check-input" type="radio" name="data-sidebar-image" id="sidebarimg-02"
                                 value="img-2">
                             <label class="form-check-label p-0 avatar-sm h-auto" for="sidebarimg-02">
-                                <img src="assets/images/sidebar/img-2.jpg" alt=""
+                                <img src="{{ asset('assets/images/sidebar/img-2.jpg') }}" alt=""
                                     class="avatar-md w-auto object-fit-cover">
                             </label>
                         </div>
@@ -717,7 +717,7 @@
                             <input class="form-check-input" type="radio" name="data-sidebar-image" id="sidebarimg-03"
                                 value="img-3">
                             <label class="form-check-label p-0 avatar-sm h-auto" for="sidebarimg-03">
-                                <img src="assets/images/sidebar/img-3.jpg" alt=""
+                                <img src="{{ asset('assets/images/sidebar/img-3.jpg') }}" alt=""
                                     class="avatar-md w-auto object-fit-cover">
                             </label>
                         </div>
@@ -725,7 +725,7 @@
                             <input class="form-check-input" type="radio" name="data-sidebar-image" id="sidebarimg-04"
                                 value="img-4">
                             <label class="form-check-label p-0 avatar-sm h-auto" for="sidebarimg-04">
-                                <img src="assets/images/sidebar/img-4.jpg" alt=""
+                                <img src="{{ asset('assets/images/sidebar/img-4.jpg') }}" alt=""
                                     class="avatar-md w-auto object-fit-cover">
                             </label>
                         </div>
