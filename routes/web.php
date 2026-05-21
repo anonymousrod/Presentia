@@ -28,6 +28,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('activities', [App\Http\Controllers\ActivityController::class, 'index'])->name('activities.index');
     Route::post('activities/{activity}/register', [App\Http\Controllers\ActivityController::class, 'register'])->name('activities.register');
     Route::post('activities/{activity}/unregister', [App\Http\Controllers\ActivityController::class, 'unregister'])->name('activities.unregister');
+    
+    // QR Code Scanning
+    Route::get('attendance/scan', [App\Http\Controllers\AttendanceScanController::class, 'scan'])->name('attendance.scan');
 });
 
 Route::middleware(['auth', 'can:manage-users'])->prefix('admin')->name('admin.')->group(function () {
@@ -43,5 +46,10 @@ Route::middleware(['auth', 'can:manage-users'])->prefix('admin')->name('admin.')
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
 
     // Activities Admin
+    Route::post('activities/{activity}/qr/generate', [App\Http\Controllers\Admin\QrCodeController::class, 'generate'])->name('activities.qr.generate');
+    Route::post('activities/{activity}/qr/revoke', [App\Http\Controllers\Admin\QrCodeController::class, 'revoke'])->name('activities.qr.revoke');
+    Route::get('activities/{activity}/qr/pdf', [App\Http\Controllers\Admin\QrCodeController::class, 'downloadPdf'])->name('activities.qr.pdf');
     Route::resource('activities', App\Http\Controllers\Admin\ActivityController::class);
 });
+
+

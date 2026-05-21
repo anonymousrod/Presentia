@@ -138,6 +138,88 @@
                     </div>
                 </div>
             </div>
+
+            <!-- QR Code de Présence Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">QR Code d'Émargement</h5>
+                </div>
+                <div class="card-body text-center">
+                    @php
+                        $qrUrl = session("activity_qr_url_{$activity->id}");
+                        $qrExpires = session("activity_qr_expires_{$activity->id}");
+                        $qrSvg = null;
+                        if ($qrUrl) {
+                            try {
+                                $qrCode = new \Endroid\QrCode\QrCode(
+                                    data: $qrUrl,
+                                    size: 200,
+                                    margin: 0
+                                );
+                                $writer = new \Endroid\QrCode\Writer\SvgWriter();
+                                $result = $writer->write($qrCode);
+                                $qrSvg = $result->getString();
+                            } catch (\Exception $e) {
+                                $qrSvg = null;
+                            }
+                        }
+                    @endphp
+
+                    @if($qrSvg)
+                        <div class="d-flex justify-content-center mb-3">
+                            <div style="
+                                width: 200px;
+                                height: 200px;
+                                background: white;
+                                padding: 10px;
+                                border-radius: 8px;
+                                border: 1px solid #e3e3e3;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                overflow: hidden;
+                            ">
+                                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                                    {!! preg_replace('/<svg/', '<svg style="width:100%;height:100%;display:block;"', $qrSvg, 1) !!}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alpine.js countdown -->
+                        <div x-data="qrcodeCountdown('{{ $qrExpires }}')" x-init="startTimer()" class="mb-3">
+                            <span class="text-muted fs-12">Le QR Code expire dans :</span>
+                            <div class="fw-bold fs-16 text-primary mt-1" x-text="formattedTime">--:--:--</div>
+                            <div x-show="expired" class="alert alert-danger p-2 mt-2 mb-0 fs-12">
+                                <i class="mdi mdi-alert-circle"></i> Le QR Code a expiré.
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <a href="{{ route('admin.activities.qr.pdf', $activity) }}" class="btn btn-soft-success">
+                                <i class="mdi mdi-download"></i> Télécharger le PDF
+                            </a>
+                            <form action="{{ route('admin.activities.qr.revoke', $activity) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir révoquer ce QR Code ? Toutes les signatures précédentes seront invalidées.');">
+                                @csrf
+                                <button type="submit" class="btn btn-soft-danger w-100">
+                                    <i class="mdi mdi-cancel"></i> Révoquer / Désactiver
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <div class="py-3">
+                            <i class="mdi mdi-qrcode-scan fs-48 text-muted d-block mb-2"></i>
+                            <p class="text-muted fs-13">Aucun QR Code d'émargement actif pour cette activité.</p>
+                        </div>
+
+                        <form action="{{ route('admin.activities.qr.generate', $activity) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="mdi mdi-qrcode"></i> Générer un QR Code
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -149,11 +231,45 @@
 @endsection
 
 @push('scripts')
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script>
     function confirmDelete() {
         if (confirm('Êtes-vous sûr de vouloir supprimer cette activité ?')) {
             document.getElementById('delete-form').submit();
         }
     }
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('qrcodeCountdown', (expiryTimestamp) => ({
+            expiry: parseInt(expiryTimestamp) * 1000,
+            formattedTime: '00:00:00',
+            expired: false,
+            timer: null,
+            startTimer() {
+                this.updateTime();
+                this.timer = setInterval(() => {
+                    this.updateTime();
+                }, 1000);
+            },
+            updateTime() {
+                const now = new Date().getTime();
+                const diff = this.expiry - now;
+                if (diff <= 0) {
+                    this.formattedTime = '00:00:00';
+                    this.expired = true;
+                    clearInterval(this.timer);
+                    return;
+                }
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                this.formattedTime = 
+                    String(hours).padStart(2, '0') + ':' + 
+                    String(minutes).padStart(2, '0') + ':' + 
+                    String(seconds).padStart(2, '0');
+            }
+        }));
+    });
 </script>
 @endpush
+

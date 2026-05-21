@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.1",
+        "endroid/qr-code": "^6.0",
         "intervention/image": "^3.11",
         "laravel/fortify": "^1.37",
         "laravel/framework": "^11.0",
