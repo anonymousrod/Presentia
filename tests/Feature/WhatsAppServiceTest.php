@@ -9,7 +9,6 @@ use App\Jobs\SendWhatsAppCredentials;
 use App\Jobs\SendWhatsAppNotification;
 use App\Models\Activity;
 use App\Models\User;
-use App\Models\WhatsappLog;
 use App\Services\FakeWhatsAppService;
 use App\Services\WhatsAppServiceInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;

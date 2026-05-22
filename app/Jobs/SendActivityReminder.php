@@ -34,7 +34,8 @@ class SendActivityReminder implements ShouldQueue
     public function __construct(
         public readonly User $user,
         public readonly Activity $activity
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job.

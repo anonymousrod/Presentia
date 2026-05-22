@@ -33,7 +33,8 @@ class SendWhatsAppCredentials implements ShouldQueue
     public function __construct(
         public readonly User $user,
         public readonly string $plainPassword
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job.

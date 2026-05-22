@@ -7,7 +7,6 @@ use App\Enums\UserStatus;
 use App\Jobs\SendEmailCredentials;
 use App\Jobs\SendWhatsAppCredentials;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Support\Facades\Bus;
 use Tests\TestCase;
 

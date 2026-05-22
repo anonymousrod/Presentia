@@ -33,7 +33,8 @@ class SendWhatsAppNotification implements ShouldQueue
     public function __construct(
         public readonly User $user,
         public readonly string $message
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job.
