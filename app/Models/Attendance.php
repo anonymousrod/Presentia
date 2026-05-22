@@ -24,6 +24,7 @@ class Attendance extends Model
 
     protected $casts = [
         'scanned_at' => 'datetime',
+        'status' => \App\Enums\AttendanceStatus::class,
     ];
 
     public function user(): BelongsTo

@@ -29,8 +29,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('activities/{activity}/register', [App\Http\Controllers\ActivityController::class, 'register'])->name('activities.register');
     Route::post('activities/{activity}/unregister', [App\Http\Controllers\ActivityController::class, 'unregister'])->name('activities.unregister');
 
-    // QR Code Scanning
-    Route::get('attendance/scan', [App\Http\Controllers\AttendanceScanController::class, 'scan'])->name('attendance.scan');
+    // QR Code Scanning & Attendance
+    Route::get('scan', [App\Http\Controllers\AttendanceScanController::class, 'scanner'])->name('scan.alias');
+    Route::get('attendance/scan', [App\Http\Controllers\AttendanceScanController::class, 'scanner'])->name('attendance.scan');
+    Route::get('attendance/success/{activity}', [App\Http\Controllers\AttendanceScanController::class, 'success'])->name('attendance.success');
+    Route::match(['get', 'post'], 'attendance/validate', [App\Http\Controllers\AttendanceController::class, 'validate'])
+        ->name('attendance.validate')
+        ->middleware('signed');
 });
 
 Route::middleware(['auth', 'can:manage-users'])->prefix('admin')->name('admin.')->group(function () {

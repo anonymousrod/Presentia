@@ -120,20 +120,28 @@
                             @endif
                         </div>
                         <div>
-                            @if(!$regStatus || $regStatus === 'ABSENT_JUSTIFIED')
-                                <form action="{{ route('activities.register', $activity) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    <button type="submit" class="btn btn-sm btn-primary">
-                                        <i class="mdi mdi-plus-circle-outline"></i> S'inscrire
-                                    </button>
-                                </form>
+                            @if($activity->start_time->lte(now()))
+                                @if($regStatus && $regStatus !== 'ABSENT_JUSTIFIED')
+                                    <span class="text-success fw-semibold"><i class="mdi mdi-check-circle-outline"></i> Inscrit</span>
+                                @else
+                                    <span class="text-muted fw-semibold"><i class="mdi mdi-close-circle-outline"></i> Non inscrit</span>
+                                @endif
                             @else
-                                <form action="{{ route('activities.unregister', $activity) }}" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir vous désinscrire de cette activité ?')">
-                                    @csrf
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                        <i class="mdi mdi-minus-circle-outline"></i> Se désinscrire
-                                    </button>
-                                </form>
+                                @if(!$regStatus || $regStatus === 'ABSENT_JUSTIFIED')
+                                    <form action="{{ route('activities.register', $activity) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            <i class="mdi mdi-plus-circle-outline"></i> S'inscrire
+                                        </button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('activities.unregister', $activity) }}" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir vous désinscrire de cette activité ?')">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="mdi mdi-minus-circle-outline"></i> Se désinscrire
+                                        </button>
+                                    </form>
+                                @endif
                             @endif
                         </div>
                     </div>

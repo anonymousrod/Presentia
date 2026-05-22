@@ -328,4 +328,49 @@ class ActivityTest extends TestCase
             'is_waitlisted' => false,
         ]);
     }
+
+    /**
+     * Test that users cannot register or unregister if the activity has started.
+     */
+    public function test_cannot_register_or_unregister_when_activity_has_started(): void
+    {
+        $activity = Activity::create([
+            'title' => 'Started Activity',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->subMinutes(10), // Déjà commencé
+            'end_time' => now()->addHour(),
+        ]);
+
+        // 1. Tenter de s'inscrire
+        $response = $this->actingAs($this->member)->post(route('activities.register', $activity));
+        $response->assertRedirect();
+        $response->assertSessionHas('error', "Cette activité a déjà commencé. L'inscription n'est plus possible.");
+        $this->assertDatabaseMissing('registrations', [
+            'user_id' => $this->member->id,
+            'activity_id' => $activity->id,
+        ]);
+
+        // 2. Créer une inscription manuellement pour tester la désinscription
+        Registration::create([
+            'user_id' => $this->member->id,
+            'activity_id' => $activity->id,
+            'status' => 'PRESENT',
+            'is_waitlisted' => false,
+            'registered_at' => now(),
+        ]);
+
+        // Tenter de se désinscrire
+        $response = $this->actingAs($this->member)->post(route('activities.unregister', $activity));
+        $response->assertRedirect();
+        $response->assertSessionHas('error', "Cette activité a déjà commencé. La désinscription n'est plus possible.");
+        
+        // L'inscription doit toujours être active (status != ABSENT_JUSTIFIED)
+        $this->assertDatabaseHas('registrations', [
+            'user_id' => $this->member->id,
+            'activity_id' => $activity->id,
+            'status' => 'PRESENT',
+        ]);
+    }
 }

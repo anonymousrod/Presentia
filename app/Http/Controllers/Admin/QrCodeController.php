@@ -18,7 +18,7 @@ class QrCodeController extends Controller
         $expires = $activity->end_time;
 
         $url = URL::temporarySignedRoute(
-            'attendance.scan',
+            'attendance.validate',
             $expires,
             ['activity' => $activity->id, 'v' => $activity->qr_version]
         );
@@ -54,7 +54,7 @@ class QrCodeController extends Controller
         if (!$url) {
             $expires = $activity->end_time;
             $url = URL::temporarySignedRoute(
-                'attendance.scan',
+                'attendance.validate',
                 $expires,
                 ['activity' => $activity->id, 'v' => $activity->qr_version]
             );

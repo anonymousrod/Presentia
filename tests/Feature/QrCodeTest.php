@@ -58,11 +58,16 @@ class QrCodeTest extends TestCase
             'capacity'    => 10,
             'qr_version'  => 1,
         ]);
+
+        \App\Models\Registration::create([
+            'user_id'       => $this->member->id,
+            'activity_id'   => $this->activity->id,
+            'status'        => 'PRESENT',
+            'is_waitlisted' => false,
+            'registered_at' => now(),
+        ]);
     }
 
-    /**
-     * Test que l'admin peut générer une URL signée et qu'elle fonctionne pour un scan.
-     */
     public function test_admin_can_generate_signed_url(): void
     {
         $response = $this->actingAs($this->admin)
@@ -75,7 +80,7 @@ class QrCodeTest extends TestCase
         $url = session("activity_qr_url_{$this->activity->id}");
 
         // Le scan de l'URL signée par le membre doit réussir
-        $scanResponse = $this->actingAs($this->member)->get($url);
+        $scanResponse = $this->actingAs($this->member)->followingRedirects()->get($url);
         $scanResponse->assertStatus(200);
         $scanResponse->assertSee('Présence Validée !');
         $scanResponse->assertSee($this->activity->title);
@@ -88,7 +93,7 @@ class QrCodeTest extends TestCase
     {
         // Génère une URL signée expirée il y a 5 minutes
         $expiredUrl = URL::temporarySignedRoute(
-            'attendance.scan',
+            'attendance.validate',
             now()->subMinutes(5),
             ['activity' => $this->activity->id, 'v' => $this->activity->qr_version]
         );

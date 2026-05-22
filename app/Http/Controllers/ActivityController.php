@@ -80,6 +80,11 @@ class ActivityController extends Controller
         // Check visibility access
         $this->authorizeVisibility($activity, $user);
 
+        // Check if the activity has already started
+        if ($activity->start_time->lte(now())) {
+            return redirect()->back()->with('error', "Cette activité a déjà commencé. L'inscription n'est plus possible.");
+        }
+
         // Check if already registered (not cancelled)
         $registration = Registration::where('user_id', $user->id)
             ->where('activity_id', $activity->id)
@@ -131,6 +136,11 @@ class ActivityController extends Controller
     public function unregister(Activity $activity)
     {
         $user = Auth::user();
+
+        // Check if the activity has already started
+        if ($activity->start_time->lte(now())) {
+            return redirect()->back()->with('error', "Cette activité a déjà commencé. La désinscription n'est plus possible.");
+        }
 
         $registration = Registration::where('user_id', $user->id)
             ->where('activity_id', $activity->id)

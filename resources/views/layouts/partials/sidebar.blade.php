@@ -40,6 +40,12 @@
                             </a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{{ route('attendance.scan') }}">
+                                <i class="mdi mdi-qrcode-scan"></i> <span>Scanner QR</span>
+                            </a>
+                        </li>
+
                         @if(auth()->user()->can('manage-users') || auth()->user()->can('audit.view'))
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarAdmin" data-bs-toggle="collapse"

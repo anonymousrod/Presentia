@@ -8,24 +8,32 @@ use Illuminate\Http\Request;
 class AttendanceScanController extends Controller
 {
     /**
-     * Valide le scan du QR Code et affiche la confirmation de présence.
+     * Affiche la page du scanner QR Code (caméra).
+     * Accessible par tous les utilisateurs authentifiés.
+     */
+    public function scanner()
+    {
+        return view('attendance.scanner');
+    }
+
+    /**
+     * Affiche la page de confirmation après un scan réussi.
+     */
+    public function success(Activity $activity)
+    {
+        return view('attendance.success', compact('activity'));
+    }
+
+    /**
+     * Méthode dépréciée ou conservée pour compatibilité si l'URL QR pointe encore ici.
+     * Redirige vers validate si signature présente.
      */
     public function scan(Request $request)
     {
-        if (! $request->hasValidSignature()) {
-            abort(403, 'Le QR Code a expiré ou la signature est invalide.');
+        if ($request->hasValidSignature()) {
+            return app(AttendanceController::class)->validate($request);
         }
 
-        $activityId = $request->query('activity');
-        $version = $request->query('v');
-
-        $activity = Activity::findOrFail($activityId);
-
-        if ($version != $activity->qr_version) {
-            abort(403, 'Ce QR Code a été révoqué ou mis à jour.');
-        }
-
-        // Nous passons l'activité et le statut de validation à la vue
-        return view('attendance.scan', compact('activity'));
+        return redirect()->route('attendance.scanner');
     }
 }
