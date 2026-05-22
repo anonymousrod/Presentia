@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Activity;
 use App\Models\User;
 use App\Models\WhatsappLog;
 use App\Services\WhatsAppServiceInterface;
@@ -11,7 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class SendWhatsAppCredentials implements ShouldQueue
+class SendActivityReminder implements ShouldQueue
 {
     use Queueable;
     use InteractsWithQueue;
@@ -32,7 +33,7 @@ class SendWhatsAppCredentials implements ShouldQueue
 
     public function __construct(
         public readonly User $user,
-        public readonly string $plainPassword
+        public readonly Activity $activity
     ) {}
 
     /**
@@ -41,30 +42,37 @@ class SendWhatsAppCredentials implements ShouldQueue
     public function handle(WhatsAppServiceInterface $whatsApp): void
     {
         if (! $this->user->phone) {
-            Log::warning("SendWhatsAppCredentials: utilisateur {$this->user->id} sans numéro de téléphone. Job abandonné.");
+            Log::warning("SendActivityReminder: utilisateur {$this->user->id} sans numéro de téléphone. Job abandonné.");
             return;
         }
 
-        $message = "Bonjour {$this->user->first_name},\n\n"
-            . "Votre compte Presentia a été créé par l'administrateur.\n\n"
-            . "Voici vos identifiants temporaires :\n"
-            . "- Identifiant (Téléphone) : {$this->user->phone}\n"
-            . "- Mot de passe temporaire : {$this->plainPassword}\n\n"
-            . "Veuillez vous connecter à l'application et changer votre mot de passe lors de votre première connexion.";
+        $startTime = $this->activity->start_time
+            ? $this->activity->start_time->translatedFormat('l d F Y à H:i')
+            : 'date à confirmer';
+
+        $location = $this->activity->location ?? 'lieu à confirmer';
+
+        $message = "Rappel Presentia 📅\n\n"
+            . "Bonjour {$this->user->first_name},\n\n"
+            . "Nous vous rappelons que l'activité suivante approche :\n\n"
+            . "📌 *{$this->activity->title}*\n"
+            . "🗓 {$startTime}\n"
+            . "📍 {$location}\n\n"
+            . "Merci d'être ponctuel(le). À bientôt !";
 
         try {
             $response = $whatsApp->send($this->user->phone, $message);
 
             WhatsappLog::create([
                 'user_id'           => $this->user->id,
-                'message_type'      => 'credentials',
+                'message_type'      => 'reminder',
                 'status'            => 'sent',
                 'provider_response' => $response,
             ]);
         } catch (\Throwable $e) {
             WhatsappLog::create([
                 'user_id'           => $this->user->id,
-                'message_type'      => 'credentials',
+                'message_type'      => 'reminder',
                 'status'            => 'failed',
                 'provider_response' => ['error' => $e->getMessage()],
             ]);

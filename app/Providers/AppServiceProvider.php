@@ -10,12 +10,19 @@ use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
-        //
+        if ($this->app->environment('testing') || env('WHATSAPP_DRIVER') === 'fake') {
+            $this->app->bind(
+                \App\Services\WhatsAppServiceInterface::class,
+                \App\Services\FakeWhatsAppService::class
+            );
+        } else {
+            $this->app->bind(
+                \App\Services\WhatsAppServiceInterface::class,
+                \App\Services\D7NetworksWhatsAppService::class
+            );
+        }
     }
 
     /**

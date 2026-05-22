@@ -31,4 +31,11 @@ return [
         ],
     ],
 
+    'd7networks' => [
+        'whatsapp' => [
+            'token' => env('D7NETWORKS_WHATSAPP_TOKEN'),
+            'originator' => env('D7NETWORKS_WHATSAPP_ORIGINATOR'),
+        ],
+    ],
+
 ];

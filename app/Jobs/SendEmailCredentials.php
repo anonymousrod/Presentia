@@ -16,6 +16,19 @@ class SendEmailCredentials implements ShouldQueue
     use SerializesModels;
     use InteractsWithQueue;
 
+    /**
+     * Nombre maximum de tentatives.
+     */
+    public int $tries = 3;
+
+    /**
+     * Délais de backoff exponentiel en secondes : 30s, 60s, 120s.
+     */
+    public function backoff(): array
+    {
+        return [30, 60, 120];
+    }
+
     public User $user;
     public string $plainPassword;
 

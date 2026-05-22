@@ -7,6 +7,7 @@ use App\Enums\UserStatus;
 use App\Jobs\SendEmailCredentials;
 use App\Jobs\SendWhatsAppCredentials;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Support\Facades\Bus;
 use Tests\TestCase;
 
@@ -20,6 +21,8 @@ class AdminUserCreationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
 
         // 1. Initialiser le seeder des rôles/permissions
         $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
@@ -107,7 +110,7 @@ class AdminUserCreationTest extends TestCase
             'birth_date' => '2000-01-01',
         ]);
 
-        $response->assertRedirect(route('admin.users.create'));
+        $response->assertRedirect(route('admin.users.index'));
         $response->assertSessionHasNoErrors();
 
         // Vérifier l'utilisateur en DB
@@ -154,7 +157,7 @@ class AdminUserCreationTest extends TestCase
             'phone'      => '+22990000000',
         ]);
 
-        $response->assertRedirect(route('admin.users.create'));
+        $response->assertRedirect(route('admin.users.index'));
         $response->assertSessionHasNoErrors();
 
         // Vérifier l'utilisateur en DB
@@ -183,7 +186,7 @@ class AdminUserCreationTest extends TestCase
             'phone'      => '+22991111111',
         ]);
 
-        $response->assertRedirect(route('admin.users.create'));
+        $response->assertRedirect(route('admin.users.index'));
         $response->assertSessionHasNoErrors();
 
         $user = User::where('email', 'sophie.durand@presentia.org')->first();

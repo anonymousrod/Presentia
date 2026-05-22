@@ -11,7 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class SendWhatsAppCredentials implements ShouldQueue
+class SendPasswordResetWhatsApp implements ShouldQueue
 {
     use Queueable;
     use InteractsWithQueue;
@@ -32,7 +32,7 @@ class SendWhatsAppCredentials implements ShouldQueue
 
     public function __construct(
         public readonly User $user,
-        public readonly string $plainPassword
+        public readonly string $code
     ) {}
 
     /**
@@ -41,30 +41,30 @@ class SendWhatsAppCredentials implements ShouldQueue
     public function handle(WhatsAppServiceInterface $whatsApp): void
     {
         if (! $this->user->phone) {
-            Log::warning("SendWhatsAppCredentials: utilisateur {$this->user->id} sans numéro de téléphone. Job abandonné.");
+            Log::warning("SendPasswordResetWhatsApp: utilisateur {$this->user->id} sans numéro de téléphone. Job abandonné.");
             return;
         }
 
-        $message = "Bonjour {$this->user->first_name},\n\n"
-            . "Votre compte Presentia a été créé par l'administrateur.\n\n"
-            . "Voici vos identifiants temporaires :\n"
-            . "- Identifiant (Téléphone) : {$this->user->phone}\n"
-            . "- Mot de passe temporaire : {$this->plainPassword}\n\n"
-            . "Veuillez vous connecter à l'application et changer votre mot de passe lors de votre première connexion.";
+        $message = "Presentia — Réinitialisation de mot de passe 🔐\n\n"
+            . "Bonjour {$this->user->first_name},\n\n"
+            . "Votre code de réinitialisation de mot de passe est :\n\n"
+            . "🔑 *{$this->code}*\n\n"
+            . "Ce code est valable 15 minutes.\n"
+            . "Si vous n'avez pas demandé cette réinitialisation, ignorez ce message.";
 
         try {
             $response = $whatsApp->send($this->user->phone, $message);
 
             WhatsappLog::create([
                 'user_id'           => $this->user->id,
-                'message_type'      => 'credentials',
+                'message_type'      => 'password_reset',
                 'status'            => 'sent',
                 'provider_response' => $response,
             ]);
         } catch (\Throwable $e) {
             WhatsappLog::create([
                 'user_id'           => $this->user->id,
-                'message_type'      => 'credentials',
+                'message_type'      => 'password_reset',
                 'status'            => 'failed',
                 'provider_response' => ['error' => $e->getMessage()],
             ]);
