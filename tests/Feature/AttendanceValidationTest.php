@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\Attendance;
 use App\Enums\AttendanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
@@ -166,14 +165,14 @@ class AttendanceValidationTest extends TestCase
 
         // Premier scan
         $this->actingAs($user)->post($url, [], ['X-Requested-With' => 'XMLHttpRequest']);
-        
+
         // Deuxième scan
         $response = $this->actingAs($user)
             ->post($url, [], ['X-Requested-With' => 'XMLHttpRequest']);
 
         $response->assertStatus(200);
         $response->assertJsonPath('already_scanned', true);
-        
+
         $this->assertEquals(1, Attendance::where('user_id', $user->id)->where('activity_id', $activity->id)->count());
     }
 

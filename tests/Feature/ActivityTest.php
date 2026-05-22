@@ -365,7 +365,7 @@ class ActivityTest extends TestCase
         $response = $this->actingAs($this->member)->post(route('activities.unregister', $activity));
         $response->assertRedirect();
         $response->assertSessionHas('error', "Cette activité a déjà commencé. La désinscription n'est plus possible.");
-        
+
         // L'inscription doit toujours être active (status != ABSENT_JUSTIFIED)
         $this->assertDatabaseHas('registrations', [
             'user_id' => $this->member->id,

@@ -17,7 +17,7 @@ class AttendanceController extends Controller
     public function validate(Request $request)
     {
         // La signature est vérifiée par le middleware 'signed' dans les routes
-        
+
         $activityId = $request->query('activity');
         $version = $request->query('v');
 
@@ -83,7 +83,7 @@ class AttendanceController extends Controller
         $startTime = $activity->start_time;
         $now = now();
         $lateThreshold = $startTime->copy()->addMinutes(15);
-        
+
         $status = $now->gt($lateThreshold) ? AttendanceStatus::LATE : AttendanceStatus::PRESENT;
 
         // Création de la présence
