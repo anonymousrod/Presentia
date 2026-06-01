@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Event;
+use App\Events\GroupLeaderAssigned;
+use App\Listeners\AssignGroupLeaderRole;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -49,5 +52,11 @@ class AppServiceProvider extends ServiceProvider
                 Str::transliterate(Str::lower($request->input('identifiant')) . '|' . $request->ip())
             );
         });
+
+        // Enregistrement de l'événement de désignation du chef de groupe
+        Event::listen(
+            GroupLeaderAssigned::class,
+            AssignGroupLeaderRole::class
+        );
     }
 }

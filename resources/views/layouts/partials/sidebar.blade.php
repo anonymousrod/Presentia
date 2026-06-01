@@ -71,6 +71,11 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
+                                        <a href="{{ route('admin.groups.index') }}" class="nav-link">
+                                            Gestion des groupes
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
                                         <a href="{{ route('admin.password-requests.index') }}" class="nav-link">
                                             Demandes de Reset
                                         </a>

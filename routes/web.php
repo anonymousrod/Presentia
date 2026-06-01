@@ -63,4 +63,9 @@ Route::middleware(['auth', 'can:manage-users'])->prefix('admin')->name('admin.')
     // Password Requests (WhatsApp)
     Route::get('password-requests', [App\Http\Controllers\Admin\PasswordRequestController::class, 'index'])->name('password-requests.index');
     Route::post('password-requests/{passwordResetRequest}/validate', [App\Http\Controllers\Admin\PasswordRequestController::class, 'validateRequest'])->name('password-requests.validate');
+
+    // Groups & Member Assignment
+    Route::post('groups/{group}/members', [App\Http\Controllers\Admin\GroupController::class, 'assignMember'])->name('groups.members.assign');
+    Route::delete('groups/{group}/members/{user}', [App\Http\Controllers\Admin\GroupController::class, 'removeMember'])->name('groups.members.remove');
+    Route::resource('groups', App\Http\Controllers\Admin\GroupController::class);
 });
