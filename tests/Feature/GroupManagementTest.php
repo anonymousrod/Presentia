@@ -154,7 +154,7 @@ class GroupManagementTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        
+
         $this->assertDatabaseHas('group_members', [
             'group_id' => $group->id,
             'user_id'  => $this->user1->id,
