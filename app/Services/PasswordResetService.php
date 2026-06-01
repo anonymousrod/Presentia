@@ -115,7 +115,9 @@ class PasswordResetService
         if ($admins->isEmpty()) {
             // Fallback si pas de rôle Administrateur défini par Spatie (on cherche par permission ou id 1?)
             // Selon Rolesandpermissionsseeder, il devrait y avoir des admins.
-            $admins = User::whereHas('roles', function($q) { $q->where('name', 'Administrateur'); })->get();
+            $admins = User::whereHas('roles', function ($q) {
+                $q->where('name', 'Administrateur');
+            })->get();
         }
 
         Notification::send($admins, new AdminPasswordResetAlert($request));

@@ -8,7 +8,6 @@ use App\Notifications\AdminPasswordResetAlert;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\RateLimiter;
 use Tests\TestCase;
 use Spatie\Permission\Models\Role;
 
@@ -39,7 +38,7 @@ class PasswordResetTest extends TestCase
         ]);
 
         Notification::fake();
-        
+
         $response = $this->post(route('password.email'), [
             'identifier' => 'user@example.com'
         ]);
@@ -67,7 +66,7 @@ class PasswordResetTest extends TestCase
         ]);
 
         $response->assertSessionHas('status', 'Votre demande a été envoyée à l\'administrateur. Vous recevrez un nouveau mot de passe par WhatsApp après validation.');
-        
+
         $this->assertDatabaseHas('password_reset_requests', [
             'user_id' => $user->id,
             'status' => 'PENDING'
@@ -79,7 +78,7 @@ class PasswordResetTest extends TestCase
     public function test_rate_limiting_is_applied()
     {
         $identifier = 'test@example.com';
-        
+
         // Simuler 3 tentatives
         for ($i = 0; $i < 3; $i++) {
             $this->post(route('password.email'), ['identifier' => $identifier]);
@@ -87,7 +86,7 @@ class PasswordResetTest extends TestCase
 
         // La 4ème doit échouer
         $response = $this->post(route('password.email'), ['identifier' => $identifier]);
-        
+
         $response->assertSessionHasErrors('identifier');
         $this->assertTrue(session('errors')->get('identifier')[0] == __('passwords.throttled'));
     }
