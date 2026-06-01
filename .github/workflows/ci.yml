@@ -18,7 +18,13 @@ jobs:
       with:
         php-version: '8.2'
         extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
-        coverage: none
+        coverage: pcov
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
 
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -34,19 +40,14 @@ jobs:
     - name: Install Composer Dependencies
       run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
+    - name: Install NPM Dependencies
+      run: npm ci
+
+    - name: Build Assets (Vite)
+      run: npm run build
+
     - name: Generate Application Key
       run: php artisan key:generate
-
-    - name: Create Directory and Databases for SQLite
-      run: |
-        mkdir -p database
-        touch database/database.sqlite
-
-    - name: Run Migrations
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-      run: php artisan migrate --force
 
     - name: Run Code Style Checks (Laravel Pint)
       run: ./vendor/bin/pint --test
@@ -54,7 +55,7 @@ jobs:
     - name: Execute Tests
       env:
         DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
+        DB_DATABASE: ":memory:"
         MAIL_MAILER: array
         QUEUE_CONNECTION: sync
-      run: php artisan test
+      run: php artisan test --coverage-clover=coverage.xml

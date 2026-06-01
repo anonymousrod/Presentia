@@ -1,5 +1,7 @@
 # Presentia - EBER Platform
 
+[![Laravel CI](https://github.com/anonymousrod/Presentia/actions/workflows/ci.yml/badge.svg)](https://github.com/anonymousrod/Presentia/actions/workflows/ci.yml)
+
 Presentia est une plateforme de gestion d'EBER (Entités de Base d'Engagement et de Responsabilité).
 
 ## TECH-001 : Initialisation du projet & intégration du template
