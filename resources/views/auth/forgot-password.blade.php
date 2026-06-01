@@ -85,18 +85,18 @@
                                 @endif
 
                                 <div class="alert border-0 alert-warning text-center mb-2 mx-2" role="alert">
-                                    Entrez votre adresse email et nous vous enverrons un lien de réinitialisation !
+                                    Entrez votre identifiant (email ou téléphone) et nous vous enverrons un lien de réinitialisation ou traiterons votre demande via WhatsApp !
                                 </div>
                                 
                                 <div class="p-2">
                                     <form action="{{ route('password.email') }}" method="POST">
                                         @csrf
                                         <div class="mb-4">
-                                            <label class="form-label" for="email">Adresse Email</label>
-                                            <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                                   id="email" name="email" value="{{ old('email') }}" 
-                                                   placeholder="Entrez votre email" required autofocus>
-                                            @error('email')
+                                            <label class="form-label" for="identifier">Identifiant (Email ou Téléphone)</label>
+                                            <input type="text" class="form-control @error('identifier') is-invalid @enderror" 
+                                                   id="identifier" name="identifier" value="{{ old('identifier') }}" 
+                                                   placeholder="Entrez votre email ou n° de téléphone" required autofocus>
+                                            @error('identifier')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
@@ -104,7 +104,7 @@
                                         </div>
 
                                         <div class="text-center mt-4">
-                                            <button class="btn btn-success w-100" type="submit">Envoyer le lien de réinitialisation</button>
+                                            <button class="btn btn-success w-100" type="submit">Réinitialiser le mot de passe</button>
                                         </div>
                                     </form><!-- end form -->
                                 </div>

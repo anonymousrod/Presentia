@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('activities:archive-old')->daily();
+Schedule::command('app:expire-password-reset-requests')->daily();

@@ -13,6 +13,10 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [LoginController::class, 'login']);
+
+    // Réinitialisation de mot de passe (Email / WhatsApp)
+    Route::get('forgot-password', [App\Http\Controllers\Auth\PasswordResetController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('forgot-password', [App\Http\Controllers\Auth\PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
 });
 
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
@@ -55,4 +59,8 @@ Route::middleware(['auth', 'can:manage-users'])->prefix('admin')->name('admin.')
     Route::post('activities/{activity}/qr/revoke', [App\Http\Controllers\Admin\QrCodeController::class, 'revoke'])->name('activities.qr.revoke');
     Route::get('activities/{activity}/qr/pdf', [App\Http\Controllers\Admin\QrCodeController::class, 'downloadPdf'])->name('activities.qr.pdf');
     Route::resource('activities', App\Http\Controllers\Admin\ActivityController::class);
+
+    // Password Requests (WhatsApp)
+    Route::get('password-requests', [App\Http\Controllers\Admin\PasswordRequestController::class, 'index'])->name('password-requests.index');
+    Route::post('password-requests/{passwordResetRequest}/validate', [App\Http\Controllers\Admin\PasswordRequestController::class, 'validateRequest'])->name('password-requests.validate');
 });
