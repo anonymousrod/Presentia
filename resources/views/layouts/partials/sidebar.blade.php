@@ -76,6 +76,11 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
+                                        <a href="{{ route('admin.roles.index') }}" class="nav-link">
+                                            Rôles & Permissions
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
                                         <a href="{{ route('admin.password-requests.index') }}" class="nav-link">
                                             Demandes de Reset
                                         </a>

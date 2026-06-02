@@ -68,4 +68,9 @@ Route::middleware(['auth', 'can:manage-users'])->prefix('admin')->name('admin.')
     Route::post('groups/{group}/members', [App\Http\Controllers\Admin\GroupController::class, 'assignMember'])->name('groups.members.assign');
     Route::delete('groups/{group}/members/{user}', [App\Http\Controllers\Admin\GroupController::class, 'removeMember'])->name('groups.members.remove');
     Route::resource('groups', App\Http\Controllers\Admin\GroupController::class);
+
+    // Roles & Permissions CRUD
+    Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
+    Route::get('users/{user}/permissions', [App\Http\Controllers\Admin\PermissionController::class, 'editUserPermissions'])->name('users.permissions.edit');
+    Route::post('users/{user}/permissions', [App\Http\Controllers\Admin\PermissionController::class, 'updateUserPermissions'])->name('users.permissions.update');
 });
