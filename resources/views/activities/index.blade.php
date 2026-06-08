@@ -135,12 +135,10 @@
                                         </button>
                                     </form>
                                 @else
-                                    <form action="{{ route('activities.unregister', $activity) }}" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir vous désinscrire de cette activité ?')">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="mdi mdi-minus-circle-outline"></i> Se désinscrire
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            onclick="openUnregisterModal('{{ route('activities.unregister', $activity) }}')">
+                                        <i class="mdi mdi-minus-circle-outline"></i> Se désinscrire
+                                    </button>
                                 @endif
                             @endif
                         </div>
@@ -168,6 +166,44 @@
         {{ $activities->links() }}
     </div>
 </div>
+
+<!-- Modale de Désinscription -->
+<div class="modal fade" id="unregisterModal" tabindex="-1" aria-labelledby="unregisterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <form id="unregister-form" action="" method="POST">
+                @csrf
+                <div class="modal-header border-bottom p-3">
+                    <h5 class="modal-title text-danger d-flex align-items-center" id="unregisterModalLabel">
+                        <i class="ri-error-warning-fill me-2 fs-20"></i> Désinscription d'une activité
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="text-center mb-3">
+                        <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:70px;height:70px"></lord-icon>
+                    </div>
+                    <p class="text-muted fs-14">
+                        Êtes-vous sûr de vouloir vous désinscrire de cette activité ? Pour finaliser cette action, veuillez renseigner le motif de votre absence.
+                    </p>
+                    <div class="mb-3">
+                        <label for="justification-input" class="form-label fw-bold">Motif de désinscription <span class="text-danger">*</span></label>
+                        <textarea class="form-control" 
+                                  id="justification-input" 
+                                  name="justification" 
+                                  rows="3" 
+                                  required 
+                                  placeholder="Ex: Contretemps professionnel, Maladie, etc. (min. 5 caractères)"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light p-3 border-0">
+                    <button type="button" class="btn btn-light w-sm" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-danger w-sm">Confirmer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -179,5 +215,16 @@
             window.location.href = "{{ route('activities.index') }}";
         }
     });
+
+    function openUnregisterModal(actionUrl) {
+        const form = document.getElementById('unregister-form');
+        form.action = actionUrl;
+        const input = document.getElementById('justification-input');
+        input.value = ''; // Reset
+        
+        const modalEl = document.getElementById('unregisterModal');
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.show();
+    }
 </script>
 @endpush

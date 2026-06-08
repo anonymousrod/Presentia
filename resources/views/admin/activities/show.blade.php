@@ -57,11 +57,66 @@
             </div>
 
             <!-- Inscriptions -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Membres inscrits ({{ $activity->registrations->count() }})</h5>
+            <div class="card" x-data="{
+                search: '',
+                statusFilter: '',
+                registrations: [
+                    @foreach($activity->registrations as $reg)
+                    {
+                        id: {{ $reg->id }},
+                        name: '{{ addslashes($reg->user->full_name) }}',
+                        email: '{{ addslashes($reg->user->email) }}',
+                        date: '{{ $reg->created_at->format('d/m/Y H:i') }}',
+                        status: '{{ $reg->status === 'ABSENT_JUSTIFIED' ? 'desinscrit' : ($reg->is_waitlisted ? 'attente' : 'inscrit') }}',
+                        justification: '{{ addslashes($reg->justification ?: '') }}',
+                        user_url: '{{ route('admin.users.show', $reg->user_id) }}'
+                    },
+                    @endforeach
+                ],
+                get filteredRegistrations() {
+                    return this.registrations.filter(r => {
+                        const matchesSearch = r.name.toLowerCase().includes(this.search.toLowerCase()) || 
+                                              r.email.toLowerCase().includes(this.search.toLowerCase());
+                        const matchesStatus = this.statusFilter === '' || r.status === this.statusFilter;
+                        return matchesSearch && matchesStatus;
+                    });
+                }
+            }">
+                <div class="card-header d-flex align-items-center">
+                    <h5 class="card-title mb-0 flex-grow-1">Inscriptions</h5>
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-success-subtle text-success">{{ $activity->registrations->where('status', '!=', 'ABSENT_JUSTIFIED')->where('is_waitlisted', false)->count() }} Inscrit(s)</span>
+                        @if($activity->capacity)
+                            <span class="badge bg-warning-subtle text-warning">{{ $activity->registrations->where('is_waitlisted', true)->count() }} Liste d'attente</span>
+                        @endif
+                        <span class="badge bg-danger-subtle text-danger">{{ $activity->registrations->where('status', 'ABSENT_JUSTIFIED')->count() }} Désinscrit(s)</span>
+                    </div>
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body">
+                    <!-- Filters row -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-7">
+                            <div class="search-box position-relative">
+                                <input type="text" x-model="search" class="form-control" placeholder="Rechercher un membre (nom, email)...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select x-model="statusFilter" class="form-select">
+                                <option value="">Tous les statuts</option>
+                                <option value="inscrit">Inscrit</option>
+                                @if($activity->capacity)
+                                    <option value="attente">Liste d'attente</option>
+                                @endif
+                                <option value="desinscrit">Désinscrit</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-light w-100" @click="search = ''; statusFilter = '';">
+                                Réinitialiser
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table table-hover table-striped mb-0">
                             <thead class="table-light">
@@ -69,20 +124,38 @@
                                     <th>Nom Complet</th>
                                     <th>Email</th>
                                     <th>Date d'inscription</th>
+                                    <th>Statut</th>
+                                    <th>Motif / Justification</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($activity->registrations as $reg)
-                                <tr>
-                                    <td>{{ $reg->user->first_name }} {{ $reg->user->name }}</td>
-                                    <td>{{ $reg->user->email }}</td>
-                                    <td>{{ $reg->created_at->format('d/m/Y H:i') }}</td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="3" class="text-center py-4">Aucun membre inscrit pour le moment.</td>
-                                </tr>
-                                @endforelse
+                                <template x-for="reg in filteredRegistrations" :key="reg.id">
+                                    <tr>
+                                        <td>
+                                            <a :href="reg.user_url" class="fw-semibold text-body" x-text="reg.name"></a>
+                                        </td>
+                                        <td x-text="reg.email"></td>
+                                        <td x-text="reg.date"></td>
+                                        <td>
+                                            <span class="badge" 
+                                                  :class="{
+                                                      'bg-success-subtle text-success': reg.status === 'inscrit',
+                                                      'bg-warning-subtle text-warning': reg.status === 'attente',
+                                                      'bg-danger-subtle text-danger': reg.status === 'desinscrit'
+                                                  }"
+                                                  x-text="reg.status === 'inscrit' ? 'Inscrit' : (reg.status === 'attente' ? 'Liste d\'attente' : 'Désinscrit')">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-muted" x-text="reg.status === 'desinscrit' ? (reg.justification || 'Aucun motif renseigné') : '—'"></span>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <template x-if="filteredRegistrations.length === 0">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">Aucun membre inscrit trouvé.</td>
+                                    </tr>
+                                </template>
                             </tbody>
                         </table>
                     </div>

@@ -33,6 +33,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Use Bootstrap 5 pagination styles globally
+        \Illuminate\Pagination\Paginator::useBootstrapFive();
+
         // Bypass implicit pour l'administrateur
         \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
             return $user->hasRole('Administrateur') ? true : null;

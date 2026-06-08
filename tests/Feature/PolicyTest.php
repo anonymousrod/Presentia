@@ -196,7 +196,7 @@ class PolicyTest extends TestCase
         $attendance = Attendance::create([
             'user_id'     => $this->jeune->id,
             'activity_id' => $activity->id,
-            'status'      => 'absent',
+            'status'      => \App\Enums\AttendanceStatus::ABSENT->value,
             'scan_source' => 'manual',
         ]);
 
@@ -228,7 +228,7 @@ class PolicyTest extends TestCase
         $attendance = Attendance::create([
             'user_id'     => $outsideMember->id,
             'activity_id' => $activity->id,
-            'status'      => 'absent',
+            'status'      => \App\Enums\AttendanceStatus::ABSENT->value,
             'scan_source' => 'manual',
         ]);
 
@@ -252,7 +252,7 @@ class PolicyTest extends TestCase
         $attendance = Attendance::create([
             'user_id'     => $this->jeune->id,
             'activity_id' => $activity->id,
-            'status'      => 'absent',
+            'status'      => \App\Enums\AttendanceStatus::ABSENT->value,
             'scan_source' => 'manual',
         ]);
 

@@ -152,7 +152,7 @@ class WhatsAppServiceTest extends TestCase
 
         Bus::assertDispatched(SendPasswordResetWhatsApp::class, function ($job) {
             return $job->user->id === $this->userWithPhone->id
-                && $job->code === '854321';
+                && $job->temporaryPassword === '854321';
         });
     }
 

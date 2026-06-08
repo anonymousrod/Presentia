@@ -133,7 +133,7 @@ class ActivityController extends Controller
     /**
      * Cancel/Unregister the authenticated user from the activity.
      */
-    public function unregister(Activity $activity)
+    public function unregister(Request $request, Activity $activity)
     {
         $user = Auth::user();
 
@@ -150,10 +150,15 @@ class ActivityController extends Controller
             return redirect()->back()->with('error', 'Vous n\'êtes pas inscrit à cette activité.');
         }
 
+        // Validate justification reason
+        $request->validate([
+            'justification' => 'required|string|min:5|max:255',
+        ]);
+
         // Mark as ABSENT_JUSTIFIED (cancellation status)
         $registration->update([
             'status' => 'ABSENT_JUSTIFIED',
-            'justification' => 'Annulation par le membre',
+            'justification' => $request->input('justification'),
             'is_waitlisted' => false,
         ]);
 

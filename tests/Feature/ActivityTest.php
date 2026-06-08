@@ -311,7 +311,9 @@ class ActivityTest extends TestCase
         ]);
 
         // 3. Member 1 cancels (member 2 should be promoted)
-        $response = $this->actingAs($this->member)->post(route('activities.unregister', $activity));
+        $response = $this->actingAs($this->member)->post(route('activities.unregister', $activity), [
+            'justification' => 'Contretemps imprévu',
+        ]);
         $response->assertRedirect();
 
         // Member 1 registration becomes ABSENT_JUSTIFIED
@@ -319,6 +321,7 @@ class ActivityTest extends TestCase
             'user_id' => $this->member->id,
             'activity_id' => $activity->id,
             'status' => 'ABSENT_JUSTIFIED',
+            'justification' => 'Contretemps imprévu',
         ]);
 
         // Member 2 registration becomes is_waitlisted = false
@@ -362,7 +365,9 @@ class ActivityTest extends TestCase
         ]);
 
         // Tenter de se désinscrire
-        $response = $this->actingAs($this->member)->post(route('activities.unregister', $activity));
+        $response = $this->actingAs($this->member)->post(route('activities.unregister', $activity), [
+            'justification' => 'Contretemps imprévu',
+        ]);
         $response->assertRedirect();
         $response->assertSessionHas('error', "Cette activité a déjà commencé. La désinscription n'est plus possible.");
 
@@ -371,6 +376,55 @@ class ActivityTest extends TestCase
             'user_id' => $this->member->id,
             'activity_id' => $activity->id,
             'status' => 'PRESENT',
+        ]);
+    }
+
+    /**
+     * Test validation rules for unregistration justification.
+     */
+    public function test_member_cannot_unregister_without_justification(): void
+    {
+        $activity = Activity::create([
+            'title' => 'Future Activity',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->addDay(),
+            'end_time' => now()->addDay()->addHours(2),
+        ]);
+
+        // Create registration
+        Registration::create([
+            'user_id' => $this->member->id,
+            'activity_id' => $activity->id,
+            'status' => 'PRESENT',
+            'is_waitlisted' => false,
+            'registered_at' => now(),
+        ]);
+
+        // 1. Unregister with no justification -> fails
+        $response = $this->actingAs($this->member)
+            ->post(route('activities.unregister', $activity), []);
+        $response->assertSessionHasErrors(['justification']);
+
+        // 2. Unregister with too short justification -> fails
+        $response = $this->actingAs($this->member)
+            ->post(route('activities.unregister', $activity), [
+                'justification' => 'abc', // too short
+            ]);
+        $response->assertSessionHasErrors(['justification']);
+
+        // 3. Unregister with valid justification -> passes
+        $response = $this->actingAs($this->member)
+            ->post(route('activities.unregister', $activity), [
+                'justification' => 'Contretemps de dernière minute',
+            ]);
+        $response->assertRedirect();
+        $this->assertDatabaseHas('registrations', [
+            'user_id' => $this->member->id,
+            'activity_id' => $activity->id,
+            'status' => 'ABSENT_JUSTIFIED',
+            'justification' => 'Contretemps de dernière minute',
         ]);
     }
 }
