@@ -24,6 +24,7 @@ class Registration extends Model
     protected $casts = [
         'registered_at' => 'datetime',
         'is_waitlisted' => 'boolean',
+        'status' => \App\Enums\RegistrationStatus::class,
     ];
 
     public function user(): BelongsTo

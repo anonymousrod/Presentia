@@ -281,7 +281,9 @@ class ActivityTest extends TestCase
         ]);
 
         // 1. Member 1 registers
-        $response = $this->actingAs($this->member)->post(route('activities.register', $activity));
+        $response = $this->actingAs($this->member)->post(route('activities.register', $activity), [
+            'status' => 'PRESENT',
+        ]);
         $response->assertRedirect();
 
         $this->assertDatabaseHas('registrations', [
@@ -301,7 +303,9 @@ class ActivityTest extends TestCase
         ]);
         $member2->assignRole('Jeune');
 
-        $response = $this->actingAs($member2)->post(route('activities.register', $activity));
+        $response = $this->actingAs($member2)->post(route('activities.register', $activity), [
+            'status' => 'PRESENT',
+        ]);
         $response->assertRedirect();
 
         $this->assertDatabaseHas('registrations', [
@@ -347,7 +351,9 @@ class ActivityTest extends TestCase
         ]);
 
         // 1. Tenter de s'inscrire
-        $response = $this->actingAs($this->member)->post(route('activities.register', $activity));
+        $response = $this->actingAs($this->member)->post(route('activities.register', $activity), [
+            'status' => 'PRESENT',
+        ]);
         $response->assertRedirect();
         $response->assertSessionHas('error', "Cette activité a déjà commencé. L'inscription n'est plus possible.");
         $this->assertDatabaseMissing('registrations', [
@@ -426,5 +432,80 @@ class ActivityTest extends TestCase
             'status' => 'ABSENT_JUSTIFIED',
             'justification' => 'Contretemps de dernière minute',
         ]);
+    }
+
+    /**
+     * Test registration with UNCERTAIN status.
+     */
+    public function test_registration_with_uncertain_status(): void
+    {
+        $activity = Activity::create([
+            'title' => 'Future Activity 2',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->addDay(),
+            'end_time' => now()->addDay()->addHours(2),
+        ]);
+
+        $response = $this->actingAs($this->member)->post(route('activities.register', $activity), [
+            'status' => 'UNCERTAIN',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('registrations', [
+            'user_id' => $this->member->id,
+            'activity_id' => $activity->id,
+            'status' => 'UNCERTAIN',
+        ]);
+    }
+
+    /**
+     * Test registration fails if activity is starting in less than 2 hours.
+     */
+    public function test_cannot_register_less_than_2_hours_before_start(): void
+    {
+        $activity = Activity::create([
+            'title' => 'Near Start Activity',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->addMinutes(90), // 1h30 from now
+            'end_time' => now()->addHours(3),
+        ]);
+
+        $response = $this->actingAs($this->member)->post(route('activities.register', $activity), [
+            'status' => 'PRESENT',
+        ]);
+
+        $response->assertSessionHasErrors(['status']);
+        $this->assertDatabaseMissing('registrations', [
+            'user_id' => $this->member->id,
+            'activity_id' => $activity->id,
+        ]);
+    }
+
+    /**
+     * Test job SendRegistrationConfirmation is dispatched.
+     */
+    public function test_send_registration_confirmation_job_is_dispatched(): void
+    {
+        \Illuminate\Support\Facades\Queue::fake();
+
+        $activity = Activity::create([
+            'title' => 'Future Activity 3',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->addDay(),
+            'end_time' => now()->addDay()->addHours(2),
+        ]);
+
+        $response = $this->actingAs($this->member)->post(route('activities.register', $activity), [
+            'status' => 'PRESENT',
+        ]);
+
+        $response->assertRedirect();
+        \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\SendRegistrationConfirmation::class);
     }
 }

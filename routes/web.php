@@ -30,8 +30,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Frontend Activities
     Route::get('activities', [App\Http\Controllers\ActivityController::class, 'index'])->name('activities.index');
-    Route::post('activities/{activity}/register', [App\Http\Controllers\ActivityController::class, 'register'])->name('activities.register');
-    Route::post('activities/{activity}/unregister', [App\Http\Controllers\ActivityController::class, 'unregister'])->name('activities.unregister');
+    Route::get('activities/{activity}', [App\Http\Controllers\ActivityController::class, 'show'])->name('activities.show');
+    Route::post('activities/{activity}/register', [App\Http\Controllers\RegistrationController::class, 'store'])->name('activities.register');
+    Route::put('activities/{activity}/register', [App\Http\Controllers\RegistrationController::class, 'update'])->name('activities.register.update');
+    Route::post('activities/{activity}/unregister', [App\Http\Controllers\RegistrationController::class, 'destroy'])->name('activities.unregister');
 
     // QR Code Scanning & Attendance
     Route::get('scan', [App\Http\Controllers\AttendanceScanController::class, 'scanner'])->name('scan.alias');

@@ -66,106 +66,29 @@ class ActivityController extends Controller
     }
 
     /**
-     * Register the authenticated user to the activity.
+     * Display the specified activity details.
      */
-    public function register(Activity $activity)
+    public function show(Activity $activity)
     {
         $user = Auth::user();
 
-        // Check if the activity is PUBLISHED and visible
+        // Check if the activity is PUBLISHED
         if ($activity->status !== ActivityStatus::PUBLISHED) {
             abort(403, "Cette activité n'est pas disponible.");
         }
 
-        // Check visibility access
         $this->authorizeVisibility($activity, $user);
 
-        // Check if the activity has already started
-        if ($activity->start_time->lte(now())) {
-            return redirect()->back()->with('error', "Cette activité a déjà commencé. L'inscription n'est plus possible.");
-        }
-
-        // Check if already registered (not cancelled)
-        $registration = Registration::where('user_id', $user->id)
+        $myRegistration = Registration::where('user_id', $user->id)
             ->where('activity_id', $activity->id)
             ->first();
 
-        if ($registration && $registration->status !== 'ABSENT_JUSTIFIED') {
-            return redirect()->back()->with('error', 'Vous êtes déjà inscrit à cette activité.');
-        }
-
-        // Check capacity & waitlist
-        $registeredCount = Registration::where('activity_id', $activity->id)
+        $activeRegistrationsCount = Registration::where('activity_id', $activity->id)
             ->where('is_waitlisted', false)
-            ->where('status', '!=', 'ABSENT_JUSTIFIED')
+            ->where('status', '!=', \App\Enums\RegistrationStatus::ABSENT_JUSTIFIED)
             ->count();
 
-        $isWaitlisted = false;
-        if ($activity->capacity && $registeredCount >= $activity->capacity) {
-            $isWaitlisted = true;
-        }
-
-        if ($registration) {
-            // Reactivate registration
-            $registration->update([
-                'status' => 'PRESENT',
-                'is_waitlisted' => $isWaitlisted,
-                'justification' => null,
-                'registered_at' => now(),
-            ]);
-        } else {
-            Registration::create([
-                'user_id' => $user->id,
-                'activity_id' => $activity->id,
-                'status' => 'PRESENT',
-                'is_waitlisted' => $isWaitlisted,
-                'registered_at' => now(),
-            ]);
-        }
-
-        $msg = $isWaitlisted
-            ? 'Vous avez été inscrit sur la liste d\'attente de cette activité.'
-            : 'Inscription enregistrée avec succès.';
-
-        return redirect()->back()->with('success', $msg);
-    }
-
-    /**
-     * Cancel/Unregister the authenticated user from the activity.
-     */
-    public function unregister(Request $request, Activity $activity)
-    {
-        $user = Auth::user();
-
-        // Check if the activity has already started
-        if ($activity->start_time->lte(now())) {
-            return redirect()->back()->with('error', "Cette activité a déjà commencé. La désinscription n'est plus possible.");
-        }
-
-        $registration = Registration::where('user_id', $user->id)
-            ->where('activity_id', $activity->id)
-            ->first();
-
-        if (!$registration || $registration->status === 'ABSENT_JUSTIFIED') {
-            return redirect()->back()->with('error', 'Vous n\'êtes pas inscrit à cette activité.');
-        }
-
-        // Validate justification reason
-        $request->validate([
-            'justification' => 'required|string|min:5|max:255',
-        ]);
-
-        // Mark as ABSENT_JUSTIFIED (cancellation status)
-        $registration->update([
-            'status' => 'ABSENT_JUSTIFIED',
-            'justification' => $request->input('justification'),
-            'is_waitlisted' => false,
-        ]);
-
-        // If waitlist exists, promote the first person on waitlist
-        $this->promoteFromWaitlist($activity);
-
-        return redirect()->back()->with('success', 'Votre inscription a été annulée.');
+        return view('activities.show', compact('activity', 'myRegistration', 'activeRegistrationsCount'));
     }
 
     /**
@@ -194,33 +117,5 @@ class ActivityController extends Controller
         }
 
         abort(403, "Vous n'avez pas accès à cette activité.");
-    }
-
-    /**
-     * Promote the first waitlisted registration for the activity.
-     */
-    protected function promoteFromWaitlist(Activity $activity)
-    {
-        if (!$activity->capacity) {
-            return;
-        }
-
-        // Count active non-waitlisted registrations
-        $registeredCount = Registration::where('activity_id', $activity->id)
-            ->where('is_waitlisted', false)
-            ->where('status', '!=', 'ABSENT_JUSTIFIED')
-            ->count();
-
-        if ($registeredCount < $activity->capacity) {
-            // Find the oldest waitlisted registration
-            $next = Registration::where('activity_id', $activity->id)
-                ->where('is_waitlisted', true)
-                ->orderBy('registered_at', 'asc')
-                ->first();
-
-            if ($next) {
-                $next->update(['is_waitlisted' => false]);
-            }
-        }
     }
 }

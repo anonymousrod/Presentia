@@ -127,18 +127,14 @@
                                     <span class="text-muted fw-semibold"><i class="mdi mdi-close-circle-outline"></i> Non inscrit</span>
                                 @endif
                             @else
-                                @if(!$regStatus || $regStatus === 'ABSENT_JUSTIFIED')
-                                    <form action="{{ route('activities.register', $activity) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-primary">
-                                            <i class="mdi mdi-plus-circle-outline"></i> S'inscrire
-                                        </button>
-                                    </form>
+                                @if(!$regStatus || $regStatus === \App\Enums\RegistrationStatus::ABSENT_JUSTIFIED->value)
+                                    <a href="{{ route('activities.show', $activity) }}" class="btn btn-sm btn-primary">
+                                        <i class="mdi mdi-plus-circle-outline"></i> S'inscrire / Gérer
+                                    </a>
                                 @else
-                                    <button type="button" class="btn btn-sm btn-outline-danger" 
-                                            onclick="openUnregisterModal('{{ route('activities.unregister', $activity) }}')">
-                                        <i class="mdi mdi-minus-circle-outline"></i> Se désinscrire
-                                    </button>
+                                    <a href="{{ route('activities.show', $activity) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="mdi mdi-cog-outline"></i> Gérer mon inscription
+                                    </a>
                                 @endif
                             @endif
                         </div>

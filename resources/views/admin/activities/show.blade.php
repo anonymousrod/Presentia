@@ -67,7 +67,7 @@
                         name: '{{ addslashes($reg->user->full_name) }}',
                         email: '{{ addslashes($reg->user->email) }}',
                         date: '{{ $reg->created_at->format('d/m/Y H:i') }}',
-                        status: '{{ $reg->status === 'ABSENT_JUSTIFIED' ? 'desinscrit' : ($reg->is_waitlisted ? 'attente' : 'inscrit') }}',
+                        status: '{{ $reg->is_waitlisted ? 'attente' : (($reg->status?->value ?? $reg->status) === 'PRESENT' ? 'inscrit' : (($reg->status?->value ?? $reg->status) === 'UNCERTAIN' ? 'incertain' : 'desinscrit')) }}',
                         justification: '{{ addslashes($reg->justification ?: '') }}',
                         user_url: '{{ route('admin.users.show', $reg->user_id) }}'
                     },
@@ -85,11 +85,12 @@
                 <div class="card-header d-flex align-items-center">
                     <h5 class="card-title mb-0 flex-grow-1">Inscriptions</h5>
                     <div class="d-flex gap-2">
-                        <span class="badge bg-success-subtle text-success">{{ $activity->registrations->where('status', '!=', 'ABSENT_JUSTIFIED')->where('is_waitlisted', false)->count() }} Inscrit(s)</span>
+                        <span class="badge bg-success-subtle text-success">{{ $activity->registrations->where('status', \App\Enums\RegistrationStatus::PRESENT)->where('is_waitlisted', false)->count() }} Inscrit(s)</span>
+                        <span class="badge bg-info-subtle text-info">{{ $activity->registrations->where('status', \App\Enums\RegistrationStatus::UNCERTAIN)->where('is_waitlisted', false)->count() }} Incertain(s)</span>
                         @if($activity->capacity)
                             <span class="badge bg-warning-subtle text-warning">{{ $activity->registrations->where('is_waitlisted', true)->count() }} Liste d'attente</span>
                         @endif
-                        <span class="badge bg-danger-subtle text-danger">{{ $activity->registrations->where('status', 'ABSENT_JUSTIFIED')->count() }} Désinscrit(s)</span>
+                        <span class="badge bg-danger-subtle text-danger">{{ $activity->registrations->where('status', \App\Enums\RegistrationStatus::ABSENT_JUSTIFIED)->count() }} Désinscrit(s)</span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -104,6 +105,7 @@
                             <select x-model="statusFilter" class="form-select">
                                 <option value="">Tous les statuts</option>
                                 <option value="inscrit">Inscrit</option>
+                                <option value="incertain">Incertain</option>
                                 @if($activity->capacity)
                                     <option value="attente">Liste d'attente</option>
                                 @endif
@@ -140,10 +142,11 @@
                                             <span class="badge" 
                                                   :class="{
                                                       'bg-success-subtle text-success': reg.status === 'inscrit',
+                                                      'bg-info-subtle text-info': reg.status === 'incertain',
                                                       'bg-warning-subtle text-warning': reg.status === 'attente',
                                                       'bg-danger-subtle text-danger': reg.status === 'desinscrit'
                                                   }"
-                                                  x-text="reg.status === 'inscrit' ? 'Inscrit' : (reg.status === 'attente' ? 'Liste d\'attente' : 'Désinscrit')">
+                                                  x-text="reg.status === 'inscrit' ? 'Inscrit' : (reg.status === 'incertain' ? 'Incertain' : (reg.status === 'attente' ? 'Liste d\'attente' : 'Désinscrit'))">
                                             </span>
                                         </td>
                                         <td>
