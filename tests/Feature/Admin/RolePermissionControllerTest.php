@@ -177,6 +177,3 @@ class RolePermissionControllerTest extends TestCase
         $this->assertNull(cache()->get('spatie.permission.cache'));
     }
 }
-
-
-
