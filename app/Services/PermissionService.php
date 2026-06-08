@@ -23,7 +23,7 @@ class PermissionService
     {
         $role = Role::create(['name' => $name, 'guard_name' => 'web']);
         $role->syncPermissions($permissionNames);
-        
+
         $this->clearCache();
 
         return $role;
@@ -61,6 +61,15 @@ class PermissionService
     public function syncUserDirectPermissions(User $user, array $permissionNames): void
     {
         $user->syncPermissions($permissionNames);
+        $this->clearCache();
+    }
+
+    /**
+     * Synchronise les rôles de l'utilisateur.
+     */
+    public function syncUserRoles(User $user, array $roleNames): void
+    {
+        $user->syncRoles($roleNames);
         $this->clearCache();
     }
 

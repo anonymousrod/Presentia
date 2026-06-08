@@ -84,8 +84,13 @@
                             </a>
                         </li>
                     </ul>
-                    <div class="flex-shrink-0">
-                        <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-success"><i class="ri-edit-box-line align-bottom"></i> Modifier le profil</a>
+                    <div class="flex-shrink-0 d-flex gap-2">
+                        <a href="{{ route('admin.users.permissions.edit', $user) }}" class="btn btn-warning">
+                            <i class="ri-key-line align-bottom"></i> Permissions
+                        </a>
+                        <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-success">
+                            <i class="ri-edit-box-line align-bottom"></i> Modifier le profil
+                        </a>
                     </div>
                 </div>
                 <!-- Tab panes -->

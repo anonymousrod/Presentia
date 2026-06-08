@@ -231,7 +231,6 @@
 @endsection
 
 @push('scripts')
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script>
     function confirmDelete() {
         if (confirm('Êtes-vous sûr de vouloir supprimer cette activité ?')) {

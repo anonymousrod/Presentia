@@ -111,6 +111,9 @@
                                 </td>
                                 <td>{{ $user->created_at->format('d/m/Y') }}</td>
                                 <td class="text-end">
+                                    <a href="{{ route('admin.users.permissions.edit', $user) }}" class="btn btn-sm btn-outline-warning" title="Permissions">
+                                        <i class="mdi mdi-key"></i>
+                                    </a>
                                     <a href="{{ route('admin.users.show', $user) }}" class="btn btn-sm btn-info" title="Voir">
                                         <i class="mdi mdi-eye"></i>
                                     </a>
