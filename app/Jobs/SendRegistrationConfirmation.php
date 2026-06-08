@@ -63,8 +63,8 @@ class SendRegistrationConfirmation implements ShouldQueue
         if ($isWaitlisted) {
             $statusStr = "Inscrit(e) sur Liste d'attente ⏳";
         } else {
-            $statusVal = $registration->status instanceof \App\Enums\RegistrationStatus 
-                ? $registration->status->value 
+            $statusVal = $registration->status instanceof \App\Enums\RegistrationStatus
+                ? $registration->status->value
                 : $registration->status;
 
             switch ($statusVal) {

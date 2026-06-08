@@ -236,7 +236,7 @@ class RegistrationController extends Controller
         }
 
         abort(403, "Vous n'avez pas accès à cette activité.");
-      }
+    }
 
     /**
      * Promote the first waitlisted registration for the activity.
@@ -262,7 +262,7 @@ class RegistrationController extends Controller
 
             if ($next) {
                 $next->update(['is_waitlisted' => false]);
-                
+
                 // Dispatch confirmation notification for promoted user
                 dispatch(new SendRegistrationConfirmation($next));
             }
