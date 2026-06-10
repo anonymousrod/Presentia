@@ -28,8 +28,24 @@ class ActivityController extends Controller
         $roleIds = $user->roles()->pluck('id')->toArray();
 
         // Build query for published activities matching visibility criteria
-        $query = Activity::where('status', ActivityStatus::PUBLISHED)
-            ->where(function ($q) use ($groupIds, $roleIds) {
+        $query = Activity::where('status', ActivityStatus::PUBLISHED);
+
+        if ($request->get('manageable') == 1) {
+            if ($user->hasRole('Administrateur')) {
+                // Admins can manage all activities. We can optionally filter to group-restricted ones or show all.
+                // Let's show all published activities.
+            } else {
+                $ledGroupIds = $user->ledGroups()->pluck('groups.id')->toArray();
+                $query->where(function ($q) use ($ledGroupIds) {
+                    $q->where('visibility', ActivityVisibility::ALL)
+                      ->orWhere(function ($sub) use ($ledGroupIds) {
+                          $sub->where('visibility', ActivityVisibility::GROUP)
+                              ->whereIn('visibility_group_id', $ledGroupIds);
+                      });
+                });
+            }
+        } else {
+            $query->where(function ($q) use ($groupIds, $roleIds) {
                 $q->where('visibility', ActivityVisibility::ALL)
                   ->orWhere(function ($sub) use ($groupIds) {
                       $sub->where('visibility', ActivityVisibility::GROUP)
@@ -40,6 +56,7 @@ class ActivityController extends Controller
                           ->whereIn('visibility_role_id', $roleIds);
                   });
             });
+        }
 
         // Optional search/filter by type if needed
         if ($request->filled('search')) {
@@ -48,6 +65,21 @@ class ActivityController extends Controller
 
         if ($request->filled('type')) {
             $query->where('type', $request->type);
+        }
+
+        // Default status_filter to 'upcoming' if not present in request query
+        $statusFilter = $request->has('status_filter') ? $request->input('status_filter') : 'upcoming';
+
+        if (!empty($statusFilter)) {
+            $now = now();
+            if ($statusFilter === 'upcoming') {
+                $query->where('start_time', '>', $now);
+            } elseif ($statusFilter === 'finished') {
+                $query->where('end_time', '<', $now);
+            } elseif ($statusFilter === 'ongoing') {
+                $query->where('start_time', '<=', $now)
+                      ->where('end_time', '>=', $now);
+            }
         }
 
         $activities = $query->orderBy('start_time', 'asc')->paginate(10);

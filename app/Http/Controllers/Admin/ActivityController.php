@@ -12,6 +12,7 @@ use App\Http\Requests\Admin\StoreActivityRequest;
 use App\Http\Requests\Admin\UpdateActivityRequest;
 use App\Enums\ActivityStatus;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ActivityController extends Controller
 {
@@ -71,8 +72,74 @@ class ActivityController extends Controller
      */
     public function show(Activity $activity)
     {
-        $activity->load(['responsible', 'group', 'role', 'registrations.user']);
+        $activity->load(['responsible', 'group', 'role', 'registrations.user', 'attendances.user']);
         return view('admin.activities.show', compact('activity'));
+    }
+
+    /**
+     * Télécharger la liste des inscriptions au format PDF.
+     */
+    public function downloadRegistrationsPdf(Activity $activity)
+    {
+        $activity->load(['responsible', 'group', 'role', 'registrations.user.groups']);
+
+        // Filter valid registrations (non-waitlisted, status PRESENT or UNCERTAIN)
+        $registrations = $activity->registrations()
+            ->where('registrations.is_waitlisted', false)
+            ->whereIn('registrations.status', [\App\Enums\RegistrationStatus::PRESENT->value, \App\Enums\RegistrationStatus::UNCERTAIN->value])
+            ->join('users', 'registrations.user_id', '=', 'users.id')
+            ->orderBy('users.name')
+            ->orderBy('users.first_name')
+            ->select('registrations.*')
+            ->get();
+
+        $logoUeebPath = "D:/TFG_Projet/front_back_ecomerce/Projet_Presentia/LOGO UEEB.png";
+        $logoJeunessePath = "D:/TFG_Projet/front_back_ecomerce/Projet_Presentia/LOGO Jeunesse Etoile Rouge/LOGO/Logo Jeunesse/PNG/Fichier 10 1.png";
+
+        $logoUeebBase64 = '';
+        if (file_exists($logoUeebPath)) {
+            $logoUeebBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoUeebPath));
+        }
+
+        $logoJeunesseBase64 = '';
+        if (file_exists($logoJeunessePath)) {
+            $logoJeunesseBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoJeunessePath));
+        }
+
+        $pdf = Pdf::loadView('admin.activities.registrations-pdf', compact('activity', 'registrations', 'logoUeebBase64', 'logoJeunesseBase64'));
+        return $pdf->download("Liste_Inscriptions_{$activity->id}_{$activity->title}.pdf");
+    }
+
+    /**
+     * Télécharger la liste de présence au format PDF.
+     */
+    public function downloadAttendancePdf(Activity $activity)
+    {
+        $activity->load(['responsible', 'group', 'role', 'attendances.user.groups']);
+
+        // Retrieve valid attendances (Present or Late or Excused or Absent)
+        $attendances = $activity->attendances()
+            ->join('users', 'attendances.user_id', '=', 'users.id')
+            ->orderBy('users.name')
+            ->orderBy('users.first_name')
+            ->select('attendances.*')
+            ->get();
+
+        $logoUeebPath = "D:/TFG_Projet/front_back_ecomerce/Projet_Presentia/LOGO UEEB.png";
+        $logoJeunessePath = "D:/TFG_Projet/front_back_ecomerce/Projet_Presentia/LOGO Jeunesse Etoile Rouge/LOGO/Logo Jeunesse/PNG/Fichier 10 1.png";
+
+        $logoUeebBase64 = '';
+        if (file_exists($logoUeebPath)) {
+            $logoUeebBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoUeebPath));
+        }
+
+        $logoJeunesseBase64 = '';
+        if (file_exists($logoJeunessePath)) {
+            $logoJeunesseBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoJeunessePath));
+        }
+
+        $pdf = Pdf::loadView('admin.activities.attendance-pdf', compact('activity', 'attendances', 'logoUeebBase64', 'logoJeunesseBase64'));
+        return $pdf->download("Liste_Presence_{$activity->id}_{$activity->title}.pdf");
     }
 
     /**

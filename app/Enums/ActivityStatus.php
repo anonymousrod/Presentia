@@ -8,4 +8,14 @@ enum ActivityStatus: string
     case PUBLISHED = 'PUBLISHED';
     case CANCELLED = 'CANCELLED';
     case ARCHIVED = 'ARCHIVED';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::DRAFT => 'Brouillon',
+            self::PUBLISHED => 'Publié',
+            self::CANCELLED => 'Annulé',
+            self::ARCHIVED => 'Archivé',
+        };
+    }
 }

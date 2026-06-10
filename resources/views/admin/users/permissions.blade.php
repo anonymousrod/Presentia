@@ -100,16 +100,26 @@
                             <h5 class="fs-15 mb-3"><i class="ri-shield-star-line me-1 align-bottom text-primary"></i> Attribution des Rôles</h5>
                             <div class="row g-3">
                                 @foreach($roles as $role)
+                                    @php
+                                        $isJeune = $role->name === 'Jeune';
+                                        $isChecked = $isJeune || in_array($role->name, $currentUserRoleNames);
+                                    @endphp
                                     <div class="col-md-4 col-xl-3">
-                                        <div class="p-3 border rounded h-100 transition-all permission-card">
+                                        <div class="p-3 border rounded h-100 transition-all permission-card {{ $isJeune ? 'bg-light' : '' }}">
                                             <div class="form-check form-switch form-switch-primary form-switch-md mb-0">
                                                 <input class="form-check-input" type="checkbox" role="switch"
                                                        name="roles[]" 
                                                        value="{{ $role->name }}" 
                                                        id="role-{{ $role->id }}"
-                                                       {{ in_array($role->name, $currentUserRoleNames) ? 'checked' : '' }}>
+                                                       {{ $isChecked ? 'checked' : '' }}
+                                                       {{ $isJeune ? 'disabled' : '' }}>
                                                 <label class="form-check-label ms-2 cursor-pointer" for="role-{{ $role->id }}">
-                                                    <span class="fs-14 fw-semibold d-block">{{ $role->name }}</span>
+                                                    <span class="fs-14 fw-semibold d-block">
+                                                        {{ $role->name }}
+                                                        @if($isJeune)
+                                                            <span class="badge bg-danger-subtle text-danger fs-9 ms-1 rounded-pill">Requis</span>
+                                                        @endif
+                                                    </span>
                                                     <span class="text-muted fs-11 d-block mt-1">{{ $role->permissions()->count() }} permissions</span>
                                                 </label>
                                             </div>

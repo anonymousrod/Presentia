@@ -833,7 +833,7 @@
                                                 </td>
                                                 <td>Zoetic Fashion</td>
                                                 <td>
-                                                    <span class="badge bg-success-subtle text-success">Paid</span>
+                                                    <span class="badge bg-success-subtle text-success">Payé</span>
                                                 </td>
                                                 <td>
                                                     <h5 class="fs-14 fw-medium mb-0">5.0<span
@@ -861,7 +861,7 @@
                                                 </td>
                                                 <td>Micro Design</td>
                                                 <td>
-                                                    <span class="badge bg-warning-subtle text-warning">Pending</span>
+                                                    <span class="badge bg-warning-subtle text-warning">En attente</span>
                                                 </td>
                                                 <td>
                                                     <h5 class="fs-14 fw-medium mb-0">4.5<span
@@ -889,7 +889,7 @@
                                                 </td>
                                                 <td>Nesta Technologies</td>
                                                 <td>
-                                                    <span class="badge bg-success-subtle text-success">Paid</span>
+                                                    <span class="badge bg-success-subtle text-success">Payé</span>
                                                 </td>
                                                 <td>
                                                     <h5 class="fs-14 fw-medium mb-0">4.9<span
@@ -917,7 +917,7 @@
                                                 </td>
                                                 <td>Syntyce Solutions</td>
                                                 <td>
-                                                    <span class="badge bg-danger-subtle text-danger">Unpaid</span>
+                                                    <span class="badge bg-danger-subtle text-danger">Impayé</span>
                                                 </td>
                                                 <td>
                                                     <h5 class="fs-14 fw-medium mb-0">4.3<span
@@ -945,7 +945,7 @@
                                                 </td>
                                                 <td>iTest Factory</td>
                                                 <td>
-                                                    <span class="badge bg-success-subtle text-success">Paid</span>
+                                                    <span class="badge bg-success-subtle text-success">Payé</span>
                                                 </td>
                                                 <td>
                                                     <h5 class="fs-14 fw-medium mb-0">4.7<span

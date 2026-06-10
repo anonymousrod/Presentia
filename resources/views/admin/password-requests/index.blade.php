@@ -45,9 +45,9 @@
                                 {{ $request->expires_at->format('d/m/Y H:i') }}
                             </td>
                             <td class="text-end">
-                                <form action="{{ route('admin.password-requests.validate', $request) }}" method="POST" class="d-inline">
+                                <form action="{{ route('admin.password-requests.validate', $request) }}" method="POST" class="d-inline confirm-form-whatsapp">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Générer un mot de passe temporaire et l\'envoyer par WhatsApp ?')">
+                                    <button type="submit" class="btn btn-sm btn-success">
                                         Valider et Envoyer
                                     </button>
                                 </form>
@@ -71,4 +71,21 @@
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.querySelectorAll('.confirm-form-whatsapp').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            confirmAction(
+                'Générer un mot de passe temporaire et l\'envoyer par WhatsApp ?',
+                () => this.submit(),
+                'Confirmation WhatsApp',
+                'Valider et Envoyer',
+                'btn-success'
+            );
+        });
+    });
+</script>
+@endpush
 @endsection

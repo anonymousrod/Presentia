@@ -69,6 +69,11 @@ class PermissionService
      */
     public function syncUserRoles(User $user, array $roleNames): void
     {
+        // Toujours s'assurer que le rôle par défaut 'Jeune' reste assigné à l'utilisateur
+        if (!in_array('Jeune', $roleNames) && Role::where('name', 'Jeune')->exists()) {
+            $roleNames[] = 'Jeune';
+        }
+
         $user->syncRoles($roleNames);
         $this->clearCache();
     }

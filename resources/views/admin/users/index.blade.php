@@ -4,12 +4,18 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestion des membres</h2>
-        <div>
-            <a href="{{ route('admin.users.export', request()->all()) }}" class="btn btn-success me-2">
-                <i class="mdi mdi-export"></i> Exporter CSV
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.users.export', request()->all()) }}"
+               class="btn btn-outline-primary d-flex align-items-center gap-2"
+               style="border-radius: 0.5rem;">
+                <i class="mdi mdi-file-pdf-outline fs-16"></i>
+                <span>Exporter PDF</span>
             </a>
-            <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
-                <i class="mdi mdi-plus"></i> Nouveau membre
+            <a href="{{ route('admin.users.create') }}"
+               class="btn btn-primary d-flex align-items-center gap-2"
+               style="border-radius: 0.5rem;">
+                <i class="mdi mdi-plus fs-16"></i>
+                <span>Nouveau membre</span>
             </a>
         </div>
     </div>
@@ -45,7 +51,7 @@
     </div>
 
     <!-- Users Table with Bulk Actions -->
-    <form action="{{ route('admin.users.bulk-status') }}" method="POST">
+    <form id="bulkStatusForm" action="{{ route('admin.users.bulk-status') }}" method="POST">
         @csrf
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -57,7 +63,7 @@
                         <option value="INACTIVE">Désactiver</option>
                         <option value="SUSPENDED">Suspendre</option>
                     </select>
-                    <button type="submit" class="btn btn-sm btn-outline-primary" onclick="return confirm('Êtes-vous sûr de vouloir modifier le statut des utilisateurs sélectionnés ?')">Appliquer</button>
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Appliquer</button>
                 </div>
             </div>
             <div class="card-body p-0">
@@ -106,7 +112,7 @@
                                         'SUSPENDED' => 'danger',
                                         default => 'primary'
                                     } }}">
-                                        {{ $user->status->value }}
+                                        {{ $user->status->label() }}
                                     </span>
                                 </td>
                                 <td>{{ $user->created_at->format('d/m/Y') }}</td>
@@ -158,10 +164,34 @@
         checkboxes.forEach(checkbox => checkbox.checked = this.checked);
     });
 
-    function confirmDelete(id) {
-        if (confirm('Êtes-vous sûr de vouloir supprimer ce membre ? S\'il a des données liées, il sera archivé.')) {
-            document.getElementById('delete-form-' + id).submit();
+    // Intercepter la soumission du formulaire d'action en masse
+    document.getElementById('bulkStatusForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Vérifier si au moins un membre est sélectionné
+        const selected = document.querySelectorAll('.user-checkbox:checked').length;
+        if (selected === 0) {
+            alert('Veuillez sélectionner au moins un membre.');
+            return;
         }
+
+        confirmAction(
+            'Êtes-vous sûr de vouloir modifier le statut des utilisateurs sélectionnés ?',
+            () => this.submit(),
+            'Modifier le statut',
+            'Appliquer',
+            'btn-primary'
+        );
+    });
+
+    function confirmDelete(id) {
+        confirmAction(
+            'Êtes-vous sûr de vouloir supprimer ce membre ? S\'il a des données liées, il sera archivé.',
+            () => document.getElementById('delete-form-' + id).submit(),
+            'Supprimer le membre',
+            'Supprimer',
+            'btn-danger'
+        );
     }
 </script>
 @endpush

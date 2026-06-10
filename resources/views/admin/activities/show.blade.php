@@ -2,10 +2,18 @@
 
 @section('content')
 <div class="container py-4">
-    <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <a href="{{ route('admin.activities.index') }}" class="btn btn-outline-secondary btn-sm">
             <i class="mdi mdi-arrow-left"></i> Retour à la liste
         </a>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.activities.download-registrations', $activity) }}" class="btn btn-outline-primary btn-sm">
+                <i class="mdi mdi-file-pdf-box"></i> Liste d'inscriptions (PDF)
+            </a>
+            <a href="{{ route('admin.activities.download-attendance', $activity) }}" class="btn btn-outline-success btn-sm">
+                <i class="mdi mdi-file-pdf-box"></i> Liste de présence (PDF)
+            </a>
+        </div>
     </div>
 
     <div class="row">
@@ -20,7 +28,7 @@
                         'CANCELLED' => 'danger',
                         'ARCHIVED' => 'secondary',
                         default => 'primary'
-                    } }}">{{ $activity->status->value }}</span>
+                    } }}">{{ $activity->status->label() }}</span>
                 </div>
                 <div class="card-body">
                     <div class="mb-4">
@@ -164,6 +172,120 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Liste de présence -->
+            <div class="card mt-4" x-data="{
+                search: '',
+                statusFilter: '',
+                attendances: [
+                    @foreach($activity->attendances as $att)
+                    {
+                        id: {{ $att->id }},
+                        name: '{{ addslashes($att->user->full_name) }}',
+                        email: '{{ addslashes($att->user->email) }}',
+                        time: '{{ $att->created_at->format('H:i') }}',
+                        status: '{{ $att->status->value }}',
+                        source: '{{ $att->scan_source }}',
+                        note: '{{ addslashes($att->note ?: '') }}',
+                        user_url: '{{ route('admin.users.show', $att->user_id) }}'
+                    },
+                    @endforeach
+                ],
+                get filteredAttendances() {
+                    return this.attendances.filter(a => {
+                        const matchesSearch = a.name.toLowerCase().includes(this.search.toLowerCase()) || 
+                                              a.email.toLowerCase().includes(this.search.toLowerCase());
+                        const matchesStatus = this.statusFilter === '' || a.status === this.statusFilter;
+                        return matchesSearch && matchesStatus;
+                    });
+                }
+            }">
+                <div class="card-header d-flex align-items-center">
+                    <h5 class="card-title mb-0 flex-grow-1">Liste de présence digitale</h5>
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-success-subtle text-success">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::PRESENT)->count() }} Présent(s)</span>
+                        <span class="badge bg-warning-subtle text-warning">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::LATE)->count() }} En retard</span>
+                        <span class="badge bg-danger-subtle text-danger">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::ABSENT)->count() }} Absent(s)</span>
+                        <span class="badge bg-info-subtle text-info">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::EXCUSED)->count() }} Excusé(s)</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Filters row -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-7">
+                            <div class="search-box position-relative">
+                                <input type="text" x-model="search" class="form-control" placeholder="Rechercher un présent (nom, email)...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select x-model="statusFilter" class="form-select">
+                                <option value="">Tous les statuts</option>
+                                <option value="PRESENT">Présent</option>
+                                <option value="LATE">En retard</option>
+                                <option value="ABSENT">Absent</option>
+                                <option value="EXCUSED">Excusé</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-light w-100" @click="search = ''; statusFilter = '';">
+                                Réinitialiser
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nom Complet</th>
+                                    <th>Email</th>
+                                    <th>Heure d'arrivée</th>
+                                    <th>Statut</th>
+                                    <th>Moyen</th>
+                                    <th>Note / Justification</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="att in filteredAttendances" :key="att.id">
+                                    <tr>
+                                        <td>
+                                            <a :href="att.user_url" class="fw-semibold text-body" x-text="att.name"></a>
+                                        </td>
+                                        <td x-text="att.email"></td>
+                                        <td x-text="att.time"></td>
+                                        <td>
+                                            <span class="badge" 
+                                                  :class="{
+                                                      'bg-success-subtle text-success': att.status === 'PRESENT',
+                                                      'bg-warning-subtle text-warning': att.status === 'LATE',
+                                                      'bg-danger-subtle text-danger': att.status === 'ABSENT',
+                                                      'bg-info-subtle text-info': att.status === 'EXCUSED'
+                                                  }"
+                                                  x-text="att.status === 'PRESENT' ? 'Présent' : (att.status === 'LATE' ? 'En retard' : (att.status === 'ABSENT' ? 'Absent' : 'Excusé'))">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge"
+                                                  :class="att.source === 'qr_code' ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary'">
+                                                <i class="mdi" :class="att.source === 'qr_code' ? 'mdi-qrcode' : 'mdi-hand-pointing-right'"></i>
+                                                <span x-text="att.source === 'qr_code' ? 'QR Code' : 'Manuel'"></span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-muted" x-text="att.note || '—'"></span>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <template x-if="filteredAttendances.length === 0">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted">Aucun émargement trouvé.</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Sidebar details -->
@@ -175,12 +297,12 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <strong>Type d'activité :</strong>
-                        <p><span class="badge bg-soft-info text-info fs-12">{{ $activity->type->value }}</span></p>
+                        <p><span class="badge bg-soft-info text-info fs-12">{{ $activity->type->label() }}</span></p>
                     </div>
 
                     <div class="mb-3">
                         <strong>Visibilité :</strong>
-                        <p><span class="badge bg-soft-dark text-dark fs-12">{{ $activity->visibility->value }}</span></p>
+                        <p><span class="badge bg-soft-dark text-dark fs-12">{{ $activity->visibility->label() }}</span></p>
                         @if($activity->visibility === \App\Enums\ActivityVisibility::GROUP)
                             <div class="text-muted"><i class="mdi mdi-account-group"></i> Groupe : {{ $activity->group?->name }}</div>
                         @elseif($activity->visibility === \App\Enums\ActivityVisibility::ROLE)
@@ -274,7 +396,7 @@
                             <a href="{{ route('admin.activities.qr.pdf', $activity) }}" class="btn btn-soft-success">
                                 <i class="mdi mdi-download"></i> Télécharger le PDF
                             </a>
-                            <form action="{{ route('admin.activities.qr.revoke', $activity) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir révoquer ce QR Code ? Toutes les signatures précédentes seront invalidées.');">
+                            <form id="revokeQrForm" action="{{ route('admin.activities.qr.revoke', $activity) }}" method="POST">
                                 @csrf
                                 <button type="submit" class="btn btn-soft-danger w-100">
                                     <i class="mdi mdi-cancel"></i> Révoquer / Désactiver
@@ -308,10 +430,29 @@
 
 @push('scripts')
 <script>
+    // Intercepter la soumission du formulaire de révocation de QR
+    const revokeQrForm = document.getElementById('revokeQrForm');
+    if (revokeQrForm) {
+        revokeQrForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            confirmAction(
+                'Êtes-vous sûr de vouloir révoquer ce QR Code ? Toutes les signatures précédentes seront invalidées.',
+                () => this.submit(),
+                'Révoquer le QR Code',
+                'Révoquer',
+                'btn-danger'
+            );
+        });
+    }
+
     function confirmDelete() {
-        if (confirm('Êtes-vous sûr de vouloir supprimer cette activité ?')) {
-            document.getElementById('delete-form').submit();
-        }
+        confirmAction(
+            'Êtes-vous sûr de vouloir supprimer cette activité ?',
+            () => document.getElementById('delete-form').submit(),
+            'Supprimer l\'activité',
+            'Supprimer',
+            'btn-danger'
+        );
     }
 
     document.addEventListener('alpine:init', () => {

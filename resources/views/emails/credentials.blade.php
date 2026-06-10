@@ -109,7 +109,7 @@
                 </div>
             </div>
             
-            <p><strong>Remarque importante :</strong> Par mesure de sécurité, votre compte a été créé avec le statut <strong>PENDING</strong>. Vous serez invité à modifier obligatoirement ce mot de passe temporaire lors de votre première connexion.</p>
+            <p><strong>Remarque importante :</strong> Par mesure de sécurité, votre compte a été créé avec le statut <strong>En attente</strong>. Vous serez invité à modifier obligatoirement ce mot de passe temporaire lors de votre première connexion.</p>
             
             <div style="text-align: center;">
                 <a href="{{ route('login') }}" class="btn">Me connecter maintenant</a>

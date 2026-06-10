@@ -34,6 +34,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('activities/{activity}/register', [App\Http\Controllers\RegistrationController::class, 'store'])->name('activities.register');
     Route::put('activities/{activity}/register', [App\Http\Controllers\RegistrationController::class, 'update'])->name('activities.register.update');
     Route::post('activities/{activity}/unregister', [App\Http\Controllers\RegistrationController::class, 'destroy'])->name('activities.unregister');
+    Route::get('activities/{activity}/attendance', [App\Http\Controllers\AttendanceManagementController::class, 'index'])->name('activities.attendance.index');
+    Route::post('activities/{activity}/attendance', [App\Http\Controllers\AttendanceManagementController::class, 'update'])->name('activities.attendance.update');
+    Route::delete('activities/{activity}/attendance', [App\Http\Controllers\AttendanceManagementController::class, 'destroy'])->name('activities.attendance.destroy');
+    Route::get('activities/{activity}/attendance/data', [App\Http\Controllers\AttendanceManagementController::class, 'getUpdates'])->name('activities.attendance.data');
 
     // QR Code Scanning & Attendance
     Route::get('scan', [App\Http\Controllers\AttendanceScanController::class, 'scanner'])->name('scan.alias');
@@ -44,35 +48,42 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('signed');
 });
 
-Route::middleware(['auth', 'can:manage-users'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    // Routes requiring general user management permissions
+    Route::middleware(['can:manage-users'])->group(function () {
+        // Users
+        Route::post('users/bulk-status', [App\Http\Controllers\Admin\UserController::class, 'bulkUpdateStatus'])->name('users.bulk-status');
+        Route::get('users/export', [App\Http\Controllers\Admin\UserController::class, 'export'])->name('users.export');
+        Route::post('users/{user}/restore', [App\Http\Controllers\Admin\UserController::class, 'restore'])->name('users.restore');
+        Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+
+        // Activities Admin
+        Route::post('activities/{activity}/qr/generate', [App\Http\Controllers\Admin\QrCodeController::class, 'generate'])->name('activities.qr.generate');
+        Route::post('activities/{activity}/qr/revoke', [App\Http\Controllers\Admin\QrCodeController::class, 'revoke'])->name('activities.qr.revoke');
+        Route::get('activities/{activity}/qr/pdf', [App\Http\Controllers\Admin\QrCodeController::class, 'downloadPdf'])->name('activities.qr.pdf');
+        Route::get('activities/{activity}/download-registrations', [App\Http\Controllers\Admin\ActivityController::class, 'downloadRegistrationsPdf'])->name('activities.download-registrations');
+        Route::get('activities/{activity}/download-attendance', [App\Http\Controllers\Admin\ActivityController::class, 'downloadAttendancePdf'])->name('activities.download-attendance');
+        Route::resource('activities', App\Http\Controllers\Admin\ActivityController::class);
+
+        // Password Requests (WhatsApp)
+        Route::get('password-requests', [App\Http\Controllers\Admin\PasswordRequestController::class, 'index'])->name('password-requests.index');
+        Route::post('password-requests/{passwordResetRequest}/validate', [App\Http\Controllers\Admin\PasswordRequestController::class, 'validateRequest'])->name('password-requests.validate');
+
+        // Roles & Permissions CRUD
+        Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
+        Route::get('users/{user}/permissions', [App\Http\Controllers\Admin\PermissionController::class, 'editUserPermissions'])->name('users.permissions.edit');
+        Route::post('users/{user}/permissions', [App\Http\Controllers\Admin\PermissionController::class, 'updateUserPermissions'])->name('users.permissions.update');
+    });
+
     // Audit Logs
     Route::get('audit-logs', [App\Http\Controllers\Admin\AuditLogController::class, 'index'])
         ->name('audit-logs.index')
         ->middleware('can:audit.view');
 
-    // Users
-    Route::post('users/bulk-status', [App\Http\Controllers\Admin\UserController::class, 'bulkUpdateStatus'])->name('users.bulk-status');
-    Route::get('users/export', [App\Http\Controllers\Admin\UserController::class, 'export'])->name('users.export');
-    Route::post('users/{user}/restore', [App\Http\Controllers\Admin\UserController::class, 'restore'])->name('users.restore');
-    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
-
-    // Activities Admin
-    Route::post('activities/{activity}/qr/generate', [App\Http\Controllers\Admin\QrCodeController::class, 'generate'])->name('activities.qr.generate');
-    Route::post('activities/{activity}/qr/revoke', [App\Http\Controllers\Admin\QrCodeController::class, 'revoke'])->name('activities.qr.revoke');
-    Route::get('activities/{activity}/qr/pdf', [App\Http\Controllers\Admin\QrCodeController::class, 'downloadPdf'])->name('activities.qr.pdf');
-    Route::resource('activities', App\Http\Controllers\Admin\ActivityController::class);
-
-    // Password Requests (WhatsApp)
-    Route::get('password-requests', [App\Http\Controllers\Admin\PasswordRequestController::class, 'index'])->name('password-requests.index');
-    Route::post('password-requests/{passwordResetRequest}/validate', [App\Http\Controllers\Admin\PasswordRequestController::class, 'validateRequest'])->name('password-requests.validate');
-
     // Groups & Member Assignment
-    Route::post('groups/{group}/members', [App\Http\Controllers\Admin\GroupController::class, 'assignMember'])->name('groups.members.assign');
-    Route::delete('groups/{group}/members/{user}', [App\Http\Controllers\Admin\GroupController::class, 'removeMember'])->name('groups.members.remove');
-    Route::resource('groups', App\Http\Controllers\Admin\GroupController::class);
-
-    // Roles & Permissions CRUD
-    Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
-    Route::get('users/{user}/permissions', [App\Http\Controllers\Admin\PermissionController::class, 'editUserPermissions'])->name('users.permissions.edit');
-    Route::post('users/{user}/permissions', [App\Http\Controllers\Admin\PermissionController::class, 'updateUserPermissions'])->name('users.permissions.update');
+    Route::middleware(['can:access-group-management'])->group(function () {
+        Route::post('groups/{group}/members', [App\Http\Controllers\Admin\GroupController::class, 'assignMember'])->name('groups.members.assign');
+        Route::delete('groups/{group}/members/{user}', [App\Http\Controllers\Admin\GroupController::class, 'removeMember'])->name('groups.members.remove');
+        Route::resource('groups', App\Http\Controllers\Admin\GroupController::class);
+    });
 });

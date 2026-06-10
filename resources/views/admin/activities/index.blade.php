@@ -28,7 +28,7 @@
                     <select name="type" class="form-select">
                         <option value="">Tous les types</option>
                         @foreach(\App\Enums\ActivityType::cases() as $type)
-                            <option value="{{ $type->value }}" {{ request('type') === $type->value ? 'selected' : '' }}>{{ $type->name }}</option>
+                            <option value="{{ $type->value }}" {{ request('type') === $type->value ? 'selected' : '' }}>{{ $type->label() }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -37,7 +37,7 @@
                     <select name="status" class="form-select">
                         <option value="">Tous les statuts</option>
                         @foreach(\App\Enums\ActivityStatus::cases() as $status)
-                            <option value="{{ $status->value }}" {{ request('status') === $status->value ? 'selected' : '' }}>{{ $status->name }}</option>
+                            <option value="{{ $status->value }}" {{ request('status') === $status->value ? 'selected' : '' }}>{{ $status->label() }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -79,12 +79,12 @@
                                 @endif
                             </td>
                             <td>
-                                <span class="badge bg-soft-info text-info">{{ $activity->type->value }}</span>
+                                <span class="badge bg-soft-info text-info">{{ $activity->type->label() }}</span>
                             </td>
                             <td>{{ $activity->start_time->format('d/m/Y H:i') }}</td>
                             <td>{{ $activity->end_time->format('d/m/Y H:i') }}</td>
                             <td>
-                                <span class="badge bg-soft-dark text-dark">{{ $activity->visibility->value }}</span>
+                                <span class="badge bg-soft-dark text-dark">{{ $activity->visibility->label() }}</span>
                             </td>
                             <td>
                                 @if($activity->visibility === \App\Enums\ActivityVisibility::GROUP)
@@ -103,7 +103,7 @@
                                     'ARCHIVED' => 'secondary',
                                     default => 'primary'
                                 } }}">
-                                    {{ $activity->status->value }}
+                                    {{ $activity->status->label() }}
                                 </span>
                             </td>
                             <td class="text-end">
@@ -154,9 +154,13 @@
     });
 
     function confirmDelete(id) {
-        if (confirm('Êtes-vous sûr de vouloir supprimer cette activité ?')) {
-            document.getElementById('delete-form-' + id).submit();
-        }
+        confirmAction(
+            'Êtes-vous sûr de vouloir supprimer cette activité ?',
+            () => document.getElementById('delete-form-' + id).submit(),
+            'Supprimer l\'activité',
+            'Supprimer',
+            'btn-danger'
+        );
     }
 </script>
 @endpush

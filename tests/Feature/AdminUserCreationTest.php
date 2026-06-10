@@ -223,4 +223,21 @@ class AdminUserCreationTest extends TestCase
         $response->assertRedirect(route('admin.users.create'));
         $response->assertSessionHasErrors(['email']);
     }
+
+    /**
+     * Test que l'utilisateur créé reçoit automatiquement le rôle Jeune.
+     */
+    public function test_created_user_automatically_gets_jeune_role(): void
+    {
+        $response = $this->actingAs($this->admin)->post(route('admin.users.store'), [
+            'name'       => 'Dupont',
+            'first_name' => 'Jean',
+            'email'      => 'jean.dupont@presentia.org',
+            'birth_date' => '2000-01-01',
+        ]);
+
+        $user = User::where('email', 'jean.dupont@presentia.org')->first();
+        $this->assertNotNull($user);
+        $this->assertTrue($user->hasRole('Jeune'));
+    }
 }

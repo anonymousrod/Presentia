@@ -19,6 +19,24 @@ class UpdateActivityRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $visibility = $this->input('visibility');
+        if ($visibility instanceof ActivityVisibility) {
+            $visibility = $visibility->value;
+        }
+
+        if ($visibility !== 'GROUP') {
+            $this->merge(['visibility_group_id' => null]);
+        }
+        if ($visibility !== 'ROLE') {
+            $this->merge(['visibility_role_id' => null]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>

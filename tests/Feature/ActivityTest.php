@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Group;
 use App\Models\Activity;
 use App\Models\Registration;
+use App\Models\Attendance;
 use App\Enums\UserStatus;
 use App\Enums\ActivityType;
 use App\Enums\ActivityStatus;
@@ -507,5 +508,540 @@ class ActivityTest extends TestCase
 
         $response->assertRedirect();
         \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\SendRegistrationConfirmation::class);
+    }
+
+    /**
+     * Test that a group leader can access their own group activity attendance.
+     */
+    public function test_group_leader_can_access_own_activity_attendance(): void
+    {
+        $leader = User::create([
+            'name' => 'Leader A',
+            'first_name' => 'Group A',
+            'email' => 'leader.a@presentia.org',
+            'password' => bcrypt('Leader@1234!'),
+            'status' => UserStatus::ACTIVE,
+        ]);
+
+        $group = Group::create([
+            'name' => 'Group A',
+            'code' => 'GA01',
+            'leader_id' => $leader->id,
+        ]);
+
+        $activity = Activity::create([
+            'title' => 'Group A Activity',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::GROUP,
+            'visibility_group_id' => $group->id,
+            'start_time' => now()->addHours(2),
+            'end_time' => now()->addHours(4),
+        ]);
+
+        $response = $this->actingAs($leader)->get(route('activities.attendance.index', $activity));
+        $response->assertStatus(200);
+    }
+
+    /**
+     * Test that a group leader cannot access another group's activity attendance.
+     */
+    public function test_group_leader_cannot_access_other_activity_attendance(): void
+    {
+        $leaderA = User::create([
+            'name' => 'Leader A',
+            'first_name' => 'Group A',
+            'email' => 'leader.a@presentia.org',
+            'password' => bcrypt('Leader@1234!'),
+            'status' => UserStatus::ACTIVE,
+        ]);
+
+        $groupA = Group::create([
+            'name' => 'Group A',
+            'code' => 'GA01',
+            'leader_id' => $leaderA->id,
+        ]);
+
+        $activityA = Activity::create([
+            'title' => 'Group A Activity',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::GROUP,
+            'visibility_group_id' => $groupA->id,
+            'start_time' => now()->addHours(2),
+            'end_time' => now()->addHours(4),
+        ]);
+
+        $leaderB = User::create([
+            'name' => 'Leader B',
+            'first_name' => 'Group B',
+            'email' => 'leader.b@presentia.org',
+            'password' => bcrypt('Leader@1234!'),
+            'status' => UserStatus::ACTIVE,
+        ]);
+
+        $response = $this->actingAs($leaderB)->get(route('activities.attendance.index', $activityA));
+        $response->assertStatus(403);
+    }
+
+    /**
+     * Test that manual validation stores 'manual' scan source in database.
+     */
+    public function test_manual_attendance_validation_stores_manual_source(): void
+    {
+        $leader = User::create([
+            'name' => 'Leader A',
+            'first_name' => 'Group A',
+            'email' => 'leader.a@presentia.org',
+            'password' => bcrypt('Leader@1234!'),
+            'status' => UserStatus::ACTIVE,
+        ]);
+
+        $group = Group::create([
+            'name' => 'Group A',
+            'code' => 'GA01',
+            'leader_id' => $leader->id,
+        ]);
+
+        $activity = Activity::create([
+            'title' => 'Group A Activity',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::GROUP,
+            'visibility_group_id' => $group->id,
+            'start_time' => now()->addHours(2),
+            'end_time' => now()->addHours(4),
+        ]);
+
+        $member = User::create([
+            'name' => 'Member A',
+            'first_name' => 'Group A',
+            'email' => 'member.a@presentia.org',
+            'password' => bcrypt('Member@1234!'),
+            'status' => UserStatus::ACTIVE,
+        ]);
+        $group->members()->attach($member->id, ['joined_at' => now()]);
+
+        $response = $this->actingAs($leader)->postJson(route('activities.attendance.update', $activity), [
+            'user_id' => $member->id,
+            'status' => 'PRESENT',
+            'note' => 'Validé manuellement',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('success', true);
+
+        $this->assertDatabaseHas('attendances', [
+            'user_id' => $member->id,
+            'activity_id' => $activity->id,
+            'status' => 'PRESENT',
+            'scan_source' => 'manual',
+            'note' => 'Validé manuellement',
+        ]);
+    }
+
+    /**
+     * Test that validation is blocked after closure deadline (1h after end_time).
+     */
+    public function test_cannot_validate_attendance_after_closure_deadline(): void
+    {
+        $leader = User::create([
+            'name' => 'Leader A',
+            'first_name' => 'Group A',
+            'email' => 'leader.a@presentia.org',
+            'password' => bcrypt('Leader@1234!'),
+            'status' => UserStatus::ACTIVE,
+        ]);
+
+        $group = Group::create([
+            'name' => 'Group A',
+            'code' => 'GA01',
+            'leader_id' => $leader->id,
+        ]);
+
+        $activity = Activity::create([
+            'title' => 'Group A Activity Ended',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::GROUP,
+            'visibility_group_id' => $group->id,
+            'start_time' => now()->subHours(5),
+            'end_time' => now()->subHours(2), // Ended 2 hours ago (> 1 hour limit)
+        ]);
+
+        $member = User::create([
+            'name' => 'Member A',
+            'first_name' => 'Group A',
+            'email' => 'member.a@presentia.org',
+            'password' => bcrypt('Member@1234!'),
+            'status' => UserStatus::ACTIVE,
+        ]);
+        $group->members()->attach($member->id, ['joined_at' => now()]);
+
+        $response = $this->actingAs($leader)->postJson(route('activities.attendance.update', $activity), [
+            'user_id' => $member->id,
+            'status' => 'PRESENT',
+            'note' => 'Validé manuellement tardivement',
+        ]);
+
+        $response->assertStatus(403);
+        $this->assertDatabaseMissing('attendances', [
+            'user_id' => $member->id,
+            'activity_id' => $activity->id,
+        ]);
+    }
+
+    /**
+     * Test group leader manageable filter includes global activities.
+     */
+    public function test_group_leader_manageable_filter_includes_global_activities(): void
+    {
+        $leader = User::create([
+            'name' => 'Leader A',
+            'first_name' => 'Group A',
+            'email' => 'leader.a@presentia.org',
+            'password' => bcrypt('Leader@1234!'),
+            'status' => UserStatus::ACTIVE,
+        ]);
+
+        $groupA = Group::create([
+            'name' => 'Group A',
+            'code' => 'GA01',
+            'leader_id' => $leader->id,
+        ]);
+
+        $groupB = Group::create([
+            'name' => 'Group B',
+            'code' => 'GB01',
+        ]);
+
+        // 1. Global Activity
+        $actGlobal = Activity::create([
+            'title' => 'Global Activity Test',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->addHours(2),
+            'end_time' => now()->addHours(4),
+        ]);
+
+        // 2. Own Group Activity
+        $actOwnGroup = Activity::create([
+            'title' => 'Own Group Activity Test',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::GROUP,
+            'visibility_group_id' => $groupA->id,
+            'start_time' => now()->addHours(2),
+            'end_time' => now()->addHours(4),
+        ]);
+
+        // 3. Other Group Activity
+        $actOtherGroup = Activity::create([
+            'title' => 'Other Group Activity Test',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::GROUP,
+            'visibility_group_id' => $groupB->id,
+            'start_time' => now()->addHours(2),
+            'end_time' => now()->addHours(4),
+        ]);
+
+        // Request list with manageable = 1 as group leader
+        $response = $this->actingAs($leader)->get(route('activities.index', ['manageable' => 1]));
+        $response->assertStatus(200);
+
+        // Leader should see Global and Own Group activities, but NOT other group activity
+        $response->assertSee('Global Activity Test');
+        $response->assertSee('Own Group Activity Test');
+        $response->assertDontSee('Other Group Activity Test');
+    }
+
+    /**
+     * Test that a group leader can access global activity attendance.
+     */
+    public function test_group_leader_can_access_global_activity_attendance(): void
+    {
+        $leader = User::create([
+            'name' => 'Leader A',
+            'first_name' => 'Group A',
+            'email' => 'leader.a@presentia.org',
+            'password' => bcrypt('Leader@1234!'),
+            'status' => UserStatus::ACTIVE,
+        ]);
+
+        $group = Group::create([
+            'name' => 'Group A',
+            'code' => 'GA01',
+            'leader_id' => $leader->id,
+        ]);
+
+        $activity = Activity::create([
+            'title' => 'Global Activity',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->addHours(2),
+            'end_time' => now()->addHours(4),
+        ]);
+
+        $response = $this->actingAs($leader)->get(route('activities.attendance.index', $activity));
+        $response->assertStatus(200);
+    }
+
+    /**
+     * Test activities index page status filtering (upcoming, ongoing, finished).
+     */
+    public function test_activities_index_status_filtering(): void
+    {
+        Activity::query()->delete();
+
+        // 1. Create an upcoming activity
+        $upcoming = Activity::create([
+            'title' => 'Upcoming Activity',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->addDays(2),
+            'end_time' => now()->addDays(2)->addHours(2),
+        ]);
+
+        // 2. Create an ongoing activity
+        $ongoing = Activity::create([
+            'title' => 'Ongoing Activity',
+            'type' => ActivityType::REUNION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->subHour(),
+            'end_time' => now()->addHour(),
+        ]);
+
+        // 3. Create a finished activity
+        $finished = Activity::create([
+            'title' => 'Finished Activity',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->subDays(2),
+            'end_time' => now()->subDays(2)->addHours(2),
+        ]);
+
+        // Test filtering by 'upcoming'
+        $response = $this->actingAs($this->member)->get(route('activities.index', ['status_filter' => 'upcoming']));
+        $response->assertStatus(200);
+        $response->assertSee('Upcoming Activity');
+        $response->assertDontSee('Ongoing Activity');
+        $response->assertDontSee('Finished Activity');
+
+        // Test filtering by 'ongoing'
+        $response = $this->actingAs($this->member)->get(route('activities.index', ['status_filter' => 'ongoing']));
+        $response->assertStatus(200);
+        $response->assertDontSee('Upcoming Activity');
+        $response->assertSee('Ongoing Activity');
+        $response->assertDontSee('Finished Activity');
+
+        // Test filtering by 'finished'
+        $response = $this->actingAs($this->member)->get(route('activities.index', ['status_filter' => 'finished']));
+        $response->assertStatus(200);
+        $response->assertDontSee('Upcoming Activity');
+        $response->assertDontSee('Ongoing Activity');
+        $response->assertSee('Finished Activity');
+    }
+
+    /**
+     * Test that an admin or group leader can check-in (mark attendance for) an unregistered user who is eligible.
+     */
+    public function test_leader_can_record_attendance_for_unregistered_eligible_member(): void
+    {
+        // 1. Create a group led by $leader
+        $leader = User::create([
+            'name' => 'Leader B',
+            'first_name' => 'Group B',
+            'email' => 'leader.b@presentia.org',
+            'password' => bcrypt('Leader@1234!'),
+            'status' => UserStatus::ACTIVE,
+        ]);
+        $leader->assignRole('Chef de groupe');
+
+        $group = Group::create([
+            'name' => 'Group B',
+            'code' => 'GB02',
+            'leader_id' => $leader->id,
+        ]);
+
+        // Create an unregistered member in that group
+        $unregisteredMember = User::create([
+            'name' => 'Unregistered',
+            'first_name' => 'User',
+            'email' => 'unregistered@presentia.org',
+            'password' => bcrypt('Password@1234!'),
+            'status' => UserStatus::ACTIVE,
+        ]);
+        $group->members()->attach($unregisteredMember->id, ['joined_at' => now()]);
+
+        // 2. Create a global activity
+        $activity = Activity::create([
+            'title' => 'Global Activity Test Registration',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->subHour(),
+            'end_time' => now()->addHour(),
+        ]);
+
+        // Verify that unregisteredMember has NO registration for $activity
+        $this->assertDatabaseMissing('registrations', [
+            'user_id' => $unregisteredMember->id,
+            'activity_id' => $activity->id,
+        ]);
+
+        // 3. Leader checks in the unregistered member
+        $response = $this->actingAs($leader)->postJson(route('activities.attendance.update', $activity), [
+            'user_id' => $unregisteredMember->id,
+            'status' => 'PRESENT',
+            'note' => 'Added manually at start of event'
+        ]);
+
+        $response->assertStatus(200);
+
+        // 4. Verify that a Registration was created on the fly
+        $this->assertDatabaseHas('registrations', [
+            'user_id' => $unregisteredMember->id,
+            'activity_id' => $activity->id,
+            'status' => 'PRESENT',
+            'is_waitlisted' => 0
+        ]);
+
+        // 5. Verify that Attendance was created
+        $this->assertDatabaseHas('attendances', [
+            'user_id' => $unregisteredMember->id,
+            'activity_id' => $activity->id,
+            'status' => 'PRESENT',
+            'scan_source' => 'manual',
+            'note' => 'Added manually at start of event'
+        ]);
+    }
+
+    /**
+     * Test that an admin or group leader can delete a member's check-in and registration for the activity.
+     */
+    public function test_leader_can_delete_attendance_and_registration(): void
+    {
+        // 1. Create a group led by $leader
+        $leader = User::create([
+            'name' => 'Leader C',
+            'first_name' => 'Group C',
+            'email' => 'leader.c@presentia.org',
+            'password' => bcrypt('Leader@1234!'),
+            'status' => UserStatus::ACTIVE,
+        ]);
+        $leader->assignRole('Chef de groupe');
+
+        $group = Group::create([
+            'name' => 'Group C',
+            'code' => 'GC03',
+            'leader_id' => $leader->id,
+        ]);
+
+        // Create a member in that group
+        $member = User::create([
+            'name' => 'Registered',
+            'first_name' => 'User',
+            'email' => 'registered@presentia.org',
+            'password' => bcrypt('Password@1234!'),
+            'status' => UserStatus::ACTIVE,
+        ]);
+        $group->members()->attach($member->id, ['joined_at' => now()]);
+
+        // 2. Create a global activity
+        $activity = Activity::create([
+            'title' => 'Global Activity Delete Test',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->subHour(),
+            'end_time' => now()->addHour(),
+        ]);
+
+        // Create registration and attendance
+        Registration::create([
+            'user_id' => $member->id,
+            'activity_id' => $activity->id,
+            'status' => 'PRESENT',
+            'is_waitlisted' => false,
+        ]);
+
+        Attendance::create([
+            'user_id' => $member->id,
+            'activity_id' => $activity->id,
+            'status' => \App\Enums\AttendanceStatus::PRESENT,
+            'scan_source' => 'manual',
+        ]);
+
+        // 3. Leader deletes the check-in
+        $response = $this->actingAs($leader)->deleteJson(route('activities.attendance.destroy', $activity), [
+            'user_id' => $member->id,
+        ]);
+
+        $response->assertStatus(200);
+
+        // 4. Verify that Registration and Attendance were deleted
+        $this->assertDatabaseMissing('registrations', [
+            'user_id' => $member->id,
+            'activity_id' => $activity->id,
+        ]);
+
+        $this->assertDatabaseMissing('attendances', [
+            'user_id' => $member->id,
+            'activity_id' => $activity->id,
+        ]);
+    }
+
+    /**
+     * Test admin can download registrations PDF.
+     */
+    public function test_admin_can_download_registrations_pdf(): void
+    {
+        $activity = Activity::create([
+            'title' => 'PDF Registrations Test',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->addHour(),
+            'end_time' => now()->addHours(2),
+        ]);
+
+        // 1. Admin download
+        $response = $this->actingAs($this->admin)->get(route('admin.activities.download-registrations', $activity));
+        $response->assertStatus(200);
+        $response->assertHeader('content-type', 'application/pdf');
+
+        // 2. Simple member download (unauthorized)
+        $response2 = $this->actingAs($this->member)->get(route('admin.activities.download-registrations', $activity));
+        $response2->assertStatus(403);
+    }
+
+    /**
+     * Test admin can download attendance PDF.
+     */
+    public function test_admin_can_download_attendance_pdf(): void
+    {
+        $activity = Activity::create([
+            'title' => 'PDF Attendance Test',
+            'type' => ActivityType::FORMATION,
+            'status' => ActivityStatus::PUBLISHED,
+            'visibility' => ActivityVisibility::ALL,
+            'start_time' => now()->addHour(),
+            'end_time' => now()->addHours(2),
+        ]);
+
+        // 1. Admin download
+        $response = $this->actingAs($this->admin)->get(route('admin.activities.download-attendance', $activity));
+        $response->assertStatus(200);
+        $response->assertHeader('content-type', 'application/pdf');
+
+        // 2. Simple member download (unauthorized)
+        $response2 = $this->actingAs($this->member)->get(route('admin.activities.download-attendance', $activity));
+        $response2->assertStatus(403);
     }
 }

@@ -33,7 +33,7 @@
                             'SUSPENDED' => 'danger',
                             default => 'primary'
                         } }} fs-12">
-                            {{ $user->status->value }}
+                            {{ $user->status->label() }}
                         </span>
                     </p>
                     <div class="hstack text-white-50 gap-1">

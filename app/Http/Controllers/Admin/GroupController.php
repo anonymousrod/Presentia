@@ -8,12 +8,26 @@ use App\Models\Group;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class GroupController extends Controller
 {
+    use AuthorizesRequests;
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Group::class);
+
         $query = Group::withCount('members')->with('leader');
+
+        if (!auth()->user()->hasRole('Administrateur') && !auth()->user()->can('group.view')) {
+            $query->where(function ($q) {
+                $q->where('leader_id', auth()->id())
+                  ->orWhereHas('members', function ($m) {
+                      $m->where('users.id', auth()->id())
+                        ->whereNull('group_members.left_at');
+                  });
+            });
+        }
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
@@ -29,6 +43,8 @@ class GroupController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Group::class);
+
         $users = User::orderBy('name')->get();
 
         return view('admin.groups.create', compact('users'));
@@ -36,6 +52,8 @@ class GroupController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Group::class);
+
         $data = $request->validate([
             'name'        => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -56,6 +74,8 @@ class GroupController extends Controller
 
     public function show(Group $group)
     {
+        $this->authorize('view', $group);
+
         // Membres actuellement dans le groupe (left_at IS NULL)
         $activeMembers = $group->members()
             ->wherePivotNull('left_at')
@@ -79,6 +99,8 @@ class GroupController extends Controller
 
     public function edit(Group $group)
     {
+        $this->authorize('update', $group);
+
         $users = User::orderBy('name')->get();
 
         return view('admin.groups.edit', compact('group', 'users'));
@@ -86,6 +108,8 @@ class GroupController extends Controller
 
     public function update(Request $request, Group $group)
     {
+        $this->authorize('update', $group);
+
         $data = $request->validate([
             'name'        => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -108,6 +132,8 @@ class GroupController extends Controller
 
     public function destroy(Group $group)
     {
+        $this->authorize('delete', $group);
+
         $group->delete(); // Soft delete — historique pivot conservé
 
         return redirect()->route('admin.groups.index')
@@ -119,6 +145,8 @@ class GroupController extends Controller
      */
     public function assignMember(Request $request, Group $group)
     {
+        $this->authorize('assignMember', $group);
+
         $request->validate([
             'user_id' => ['required', 'exists:users,id'],
         ]);
@@ -149,6 +177,8 @@ class GroupController extends Controller
      */
     public function removeMember(Request $request, Group $group, User $user)
     {
+        $this->authorize('assignMember', $group);
+
         // Trouver la ligne pivot active (left_at IS NULL)
         $pivot = $group->members()
             ->wherePivot('user_id', $user->id)

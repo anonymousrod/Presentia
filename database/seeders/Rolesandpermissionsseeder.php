@@ -38,6 +38,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'registration.edit_own',
             'registration.cancel_own',
             'attendance.scan_qr',
+            'group.view_own',
         ]);
 
         // Chef de groupe — gestion de son groupe uniquement

@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
-use App\Exports\UsersExport;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
@@ -169,28 +169,44 @@ class UserController extends Controller
     }
 
     /**
-     * Exporter les utilisateurs en CSV.
+     * Exporter les utilisateurs en PDF — format professionnel.
      */
     public function export(Request $request)
     {
-        $query = User::query();
+        $query = User::with('roles', 'groups')->orderBy('name');
 
-        // Filtres similaires à l'index
+        $statusFilter = null;
         if ($status = $request->input('status')) {
             $query->where('status', $status);
+            $statusFilter = $status;
         }
 
-        $count = $query->count();
-
-        $export = new UsersExport($query);
-
-        if ($count > 500) {
-            // Export asynchrone si plus de 500
-            $export->queue('users.csv', 'public');
-            return redirect()->route('admin.users.index')
-                ->with('success', 'L\'export contient plus de 500 lignes. Il a été lancé en arrière-plan. Vous le trouverez bientôt dans vos fichiers.');
+        $searchQuery = null;
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('first_name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+            $searchQuery = $search;
         }
 
-        return $export->download('users.csv');
+        $users = $query->get();
+
+        $logoUeebPath = "D:/TFG_Projet/front_back_ecomerce/Projet_Presentia/LOGO UEEB.png";
+        $logoJeunessePath = "D:/TFG_Projet/front_back_ecomerce/Projet_Presentia/LOGO Jeunesse Etoile Rouge/LOGO/Logo Jeunesse/PNG/Fichier 10 1.png";
+
+        $logoUeebBase64 = '';
+        if (file_exists($logoUeebPath)) {
+            $logoUeebBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoUeebPath));
+        }
+
+        $logoJeunesseBase64 = '';
+        if (file_exists($logoJeunessePath)) {
+            $logoJeunesseBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoJeunessePath));
+        }
+
+        $pdf = Pdf::loadView('admin.users.pdf', compact('users', 'statusFilter', 'searchQuery', 'logoUeebBase64', 'logoJeunesseBase64'));
+        return $pdf->download("Liste_Membres_" . now()->format('Ymd-His') . ".pdf");
     }
 }

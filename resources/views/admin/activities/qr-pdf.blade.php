@@ -373,7 +373,7 @@
                         @endif
                         <tr>
                             <td class="info-label">&#127919; Type</td>
-                            <td class="info-value">{{ $activity->type->value }}</td>
+                            <td class="info-value">{{ $activity->type->label() }}</td>
                         </tr>
                         @if($activity->capacity)
                         <tr>

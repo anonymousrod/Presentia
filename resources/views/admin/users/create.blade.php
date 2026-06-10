@@ -25,7 +25,7 @@
                 <div class="card-header align-items-center d-flex border-bottom-dashed">
                     <h4 class="card-title mb-0 flex-grow-1">Informations du Nouvel Utilisateur</h4>
                     <div class="flex-shrink-0">
-                        <span class="badge bg-warning-subtle text-warning">Statut par défaut : PENDING</span>
+                        <span class="badge bg-warning-subtle text-warning">Statut par défaut : {{ \App\Enums\UserStatus::PENDING->label() }}</span>
                     </div>
                 </div><!-- end card header -->
 

@@ -145,10 +145,10 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="ri-shield-check-line"></i></span>
                                     <select name="status" id="status" class="form-select @error('status') is-invalid @enderror" required>
-                                        <option value="PENDING" {{ old('status', $user->status->value) === 'PENDING' ? 'selected' : '' }}>En attente (PENDING)</option>
-                                        <option value="ACTIVE" {{ old('status', $user->status->value) === 'ACTIVE' ? 'selected' : '' }}>Actif (ACTIVE)</option>
-                                        <option value="INACTIVE" {{ old('status', $user->status->value) === 'INACTIVE' ? 'selected' : '' }}>Inactif (INACTIVE)</option>
-                                        <option value="SUSPENDED" {{ old('status', $user->status->value) === 'SUSPENDED' ? 'selected' : '' }}>Suspendu (SUSPENDED)</option>
+                                        <option value="PENDING" {{ old('status', $user->status->value) === 'PENDING' ? 'selected' : '' }}>En attente</option>
+                                        <option value="ACTIVE" {{ old('status', $user->status->value) === 'ACTIVE' ? 'selected' : '' }}>Actif</option>
+                                        <option value="INACTIVE" {{ old('status', $user->status->value) === 'INACTIVE' ? 'selected' : '' }}>Inactif</option>
+                                        <option value="SUSPENDED" {{ old('status', $user->status->value) === 'SUSPENDED' ? 'selected' : '' }}>Suspendu</option>
                                     </select>
                                 </div>
                                 @error('status')

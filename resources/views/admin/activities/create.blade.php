@@ -40,7 +40,7 @@
                                 <select class="form-select @error('type') is-invalid @enderror" id="type" name="type" required>
                                     <option value="">Sélectionner un type</option>
                                     @foreach(\App\Enums\ActivityType::cases() as $type)
-                                        <option value="{{ $type->value }}" {{ old('type') === $type->value ? 'selected' : '' }}>{{ $type->name }}</option>
+                                        <option value="{{ $type->value }}" {{ old('type') === $type->value ? 'selected' : '' }}>{{ $type->label() }}</option>
                                     @endforeach
                                 </select>
                                 @error('type')
@@ -52,7 +52,7 @@
                                 <label for="status" class="form-label">Statut <span class="text-danger">*</span></label>
                                 <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
                                     @foreach(\App\Enums\ActivityStatus::cases() as $status)
-                                        <option value="{{ $status->value }}" {{ old('status', \App\Enums\ActivityStatus::DRAFT->value) === $status->value ? 'selected' : '' }}>{{ $status->name }}</option>
+                                        <option value="{{ $status->value }}" {{ old('status', \App\Enums\ActivityStatus::PUBLISHED->value) === $status->value ? 'selected' : '' }}>{{ $status->label() }}</option>
                                     @endforeach
                                 </select>
                                 @error('status')
@@ -116,7 +116,7 @@
                             <label for="visibility" class="form-label">Visibilité <span class="text-danger">*</span></label>
                             <select class="form-select @error('visibility') is-invalid @enderror" id="visibility" name="visibility" required>
                                 @foreach(\App\Enums\ActivityVisibility::cases() as $vis)
-                                    <option value="{{ $vis->value }}" {{ old('visibility', \App\Enums\ActivityVisibility::ALL->value) === $vis->value ? 'selected' : '' }}>{{ $vis->name }}</option>
+                                    <option value="{{ $vis->value }}" {{ old('visibility', \App\Enums\ActivityVisibility::ALL->value) === $vis->value ? 'selected' : '' }}>{{ $vis->label() }}</option>
                                 @endforeach
                             </select>
                             @error('visibility')

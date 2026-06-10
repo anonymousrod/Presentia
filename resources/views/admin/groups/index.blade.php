@@ -69,11 +69,10 @@
                                 <a href="{{ route('admin.groups.edit', $group) }}" class="btn btn-sm btn-primary" title="Modifier">
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
-                                <form action="{{ route('admin.groups.destroy', $group) }}" method="POST" class="d-inline">
+                                <form action="{{ route('admin.groups.destroy', $group) }}" method="POST" class="d-inline confirm-archive-group" data-group-name="{{ $group->name }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Archiver"
-                                        onclick="return confirm('Archiver le groupe « {{ $group->name }} » ?')">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Archiver">
                                         <i class="mdi mdi-archive"></i>
                                     </button>
                                 </form>
@@ -95,4 +94,22 @@
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.querySelectorAll('.confirm-archive-group').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const groupName = this.getAttribute('data-group-name');
+            confirmAction(
+                `Archiver le groupe « ${groupName} » ?`,
+                () => this.submit(),
+                'Archiver le groupe',
+                'Archiver',
+                'btn-danger'
+            );
+        });
+    });
+</script>
+@endpush
 @endsection

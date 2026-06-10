@@ -214,4 +214,299 @@ class GroupManagementTest extends TestCase
         $this->user1->refresh();
         $this->assertTrue($this->user1->hasRole('Chef de groupe'));
     }
+
+    /**
+     * Test the role is revoked from the old group leader if they don't lead any other groups.
+     */
+    public function test_role_is_revoked_from_old_group_leader(): void
+    {
+        $group = Group::create([
+            'name'      => 'Éclaireurs',
+            'leader_id' => $this->user1->id,
+        ]);
+
+        $this->user1->refresh();
+        $this->assertTrue($this->user1->hasRole('Chef de groupe'));
+
+        // Assign leader to user2
+        $this->actingAs($this->admin)->put(route('admin.groups.update', $group), [
+            'name'      => 'Éclaireurs',
+            'leader_id' => $this->user2->id,
+        ]);
+
+        $this->user1->refresh();
+        $this->user2->refresh();
+
+        $this->assertFalse($this->user1->hasRole('Chef de groupe'));
+        $this->assertTrue($this->user2->hasRole('Chef de groupe'));
+    }
+
+    /**
+     * Test that a group leader is automatically added as a member of the group.
+     */
+    public function test_group_leader_is_automatically_added_as_group_member(): void
+    {
+        $group = Group::create([
+            'name'      => 'Éclaireurs',
+            'leader_id' => $this->user1->id,
+        ]);
+
+        $this->assertTrue($group->members()->wherePivotNull('left_at')->where('users.id', $this->user1->id)->exists());
+    }
+
+    /**
+     * Test group leader can view own group.
+     */
+    public function test_group_leader_can_view_own_group(): void
+    {
+        $chef = User::create([
+            'name'       => 'ChefOne',
+            'first_name' => 'Paul',
+            'email'      => 'chef@presentia.org',
+            'password'   => bcrypt('Password123!'),
+            'status'     => UserStatus::ACTIVE,
+        ]);
+        $chef->assignRole('Chef de groupe');
+
+        $group = Group::create([
+            'name'      => 'Flambeaux',
+            'leader_id' => $chef->id,
+        ]);
+
+        $response = $this->actingAs($chef)->get(route('admin.groups.show', $group));
+        $response->assertStatus(200);
+        $response->assertSee('Flambeaux');
+    }
+
+    /**
+     * Test group leader cannot view other group.
+     */
+    public function test_group_leader_cannot_view_other_group(): void
+    {
+        $chef = User::create([
+            'name'       => 'ChefOne',
+            'first_name' => 'Paul',
+            'email'      => 'chef@presentia.org',
+            'password'   => bcrypt('Password123!'),
+            'status'     => UserStatus::ACTIVE,
+        ]);
+        $chef->assignRole('Chef de groupe');
+
+        $groupOwn = Group::create([
+            'name'      => 'Flambeaux',
+            'leader_id' => $chef->id,
+        ]);
+
+        $groupOther = Group::create([
+            'name'      => 'Aînés',
+            'leader_id' => $this->admin->id,
+        ]);
+
+        $response = $this->actingAs($chef)->get(route('admin.groups.show', $groupOther));
+        $response->assertStatus(403);
+    }
+
+    /**
+     * Test group leader can update own group.
+     */
+    public function test_group_leader_can_update_own_group(): void
+    {
+        $chef = User::create([
+            'name'       => 'ChefOne',
+            'first_name' => 'Paul',
+            'email'      => 'chef@presentia.org',
+            'password'   => bcrypt('Password123!'),
+            'status'     => UserStatus::ACTIVE,
+        ]);
+        $chef->assignRole('Chef de groupe');
+
+        $group = Group::create([
+            'name'      => 'Flambeaux',
+            'leader_id' => $chef->id,
+        ]);
+
+        $response = $this->actingAs($chef)->put(route('admin.groups.update', $group), [
+            'name'      => 'Flambeaux Modifié',
+            'leader_id' => $chef->id,
+        ]);
+
+        $response->assertRedirect(route('admin.groups.show', $group));
+        $group->refresh();
+        $this->assertEquals('Flambeaux Modifié', $group->name);
+    }
+
+    /**
+     * Test group leader cannot update other group.
+     */
+    public function test_group_leader_cannot_update_other_group(): void
+    {
+        $chef = User::create([
+            'name'       => 'ChefOne',
+            'first_name' => 'Paul',
+            'email'      => 'chef@presentia.org',
+            'password'   => bcrypt('Password123!'),
+            'status'     => UserStatus::ACTIVE,
+        ]);
+        $chef->assignRole('Chef de groupe');
+
+        $groupOther = Group::create([
+            'name'      => 'Aînés',
+            'leader_id' => $this->admin->id,
+        ]);
+
+        $response = $this->actingAs($chef)->put(route('admin.groups.update', $groupOther), [
+            'name'      => 'Aînés Modifié',
+            'leader_id' => $this->admin->id,
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    /**
+     * Test group leader can assign a member to their own group.
+     */
+    public function test_group_leader_can_assign_member_to_own_group(): void
+    {
+        $chef = User::create([
+            'name'       => 'ChefOne',
+            'first_name' => 'Paul',
+            'email'      => 'chef@presentia.org',
+            'password'   => bcrypt('Password123!'),
+            'status'     => UserStatus::ACTIVE,
+        ]);
+        $chef->assignRole('Chef de groupe');
+
+        $group = Group::create([
+            'name'      => 'Flambeaux',
+            'leader_id' => $chef->id,
+        ]);
+
+        $response = $this->actingAs($chef)->post(route('admin.groups.members.assign', $group), [
+            'user_id' => $this->user1->id,
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('group_members', [
+            'group_id' => $group->id,
+            'user_id'  => $this->user1->id,
+            'left_at'  => null,
+        ]);
+    }
+
+    /**
+     * Test group leader can remove a member from their own group.
+     */
+    public function test_group_leader_can_remove_member_from_own_group(): void
+    {
+        $chef = User::create([
+            'name'       => 'ChefOne',
+            'first_name' => 'Paul',
+            'email'      => 'chef@presentia.org',
+            'password'   => bcrypt('Password123!'),
+            'status'     => UserStatus::ACTIVE,
+        ]);
+        $chef->assignRole('Chef de groupe');
+
+        $group = Group::create([
+            'name'      => 'Flambeaux',
+            'leader_id' => $chef->id,
+        ]);
+
+        $group->members()->attach($this->user1->id, [
+            'joined_at' => now(),
+            'left_at'   => null,
+        ]);
+
+        $response = $this->actingAs($chef)->delete(route('admin.groups.members.remove', [$group, $this->user1]));
+
+        $response->assertRedirect();
+        $pivot = $group->members()->where('users.id', $this->user1->id)->first()->pivot;
+        $this->assertNotNull($pivot->left_at);
+    }
+
+    /**
+     * Test group leader cannot delete a group.
+     */
+    public function test_group_leader_cannot_delete_group(): void
+    {
+        $chef = User::create([
+            'name'       => 'ChefOne',
+            'first_name' => 'Paul',
+            'email'      => 'chef@presentia.org',
+            'password'   => bcrypt('Password123!'),
+            'status'     => UserStatus::ACTIVE,
+        ]);
+        $chef->assignRole('Chef de groupe');
+
+        $group = Group::create([
+            'name'      => 'Flambeaux',
+            'leader_id' => $chef->id,
+        ]);
+
+        $response = $this->actingAs($chef)->delete(route('admin.groups.destroy', $group));
+        $response->assertStatus(403);
+    }
+
+    /**
+     * Test a Jeune user can view their own group details, but cannot edit the group.
+     */
+    public function test_jeune_can_view_own_group_details_but_cannot_edit(): void
+    {
+        $group = Group::create([
+            'name'      => 'Flambeaux',
+            'leader_id' => $this->admin->id,
+        ]);
+
+        // Attach user1 to the group
+        $group->members()->attach($this->user1->id, [
+            'joined_at' => now(),
+            'left_at'   => null,
+        ]);
+
+        // 1. Jeune views own group page
+        $response = $this->actingAs($this->user1)->get(route('admin.groups.show', $group));
+        $response->assertStatus(200);
+        $response->assertSee('Flambeaux');
+        
+        // Assert they don't see edit elements or forms
+        $response->assertDontSee('Désigner un chef');
+        $response->assertDontSee('Modifier');
+
+        // 2. Jeune attempts to view edit page of own group
+        $response = $this->actingAs($this->user1)->get(route('admin.groups.edit', $group));
+        $response->assertStatus(403);
+
+        // 3. Jeune attempts to update own group
+        $response = $this->actingAs($this->user1)->put(route('admin.groups.update', $group), [
+            'name' => 'New Name'
+        ]);
+        $response->assertStatus(403);
+    }
+
+    /**
+     * Test a Jeune user cannot assign or remove members.
+     */
+    public function test_jeune_cannot_assign_or_remove_members(): void
+    {
+        $group = Group::create([
+            'name'      => 'Flambeaux',
+            'leader_id' => $this->admin->id,
+        ]);
+
+        // Attach user1 to the group
+        $group->members()->attach($this->user1->id, [
+            'joined_at' => now(),
+            'left_at'   => null,
+        ]);
+
+        // 1. Jeune attempts to assign a member
+        $response = $this->actingAs($this->user1)->post(route('admin.groups.members.assign', $group), [
+            'user_id' => $this->user2->id,
+        ]);
+        $response->assertStatus(403);
+
+        // 2. Jeune attempts to remove a member
+        $response = $this->actingAs($this->user1)->delete(route('admin.groups.members.remove', [$group, $this->user1]));
+        $response->assertStatus(403);
+    }
 }

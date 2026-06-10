@@ -65,7 +65,7 @@
             <div class="card-body p-4">
                 <div class="d-flex align-items-center mb-4">
                     <div class="flex-grow-1">
-                        <span class="badge bg-soft-info text-info fs-12 uppercase p-2 px-3 rounded-pill">{{ $activity->type->value }}</span>
+                        <span class="badge bg-soft-info text-info fs-12 uppercase p-2 px-3 rounded-pill">{{ $activity->type->label() }}</span>
                     </div>
                     <div class="flex-shrink-0">
                         @if($hasStarted)
@@ -84,15 +84,15 @@
                 <div class="row g-3 my-4">
                     <!-- Date de début -->
                     <div class="col-sm-6 col-xl-3">
-                        <div class="card border-0 h-100 rounded-3 info-card-premium" style="background: rgba(64, 81, 137, 0.05); border-left: 3px solid #405189 !important;">
+                        <div class="card border-0 h-100 rounded-3 info-card-premium bg-primary-subtle border-start border-primary border-3 shadow-none">
                             <div class="card-body p-3 d-flex align-items-center">
                                 <div class="avatar-sm flex-shrink-0 me-3">
-                                    <span class="avatar-title bg-primary text-white rounded-circle fs-18 shadow-sm">
-                                        <i class="mdi mdi-calendar-range"></i>
+                                    <span class="avatar-title bg-primary text-white rounded-circle fs-20 shadow-sm">
+                                        <i class="ri-calendar-event-line"></i>
                                     </span>
                                 </div>
-                                <div>
-                                    <small class="text-muted d-block uppercase tracking-wider fs-10 fw-semibold">Date de début</small>
+                                <div class="overflow-hidden">
+                                    <small class="text-primary d-block uppercase tracking-wider fs-10 fw-semibold">Date de début</small>
                                     <span class="fw-bold text-dark fs-14">{{ $activity->start_time->format('d/m/Y H:i') }}</span>
                                 </div>
                             </div>
@@ -101,15 +101,15 @@
 
                     <!-- Date de fin -->
                     <div class="col-sm-6 col-xl-3">
-                        <div class="card border-0 h-100 rounded-3 info-card-premium" style="background: rgba(41, 156, 219, 0.05); border-left: 3px solid #299cdb !important;">
+                        <div class="card border-0 h-100 rounded-3 info-card-premium bg-info-subtle border-start border-info border-3 shadow-none">
                             <div class="card-body p-3 d-flex align-items-center">
                                 <div class="avatar-sm flex-shrink-0 me-3">
-                                    <span class="avatar-title bg-info text-white rounded-circle fs-18 shadow-sm">
-                                        <i class="mdi mdi-calendar-check"></i>
+                                    <span class="avatar-title bg-info text-white rounded-circle fs-20 shadow-sm">
+                                        <i class="ri-calendar-check-line"></i>
                                     </span>
                                 </div>
-                                <div>
-                                    <small class="text-muted d-block uppercase tracking-wider fs-10 fw-semibold">Date de fin</small>
+                                <div class="overflow-hidden">
+                                    <small class="text-info d-block uppercase tracking-wider fs-10 fw-semibold">Date de fin</small>
                                     <span class="fw-bold text-dark fs-14">{{ $activity->end_time->format('d/m/Y H:i') }}</span>
                                 </div>
                             </div>
@@ -118,16 +118,16 @@
 
                     <!-- Lieu -->
                     <div class="col-sm-6 col-xl-3">
-                        <div class="card border-0 h-100 rounded-3 info-card-premium" style="background: rgba(10, 179, 156, 0.05); border-left: 3px solid #0ab39c !important;">
+                        <div class="card border-0 h-100 rounded-3 info-card-premium bg-success-subtle border-start border-success border-3 shadow-none">
                             <div class="card-body p-3 d-flex align-items-center">
                                 <div class="avatar-sm flex-shrink-0 me-3">
-                                    <span class="avatar-title bg-success text-white rounded-circle fs-18 shadow-sm">
-                                        <i class="mdi mdi-map-marker-outline"></i>
+                                    <span class="avatar-title bg-success text-white rounded-circle fs-20 shadow-sm">
+                                        <i class="ri-map-pin-line"></i>
                                     </span>
                                 </div>
-                                <div>
-                                    <small class="text-muted d-block uppercase tracking-wider fs-10 fw-semibold">Lieu</small>
-                                    <span class="fw-bold text-dark fs-14 text-truncate d-inline-block" style="max-width: 140px;" title="{{ $activity->location ?: 'Non spécifié' }}">{{ $activity->location ?: 'Non spécifié' }}</span>
+                                <div class="overflow-hidden">
+                                    <small class="text-success d-block uppercase tracking-wider fs-10 fw-semibold">Lieu</small>
+                                    <span class="fw-bold text-dark fs-14 text-truncate d-block" title="{{ $activity->location ?: 'Non spécifié' }}">{{ $activity->location ?: 'Non spécifié' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -135,16 +135,16 @@
 
                     <!-- Capacité -->
                     <div class="col-sm-6 col-xl-3">
-                        <div class="card border-0 h-100 rounded-3 info-card-premium" style="background: rgba(247, 184, 75, 0.05); border-left: 3px solid #f7b84b !important;">
+                        <div class="card border-0 h-100 rounded-3 info-card-premium bg-warning-subtle border-start border-warning border-3 shadow-none">
                             <div class="card-body p-3 d-flex align-items-center">
                                 <div class="avatar-sm flex-shrink-0 me-3">
-                                    <span class="avatar-title bg-warning text-white rounded-circle fs-18 shadow-sm">
-                                        <i class="mdi mdi-account-multiple-outline"></i>
+                                    <span class="avatar-title bg-warning text-white rounded-circle fs-20 shadow-sm">
+                                        <i class="ri-team-line"></i>
                                     </span>
                                 </div>
-                                <div>
-                                    <small class="text-muted d-block uppercase tracking-wider fs-10 fw-semibold">Capacité</small>
-                                    <span class="fw-bold text-dark fs-14">
+                                <div class="overflow-hidden">
+                                    <small class="text-warning d-block uppercase tracking-wider fs-10 fw-semibold">Capacité</small>
+                                    <span class="fw-bold text-dark fs-14 d-block">
                                         @if($activity->capacity)
                                             {{ $activeRegistrationsCount }} / {{ $activity->capacity }}
                                         @else
@@ -189,7 +189,25 @@
 
     <!-- Right Column: Registration Status Cockpit -->
     <div class="col-lg-4">
-        <div class="card shadow-sm border-0 card-height-100">
+        @can('manage', $activity)
+            <div class="card shadow-sm border-0 border-start border-success border-3 mb-4 animate__animated animate__fadeIn">
+                <div class="card-header bg-soft-success border-0 py-3">
+                    <h5 class="card-title mb-0 fw-bold text-success">
+                        <i class="mdi mdi-clipboard-check-outline me-2"></i>Gestion des Présences
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-muted fs-13">
+                        En tant que chef de groupe ou administrateur, vous pouvez gérer les présences en temps réel pour cette activité.
+                    </p>
+                    <a href="{{ route('activities.attendance.index', $activity) }}" class="btn btn-success w-100 shadow-sm">
+                        <i class="mdi mdi-open-in-new me-1"></i> Ouvrir la feuille d'émargement
+                    </a>
+                </div>
+            </div>
+        @endcan
+
+        <div class="card shadow-sm border-0">
             <div class="card-header bg-soft-primary border-0 py-3">
                 <h5 class="card-title mb-0 fw-bold text-primary"><i class="mdi mdi-cog-outline me-2"></i>Mon Inscription</h5>
             </div>

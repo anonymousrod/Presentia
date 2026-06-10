@@ -97,7 +97,16 @@
                                         'logout' => 'secondary-subtle text-secondary',
                                         default => 'primary-subtle text-primary'
                                     } }} fs-11">
-                                        {{ strtoupper($log->action) }}
+                                        {{ match($log->action) {
+                                            'created' => 'CRÉATION',
+                                            'updated' => 'MODIFICATION',
+                                            'deleted' => 'SUPPRESSION',
+                                            'login' => 'CONNEXION',
+                                            'logout' => 'DÉCONNEXION',
+                                            'scan_qr' => 'SCAN QR',
+                                            'export' => 'EXPORT',
+                                            default => strtoupper($log->action)
+                                        } }}
                                     </span>
                                 </td>
                                 <td>
@@ -148,7 +157,16 @@
                                                                     'login' => 'info-subtle text-info',
                                                                     'logout' => 'secondary-subtle text-secondary',
                                                                     default => 'primary-subtle text-primary'
-                                                                } }}">{{ strtoupper($log->action) }}</span>
+                                                                } }}">{{ match($log->action) {
+                                                                    'created' => 'CRÉATION',
+                                                                    'updated' => 'MODIFICATION',
+                                                                    'deleted' => 'SUPPRESSION',
+                                                                    'login' => 'CONNEXION',
+                                                                    'logout' => 'DÉCONNEXION',
+                                                                    'scan_qr' => 'SCAN QR',
+                                                                    'export' => 'EXPORT',
+                                                                    default => strtoupper($log->action)
+                                                                } }}</span>
                                                             </div>
                                                             <div class="col-sm-4">
                                                                 <span class="text-muted d-block small">Date & Heure</span>

@@ -175,6 +175,85 @@ class PolicyTest extends TestCase
     }
 
     // ================================================================
+    // ACTIVITY POLICY - MANAGE ATTENDANCE
+    // ================================================================
+
+    /**
+     * Admin can manage attendance for any activity.
+     */
+    public function test_admin_can_manage_attendance_for_any_activity(): void
+    {
+        $groupActivity = \App\Models\Activity::create([
+            'title' => 'Group Activity',
+            'description' => 'Test',
+            'start_time' => now(),
+            'end_time' => now()->addHour(),
+            'status' => \App\Enums\ActivityStatus::DRAFT,
+            'type' => \App\Enums\ActivityType::REUNION,
+            'visibility' => \App\Enums\ActivityVisibility::GROUP,
+            'visibility_group_id' => $this->groupB->id,
+        ]);
+
+        $this->assertTrue($this->admin->can('manage', $groupActivity));
+    }
+
+    /**
+     * Chef can manage attendance for own group activity.
+     */
+    public function test_chef_can_manage_attendance_for_own_group_activity(): void
+    {
+        $groupActivity = \App\Models\Activity::create([
+            'title' => 'Group A Activity',
+            'description' => 'Test',
+            'start_time' => now(),
+            'end_time' => now()->addHour(),
+            'status' => \App\Enums\ActivityStatus::DRAFT,
+            'type' => \App\Enums\ActivityType::REUNION,
+            'visibility' => \App\Enums\ActivityVisibility::GROUP,
+            'visibility_group_id' => $this->groupA->id,
+        ]);
+
+        $this->assertTrue($this->chef->can('manage', $groupActivity));
+    }
+
+    /**
+     * Chef cannot manage attendance for other group activity.
+     */
+    public function test_chef_cannot_manage_attendance_for_other_group_activity(): void
+    {
+        $groupActivity = \App\Models\Activity::create([
+            'title' => 'Group B Activity',
+            'description' => 'Test',
+            'start_time' => now(),
+            'end_time' => now()->addHour(),
+            'status' => \App\Enums\ActivityStatus::DRAFT,
+            'type' => \App\Enums\ActivityType::REUNION,
+            'visibility' => \App\Enums\ActivityVisibility::GROUP,
+            'visibility_group_id' => $this->groupB->id,
+        ]);
+
+        $this->assertFalse($this->chef->can('manage', $groupActivity));
+    }
+
+    /**
+     * Jeune cannot manage attendance for any activity.
+     */
+    public function test_jeune_cannot_manage_attendance_for_any_activity(): void
+    {
+        $globalActivity = \App\Models\Activity::create([
+            'title' => 'Global Activity',
+            'description' => 'Test',
+            'start_time' => now(),
+            'end_time' => now()->addHour(),
+            'status' => \App\Enums\ActivityStatus::DRAFT,
+            'type' => \App\Enums\ActivityType::REUNION,
+            'visibility' => \App\Enums\ActivityVisibility::ALL,
+        ]);
+
+        $this->assertFalse($this->jeune->can('manage', $globalActivity));
+    }
+
+    // ================================================================
     // ATTENDANCE POLICY
     // ================================================================
 

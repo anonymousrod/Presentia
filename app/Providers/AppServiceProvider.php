@@ -46,8 +46,18 @@ class AppServiceProvider extends ServiceProvider
             return $user->hasRole('Administrateur') || $user->hasPermissionTo('member.create');
         });
 
+        // Gate access-group-management requise pour la gestion des groupes (Administrateurs ou Chefs de groupe)
+        \Illuminate\Support\Facades\Gate::define('access-group-management', function ($user) {
+            return $user->hasRole('Administrateur')
+                || $user->hasPermissionTo('group.view')
+                || $user->hasPermissionTo('group.view_own');
+        });
+
         // Enregistrement de l'Observer User
         \App\Models\User::observe(\App\Observers\UserObserver::class);
+
+        // Enregistrement de l'Observer Group
+        \App\Models\Group::observe(\App\Observers\GroupObserver::class);
 
         // Limiteur de débit pour la connexion (5 tentatives max, blocage de 15 minutes)
         RateLimiter::for('login', function (Request $request) {

@@ -26,4 +26,32 @@
     function topFunction() {
         document.documentElement.scrollTop = 0;
     }
+
+    // Helper global pour modale de confirmation
+    window.confirmAction = function(message, onConfirm, title = 'Confirmation', buttonText = 'Confirmer', buttonClass = 'btn-danger') {
+        const modalElement = document.getElementById('confirmActionModal');
+        if (!modalElement) return false;
+
+        document.getElementById('confirmActionTitle').innerText = title;
+        document.getElementById('confirmActionMessage').innerText = message;
+        
+        const confirmBtn = document.getElementById('confirmActionButton');
+        confirmBtn.innerText = buttonText;
+        confirmBtn.className = `btn w-sm ${buttonClass}`;
+
+        // Cloner le bouton pour nettoyer d'éventuels anciens écouteurs d'événements
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        const modal = new bootstrap.Modal(modalElement);
+        
+        newConfirmBtn.addEventListener('click', function() {
+            modal.hide();
+            if (typeof onConfirm === 'function') {
+                onConfirm();
+            }
+        });
+
+        modal.show();
+    };
 </script>

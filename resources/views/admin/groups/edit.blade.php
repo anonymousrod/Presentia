@@ -75,4 +75,39 @@
         </div>
     </div>
 </div>
+
+@push('css')
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+<style>
+    .ts-wrapper.form-select {
+        padding: 0;
+        border: none;
+        height: auto;
+    }
+    .ts-control {
+        border-radius: 0.25rem;
+        border: 1px solid #ced4da;
+        padding: 0.47rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    .ts-dropdown {
+        border-radius: 0.25rem;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+        font-size: 0.875rem;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        new TomSelect('#leader_id', {
+            create: false,
+            placeholder: '— Aucun chef désigné —',
+            allowEmptyOption: true
+        });
+    });
+</script>
+@endpush
 @endsection

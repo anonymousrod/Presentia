@@ -48,9 +48,14 @@ class GroupPolicy
             return Response::allow();
         }
 
-        // Règle contextuelle chef de groupe
-        if ($user->can(PermissionEnum::GROUP_VIEW_OWN->value) && $group->leader_id === $user->id) {
-            return Response::allow();
+        // Règle contextuelle chef de groupe ou membre du groupe
+        if ($user->can(PermissionEnum::GROUP_VIEW_OWN->value)) {
+            $isLeader = $group->leader_id === $user->id;
+            $isMember = $group->members()->wherePivotNull('left_at')->where('users.id', $user->id)->exists();
+
+            if ($isLeader || $isMember) {
+                return Response::allow();
+            }
         }
 
         return Response::deny("Vous n'avez pas la permission de voir ce groupe.");

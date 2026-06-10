@@ -1,317 +1,488 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-4">
-    {{-- Breadcrumbs & Header --}}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.groups.index') }}">Groupes</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ $group->name }}</li>
-        </ol>
-    </nav>
 
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-        <div>
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-                <h1 class="h2 mb-0 text-dark font-weight-bold">{{ $group->name }}</h1>
-                @if($group->category)
-                    <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill font-weight-semibold">
-                        <i class="mdi mdi-tag-outline me-1"></i>{{ $group->category }}
-                    </span>
-                @endif
-            </div>
-            <p class="text-muted mb-0 mt-1">Gérer les membres, le chef et l'historique du groupe.</p>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('admin.groups.index') }}" class="btn btn-outline-secondary">
-                <i class="mdi mdi-arrow-left me-1"></i> Retour
-            </a>
-            <a href="{{ route('admin.groups.edit', $group) }}" class="btn btn-primary">
-                <i class="mdi mdi-pencil me-1"></i> Modifier
-            </a>
-        </div>
-    </div>
+{{-- =================== BREADCRUMB & EN-TÊTE =================== --}}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('admin.groups.index') }}">Groupes</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ $group->name }}</li>
+            </ol>
+        </nav>
 
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="mdi mdi-check-circle me-1"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="mdi mdi-alert-circle me-1"></i> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    <div class="row g-4">
-        {{-- Left Column: Active Members & History --}}
-        <div class="col-lg-8">
-            {{-- Active Members Card --}}
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
-                    <h5 class="card-title mb-0 font-weight-bold text-dark d-flex align-items-center">
-                        <i class="mdi mdi-account-group text-primary me-2 fs-4"></i>
-                        Membres Actifs ({{ $activeMembers->count() }})
-                    </h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="ps-4">Membre</th>
-                                    <th>Contact</th>
-                                    <th>Rejoint le</th>
-                                    <th class="text-end pe-4">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($activeMembers as $member)
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="d-flex align-items-center gap-3">
-                                            @if($member->photo)
-                                                <img src="{{ asset('storage/' . $member->photo) }}" alt="Photo" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
-                                            @else
-                                                <div class="rounded-circle bg-soft-primary text-primary d-flex align-items-center justify-content-center font-weight-bold" style="width: 40px; height: 40px; font-size: 0.9rem;">
-                                                    {{ strtoupper(substr($member->first_name, 0, 1) . substr($member->name, 0, 1)) }}
-                                                </div>
-                                            @endif
-                                            <div>
-                                                <div class="font-weight-semibold text-dark">{{ $member->first_name }} {{ $member->name }}</div>
-                                                @if($group->leader_id === $member->id)
-                                                    <span class="badge bg-info text-dark font-weight-normal" style="font-size: 0.75rem;">
-                                                        <i class="mdi mdi-crown me-1"></i>Chef de groupe
-                                                    </span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="text-dark" style="font-size: 0.9rem;">{{ $member->email ?? '—' }}</div>
-                                        <small class="text-muted">{{ $member->phone ?? '—' }}</small>
-                                    </td>
-                                    <td>
-                                        <div class="text-dark" style="font-size: 0.9rem;">
-                                            {{ $member->pivot->joined_at ? \Carbon\Carbon::parse($member->pivot->joined_at)->format('d/m/Y H:i') : '—' }}
-                                        </div>
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <form action="{{ route('admin.groups.members.remove', [$group, $member]) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger btn-sm border-0" title="Retirer du groupe"
-                                                onclick="return confirm('Retirer {{ $member->first_name }} {{ $member->name }} du groupe ? Cette action sera historisée.')">
-                                                <i class="mdi mdi-account-minus fs-5"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-5 text-muted">
-                                        <i class="mdi mdi-account-off-outline fs-1 d-block mb-2 text-muted opacity-50"></i>
-                                        Aucun membre actif dans ce groupe.
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    {{-- Avatar du groupe --}}
+                    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                         style="width:56px; height:56px; font-size:1.4rem;
+                                background: rgba(var(--vz-primary-rgb), 0.15);
+                                color: var(--vz-primary); flex-shrink:0;">
+                        {{ strtoupper(substr($group->name, 0, 1)) }}
                     </div>
-                </div>
-            </div>
-
-            {{-- History Card --}}
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3 border-bottom-0">
-                    <h5 class="card-title mb-0 font-weight-bold text-dark d-flex align-items-center">
-                        <i class="mdi mdi-history text-secondary me-2 fs-4"></i>
-                        Historique des Membres
-                    </h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="ps-4">Membre</th>
-                                    <th>Rejoint le</th>
-                                    <th>Quitté le</th>
-                                    <th class="pe-4">Durée</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($allMembers as $pastMember)
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="font-weight-semibold text-dark">{{ $pastMember->first_name }} {{ $pastMember->name }}</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {{ $pastMember->pivot->joined_at ? \Carbon\Carbon::parse($pastMember->pivot->joined_at)->format('d/m/Y H:i') : '—' }}
-                                    </td>
-                                    <td>
-                                        <span class="text-danger">
-                                            {{ $pastMember->pivot->left_at ? \Carbon\Carbon::parse($pastMember->pivot->left_at)->format('d/m/Y H:i') : '—' }}
-                                        </span>
-                                    </td>
-                                    <td class="pe-4 text-muted">
-                                        @if($pastMember->pivot->joined_at && $pastMember->pivot->left_at)
-                                            @php
-                                                $joined = \Carbon\Carbon::parse($pastMember->pivot->joined_at);
-                                                $left = \Carbon\Carbon::parse($pastMember->pivot->left_at);
-                                                $diff = $joined->diffForHumans($left, true, false, 2);
-                                            @endphp
-                                            {{ $diff }}
-                                        @else
-                                            —
-                                        @endif
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-4 text-muted">
-                                        Aucun historique d'ancien membre.
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Right Column: Group Details & Assignment Form --}}
-        <div class="col-lg-4">
-            {{-- Group Info Card --}}
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
-                    <h5 class="font-weight-bold text-dark mb-3">Informations</h5>
-                    
-                    <div class="mb-3">
-                        <small class="text-muted d-block uppercase tracking-wider font-weight-bold" style="font-size: 0.75rem;">Description</small>
-                        <p class="text-dark mb-0 mt-1" style="font-size: 0.95rem; white-space: pre-line;">
-                            {{ $group->description ?? 'Aucune description fournie.' }}
+                    <div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <h1 class="h3 mb-0 fw-bold">{{ $group->name }}</h1>
+                            @if($group->category)
+                                <span class="badge rounded-pill px-3 py-2"
+                                      style="background: rgba(var(--vz-primary-rgb), 0.15); color: var(--vz-primary); font-size: 0.78rem;">
+                                    <i class="mdi mdi-tag-outline me-1"></i>{{ $group->category }}
+                                </span>
+                            @endif
+                        </div>
+                        <p class="text-muted mb-0 mt-1" style="font-size: 0.88rem;">
+                            Gérer les membres, le chef et l'historique du groupe.
                         </p>
                     </div>
-
-                    <hr class="my-3 text-muted opacity-25">
-
-                    <div class="mb-3">
-                        <small class="text-muted d-block uppercase tracking-wider font-weight-bold" style="font-size: 0.75rem;">Créé le</small>
-                        <div class="text-dark mt-1" style="font-size: 0.95rem;">
-                            {{ $group->created_at->format('d/m/Y H:i') }}
-                        </div>
-                    </div>
                 </div>
             </div>
-
-            {{-- Group Leader Card --}}
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
-                    <h5 class="font-weight-bold text-dark mb-3">Chef de groupe</h5>
-                    @if($group->leader)
-                        <div class="d-flex align-items-center gap-3">
-                            @if($group->leader->photo)
-                                <img src="{{ asset('storage/' . $group->leader->photo) }}" alt="Photo" class="rounded-circle" width="50" height="50" style="object-fit: cover;">
-                            @else
-                                <div class="rounded-circle bg-soft-info text-info d-flex align-items-center justify-content-center font-weight-bold" style="width: 50px; height: 50px; font-size: 1.1rem;">
-                                    {{ strtoupper(substr($group->leader->first_name, 0, 1) . substr($group->leader->name, 0, 1)) }}
-                                </div>
-                            @endif
-                            <div>
-                                <h6 class="mb-0 font-weight-bold text-dark">{{ $group->leader->first_name }} {{ $group->leader->name }}</h6>
-                                <span class="badge bg-soft-info text-info mt-1 font-weight-normal" style="font-size: 0.75rem;">Chef Désigné</span>
-                            </div>
-                        </div>
-
-                        <div class="mt-3 pt-3 border-top border-light">
-                            <div class="d-flex align-items-center gap-2 mb-2" style="font-size: 0.9rem;">
-                                <i class="mdi mdi-email text-muted"></i>
-                                <span class="text-dark">{{ $group->leader->email ?? '—' }}</span>
-                            </div>
-                            <div class="d-flex align-items-center gap-2" style="font-size: 0.9rem;">
-                                <i class="mdi mdi-phone text-muted"></i>
-                                <span class="text-dark">{{ $group->leader->phone ?? '—' }}</span>
-                            </div>
-                        </div>
-                    @else
-                        <div class="text-center py-3 text-muted">
-                            <i class="mdi mdi-crown-outline fs-1 d-block mb-2 text-muted opacity-50"></i>
-                            Aucun chef de groupe désigné.
-                            <div class="mt-2">
-                                <a href="{{ route('admin.groups.edit', $group) }}" class="btn btn-sm btn-outline-primary">
-                                    Désigner un chef
-                                </a>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- Member Assignment Card --}}
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3 border-bottom-0">
-                    <h5 class="card-title mb-0 font-weight-bold text-dark">
-                        <i class="mdi mdi-account-plus text-primary me-2"></i>Affecter un membre
-                    </h5>
-                </div>
-                <div class="card-body pt-0">
-                    <form action="{{ route('admin.groups.members.assign', $group) }}" method="POST">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="user_id" class="form-label text-muted" style="font-size: 0.85rem;">Sélectionner un membre</label>
-                            <select id="user_id" name="user_id" class="form-select @error('user_id') is-invalid @enderror" required>
-                                <option value="">— Sélectionner un utilisateur —</option>
-                                @foreach($availableUsers as $user)
-                                    <option value="{{ $user->id }}">
-                                        {{ $user->first_name }} {{ $user->name }}
-                                        @if($user->phone) ({{ $user->phone }}) @endif
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('user_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="mdi mdi-plus me-1"></i> Ajouter au groupe
-                        </button>
-                    </form>
-                </div>
+            <div class="d-flex gap-2 flex-shrink-0">
+                <a href="{{ route('admin.groups.index') }}" class="btn btn-sm btn-outline-secondary px-3" style="border-radius: 0.5rem;">
+                    <i class="mdi mdi-arrow-left me-1"></i>Retour
+                </a>
+                @can('update', $group)
+                <a href="{{ route('admin.groups.edit', $group) }}" class="btn btn-sm btn-primary px-3" style="border-radius: 0.5rem;">
+                    <i class="mdi mdi-pencil me-1"></i>Modifier
+                </a>
+                @endcan
             </div>
         </div>
     </div>
 </div>
 
+{{-- Alertes --}}
+@if(session('success'))
+    <div class="alert border-0 mb-4 d-flex align-items-center gap-3 p-3 shadow-sm"
+         style="background: rgba(var(--vz-success-rgb), 0.12); border-left: 4px solid var(--vz-success) !important; border-radius: 0.5rem;">
+        <i class="mdi mdi-check-circle fs-20" style="color: var(--vz-success);"></i>
+        <span>{{ session('success') }}</span>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+@if(session('error'))
+    <div class="alert border-0 mb-4 d-flex align-items-center gap-3 p-3 shadow-sm"
+         style="background: rgba(var(--vz-danger-rgb), 0.12); border-left: 4px solid var(--vz-danger) !important; border-radius: 0.5rem;">
+        <i class="mdi mdi-alert-circle fs-20" style="color: var(--vz-danger);"></i>
+        <span>{{ session('error') }}</span>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
+{{-- =================== CONTENU PRINCIPAL =================== --}}
+<div class="row g-4">
+
+    {{-- ======= COLONNE GAUCHE : Membres & Historique ======= --}}
+    <div class="col-lg-8">
+
+        {{-- ---- Carte Membres Actifs ---- --}}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header border-0 py-3 px-4 d-flex align-items-center justify-content-between"
+                 style="border-bottom: 1px solid rgba(var(--vz-border-color-translucent), 1) !important;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded p-2 flex-shrink-0"
+                         style="background: rgba(var(--vz-primary-rgb), 0.15); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                        <i class="mdi mdi-account-group fs-20" style="color: var(--vz-primary);"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Membres Actifs</h5>
+                        <small class="text-muted">{{ $activeMembers->count() }} membre(s) dans le groupe</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead style="background: rgba(var(--vz-primary-rgb), 0.06);">
+                            <tr>
+                                <th class="ps-4 py-3 fw-semibold" style="font-size: 0.78rem; text-transform:uppercase; letter-spacing:0.05em;">
+                                    <i class="mdi mdi-account me-1 text-muted"></i>Membre
+                                </th>
+                                <th class="py-3 fw-semibold" style="font-size: 0.78rem; text-transform:uppercase; letter-spacing:0.05em;">
+                                    <i class="mdi mdi-email-outline me-1 text-muted"></i>Contact
+                                </th>
+                                <th class="py-3 fw-semibold" style="font-size: 0.78rem; text-transform:uppercase; letter-spacing:0.05em;">
+                                    <i class="mdi mdi-calendar-check me-1 text-muted"></i>Rejoint le
+                                </th>
+                                @can('assignMember', $group)
+                                <th class="py-3 fw-semibold text-end pe-4" style="font-size: 0.78rem; text-transform:uppercase; letter-spacing:0.05em;">
+                                    Actions
+                                </th>
+                                @endcan
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($activeMembers as $member)
+                            <tr class="border-bottom" style="transition: background 0.15s;">
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        @if($member->photo)
+                                            <img src="{{ asset('storage/' . $member->photo) }}"
+                                                 alt="Photo" class="rounded-circle"
+                                                 width="40" height="40" style="object-fit: cover; flex-shrink:0;">
+                                        @else
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold flex-shrink-0"
+                                                 style="width:40px; height:40px; font-size:0.85rem;
+                                                        background: rgba(var(--vz-primary-rgb), 0.15);
+                                                        color: var(--vz-primary);">
+                                                {{ strtoupper(substr($member->first_name, 0, 1) . substr($member->name, 0, 1)) }}
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <div class="fw-semibold" style="font-size: 0.9rem;">
+                                                {{ $member->first_name }} {{ $member->name }}
+                                            </div>
+                                            @if($group->leader_id === $member->id)
+                                                <span class="badge rounded-pill px-2 py-1 mt-1"
+                                                      style="background: rgba(var(--vz-warning-rgb), 0.2); color: var(--vz-warning); font-size: 0.72rem;">
+                                                    <i class="mdi mdi-crown me-1"></i>Chef de groupe
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3">
+                                    <div style="font-size: 0.88rem;">{{ $member->email ?? '—' }}</div>
+                                    <small class="text-muted">{{ $member->phone ?? '—' }}</small>
+                                </td>
+                                <td class="py-3">
+                                    <span style="font-size: 0.88rem;">
+                                        {{ $member->pivot->joined_at ? \Carbon\Carbon::parse($member->pivot->joined_at)->format('d/m/Y H:i') : '—' }}
+                                    </span>
+                                </td>
+                                @can('assignMember', $group)
+                                <td class="py-3 text-end pe-4">
+                                    <form action="{{ route('admin.groups.members.remove', [$group, $member]) }}"
+                                          method="POST"
+                                          class="d-inline confirm-remove-member"
+                                          data-member-name="{{ $member->first_name }} {{ $member->name }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                                class="btn btn-sm btn-icon"
+                                                title="Retirer du groupe"
+                                                style="width:34px; height:34px; border-radius:50%;
+                                                       background: rgba(var(--vz-danger-rgb), 0.1);
+                                                       color: var(--vz-danger);
+                                                       border: 1px solid rgba(var(--vz-danger-rgb), 0.2);
+                                                       transition: all 0.2s;">
+                                            <i class="mdi mdi-account-minus fs-16"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                                @endcan
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="{{ auth()->user()->can('assignMember', $group) ? 4 : 3 }}" class="text-center py-5">
+                                    <div class="d-flex flex-column align-items-center gap-2">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                             style="width:64px; height:64px; background: rgba(var(--vz-secondary-rgb), 0.1);">
+                                            <i class="mdi mdi-account-off-outline fs-30 text-muted"></i>
+                                        </div>
+                                        <p class="text-muted mb-0">Aucun membre actif dans ce groupe.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {{-- ---- Carte Historique ---- --}}
+        <div class="card border-0 shadow-sm">
+            <div class="card-header border-0 py-3 px-4 d-flex align-items-center gap-3"
+                 style="border-bottom: 1px solid rgba(var(--vz-border-color-translucent), 1) !important;">
+                <div class="rounded p-2 flex-shrink-0"
+                     style="background: rgba(var(--vz-secondary-rgb), 0.15); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                    <i class="mdi mdi-history fs-20 text-muted"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold">Historique des Membres</h5>
+                    <small class="text-muted">Anciens membres et durées de participation</small>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead style="background: rgba(var(--vz-secondary-rgb), 0.06);">
+                            <tr>
+                                <th class="ps-4 py-3 fw-semibold" style="font-size: 0.78rem; text-transform:uppercase; letter-spacing:0.05em;">Membre</th>
+                                <th class="py-3 fw-semibold" style="font-size: 0.78rem; text-transform:uppercase; letter-spacing:0.05em;">Rejoint le</th>
+                                <th class="py-3 fw-semibold" style="font-size: 0.78rem; text-transform:uppercase; letter-spacing:0.05em;">Quitté le</th>
+                                <th class="py-3 pe-4 fw-semibold" style="font-size: 0.78rem; text-transform:uppercase; letter-spacing:0.05em;">Durée</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($allMembers as $pastMember)
+                            <tr class="border-bottom">
+                                <td class="ps-4 py-3 fw-semibold" style="font-size: 0.88rem;">
+                                    {{ $pastMember->first_name }} {{ $pastMember->name }}
+                                </td>
+                                <td class="py-3" style="font-size: 0.88rem;">
+                                    {{ $pastMember->pivot->joined_at ? \Carbon\Carbon::parse($pastMember->pivot->joined_at)->format('d/m/Y H:i') : '—' }}
+                                </td>
+                                <td class="py-3">
+                                    @if($pastMember->pivot->left_at)
+                                        <span class="badge rounded-pill px-2 py-1"
+                                              style="background: rgba(var(--vz-danger-rgb), 0.12); color: var(--vz-danger); font-size: 0.78rem;">
+                                            <i class="mdi mdi-logout me-1"></i>
+                                            {{ \Carbon\Carbon::parse($pastMember->pivot->left_at)->format('d/m/Y H:i') }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
+                                <td class="py-3 pe-4 text-muted" style="font-size: 0.85rem;">
+                                    @if($pastMember->pivot->joined_at && $pastMember->pivot->left_at)
+                                        @php
+                                            $joined = \Carbon\Carbon::parse($pastMember->pivot->joined_at);
+                                            $left = \Carbon\Carbon::parse($pastMember->pivot->left_at);
+                                        @endphp
+                                        {{ $joined->diffForHumans($left, true, false, 2) }}
+                                    @else
+                                        —
+                                    @endif
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">Aucun historique d'ancien membre.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ======= COLONNE DROITE : Info, Chef, Affectation ======= --}}
+    <div class="col-lg-4">
+
+        {{-- ---- Informations du groupe ---- --}}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header border-0 py-3 px-4 d-flex align-items-center gap-3"
+                 style="border-bottom: 1px solid rgba(var(--vz-border-color-translucent), 1) !important;">
+                <div class="rounded p-2 flex-shrink-0"
+                     style="background: rgba(var(--vz-info-rgb), 0.15); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                    <i class="mdi mdi-information-outline fs-20" style="color: var(--vz-info);"></i>
+                </div>
+                <h5 class="mb-0 fw-bold">Informations</h5>
+            </div>
+            <div class="card-body px-4 py-3">
+                <div class="mb-3">
+                    <small class="fw-bold text-muted d-block mb-1"
+                           style="font-size: 0.72rem; text-transform:uppercase; letter-spacing:0.06em;">Description</small>
+                    <p class="mb-0" style="font-size: 0.9rem; white-space: pre-line; line-height: 1.6;">
+                        {{ $group->description ?? 'Aucune description fournie.' }}
+                    </p>
+                </div>
+                <hr class="my-3" style="border-color: rgba(var(--vz-border-color-translucent), 1);">
+                <div>
+                    <small class="fw-bold text-muted d-block mb-1"
+                           style="font-size: 0.72rem; text-transform:uppercase; letter-spacing:0.06em;">Créé le</small>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="mdi mdi-calendar-outline text-muted"></i>
+                        <span style="font-size: 0.9rem;">{{ $group->created_at->format('d/m/Y H:i') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ---- Chef de groupe ---- --}}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header border-0 py-3 px-4 d-flex align-items-center gap-3"
+                 style="border-bottom: 1px solid rgba(var(--vz-border-color-translucent), 1) !important;">
+                <div class="rounded p-2 flex-shrink-0"
+                     style="background: rgba(var(--vz-warning-rgb), 0.15); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                    <i class="mdi mdi-crown fs-20" style="color: var(--vz-warning);"></i>
+                </div>
+                <h5 class="mb-0 fw-bold">Chef de groupe</h5>
+            </div>
+            <div class="card-body px-4 py-3">
+                @if($group->leader)
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        @if($group->leader->photo)
+                            <img src="{{ asset('storage/' . $group->leader->photo) }}"
+                                 alt="Photo" class="rounded-circle"
+                                 width="52" height="52" style="object-fit: cover; flex-shrink:0;">
+                        @else
+                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold flex-shrink-0"
+                                 style="width:52px; height:52px; font-size:1.1rem;
+                                        background: rgba(var(--vz-warning-rgb), 0.15);
+                                        color: var(--vz-warning);">
+                                {{ strtoupper(substr($group->leader->first_name, 0, 1) . substr($group->leader->name, 0, 1)) }}
+                            </div>
+                        @endif
+                        <div>
+                            <div class="fw-bold" style="font-size: 0.95rem;">
+                                {{ $group->leader->first_name }} {{ $group->leader->name }}
+                            </div>
+                            <span class="badge rounded-pill px-2 py-1 mt-1"
+                                  style="background: rgba(var(--vz-warning-rgb), 0.15); color: var(--vz-warning); font-size: 0.72rem;">
+                                <i class="mdi mdi-crown me-1"></i>Chef Désigné
+                            </span>
+                        </div>
+                    </div>
+                    <hr style="border-color: rgba(var(--vz-border-color-translucent), 1);">
+                    <div class="d-flex flex-column gap-2">
+                        <div class="d-flex align-items-center gap-2" style="font-size: 0.88rem;">
+                            <i class="mdi mdi-email-outline text-muted fs-16"></i>
+                            <span>{{ $group->leader->email ?? '—' }}</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2" style="font-size: 0.88rem;">
+                            <i class="mdi mdi-phone-outline text-muted fs-16"></i>
+                            <span>{{ $group->leader->phone ?? '—' }}</span>
+                        </div>
+                    </div>
+                    @can('update', $group)
+                    <div class="mt-3">
+                        <a href="{{ route('admin.groups.edit', $group) }}"
+                           class="btn btn-sm btn-outline-warning w-100"
+                           style="border-radius: 0.5rem; font-size: 0.82rem;">
+                            <i class="mdi mdi-account-switch me-1"></i>Changer le chef
+                        </a>
+                    </div>
+                    @endcan
+                @else
+                    <div class="text-center py-3">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                             style="width:56px; height:56px; background: rgba(var(--vz-secondary-rgb), 0.1);">
+                            <i class="mdi mdi-crown-outline fs-28 text-muted"></i>
+                        </div>
+                        <p class="text-muted mb-2" style="font-size: 0.88rem;">Aucun chef de groupe désigné.</p>
+                        @can('update', $group)
+                        <a href="{{ route('admin.groups.edit', $group) }}" class="btn btn-sm btn-outline-primary" style="border-radius: 0.5rem;">
+                            <i class="mdi mdi-plus me-1"></i>Désigner un chef
+                        </a>
+                        @endcan
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- ---- Affecter un membre ---- --}}
+        @can('assignMember', $group)
+        <div class="card border-0 shadow-sm">
+            <div class="card-header border-0 py-3 px-4 d-flex align-items-center gap-3"
+                 style="border-bottom: 1px solid rgba(var(--vz-border-color-translucent), 1) !important;">
+                <div class="rounded p-2 flex-shrink-0"
+                     style="background: rgba(var(--vz-success-rgb), 0.15); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                    <i class="mdi mdi-account-plus fs-20" style="color: var(--vz-success);"></i>
+                </div>
+                <h5 class="mb-0 fw-bold">Affecter un membre</h5>
+            </div>
+            <div class="card-body px-4 py-3">
+                <form action="{{ route('admin.groups.members.assign', $group) }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="user_id" class="form-label text-muted" style="font-size: 0.82rem;">
+                            Sélectionner un utilisateur
+                        </label>
+                        <select id="user_id" name="user_id"
+                                class="form-select @error('user_id') is-invalid @enderror"
+                                required
+                                style="border-radius: 0.5rem;">
+                            <option value="">— Sélectionner un utilisateur —</option>
+                            @foreach($availableUsers as $user)
+                                <option value="{{ $user->id }}">
+                                    {{ $user->first_name }} {{ $user->name }}
+                                    @if($user->phone) ({{ $user->phone }}) @endif
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('user_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <button type="submit" class="btn btn-success w-100" style="border-radius: 0.5rem;">
+                        <i class="mdi mdi-account-plus me-1"></i>Ajouter au groupe
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endcan
+
+    </div>
+</div>
+
+@push('css')
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
 <style>
-    /* Styling elements for a more premium card design */
-    .bg-soft-primary {
-        background-color: rgba(13, 110, 253, 0.1);
+    .ts-wrapper.form-select {
+        padding: 0;
+        border: none;
+        height: auto;
     }
-    .bg-soft-info {
-        background-color: rgba(13, 202, 240, 0.1);
+    .ts-control {
+        border-radius: 0.5rem;
+        padding: 0.47rem 0.75rem;
+        font-size: 0.875rem;
+        background: var(--vz-input-bg, #fff) !important;
+        border-color: var(--vz-input-border-color, #ced4da) !important;
+        color: var(--vz-body-color) !important;
     }
-    .font-weight-semibold {
-        font-weight: 600;
+    .ts-dropdown {
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.18);
+        font-size: 0.875rem;
+        background: var(--vz-dropdown-bg, #fff) !important;
+        border-color: var(--vz-dropdown-border-color, #ced4da) !important;
     }
-    .font-weight-bold {
-        font-weight: 700;
+    .ts-dropdown .option {
+        color: var(--vz-body-color) !important;
     }
-    .uppercase {
-        text-transform: uppercase;
+    .ts-dropdown .option:hover, .ts-dropdown .active {
+        background: rgba(var(--vz-primary-rgb), 0.1) !important;
+        color: var(--vz-primary) !important;
     }
-    .tracking-wider {
-        letter-spacing: 0.05em;
+
+    /* Hover sur les lignes des tableaux */
+    table tbody tr:hover {
+        background: rgba(var(--vz-primary-rgb), 0.04);
     }
-    .shadow-sm {
-        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+
+    /* Hover sur les boutons d'action */
+    .btn-icon:hover {
+        background: rgba(var(--vz-danger-rgb), 0.2) !important;
+        transform: scale(1.08);
     }
 </style>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userSelect = document.getElementById('user_id');
+        if (userSelect) {
+            new TomSelect('#user_id', {
+                create: false,
+                placeholder: '— Sélectionner un utilisateur —',
+                allowEmptyOption: true
+            });
+        }
+
+        document.querySelectorAll('.confirm-remove-member').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const memberName = this.getAttribute('data-member-name');
+                confirmAction(
+                    `Retirer ${memberName} du groupe ? Cette action sera historisée.`,
+                    () => this.submit(),
+                    'Retirer du groupe',
+                    'Retirer',
+                    'btn-danger'
+                );
+            });
+        });
+    });
+</script>
+@endpush
+
 @endsection

@@ -13,6 +13,11 @@ class UserObserver
      */
     public function created(User $user): void
     {
+        // Automatically assign 'Jeune' role to new users if they don't have any roles yet
+        if ($user->roles()->count() === 0 && \Spatie\Permission\Models\Role::where('name', 'Jeune')->exists()) {
+            $user->assignRole('Jeune');
+        }
+
         $plainPassword = $user->plain_password;
 
         if ($plainPassword) {
