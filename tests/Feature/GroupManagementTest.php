@@ -467,7 +467,7 @@ class GroupManagementTest extends TestCase
         $response = $this->actingAs($this->user1)->get(route('admin.groups.show', $group));
         $response->assertStatus(200);
         $response->assertSee('Flambeaux');
-        
+
         // Assert they don't see edit elements or forms
         $response->assertDontSee('Désigner un chef');
         $response->assertDontSee('Modifier');

@@ -56,7 +56,7 @@ class AttendanceManagementController extends Controller
         // Retrieve all other eligible users to be added to the list
         $allEligibleQuery = User::whereNull('deleted_at');
         if ($activity->visibility_group_id) {
-            $allEligibleQuery->whereIn('id', function($q) use ($activity) {
+            $allEligibleQuery->whereIn('id', function ($q) use ($activity) {
                 $q->select('user_id')
                   ->from('group_members')
                   ->where('group_id', $activity->visibility_group_id)
