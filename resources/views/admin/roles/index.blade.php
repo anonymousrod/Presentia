@@ -83,7 +83,8 @@
                     </div>
                 </div>
                 <div class="card-body pt-0">
-                    <div class="table-responsive table-card mb-1">
+                    {{-- VUE DESKTOP --}}
+                    <div class="table-responsive table-card mb-1 d-none d-md-block">
                         <table class="table table-nowrap align-middle">
                             <thead class="text-muted table-light">
                                 <tr class="text-uppercase">
@@ -192,6 +193,95 @@
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+
+                    {{-- VUE MOBILE (Cartes) --}}
+                    <div class="d-md-none mt-3">
+                        <div class="d-flex flex-column gap-3">
+                            @forelse($roles as $role)
+                            <div class="card border border-light shadow-sm mb-0">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-sm flex-shrink-0">
+                                                <div class="avatar-title rounded-circle bg-primary-subtle text-primary fs-16">
+                                                    <i class="ri-shield-user-line"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">
+                                                    <a href="{{ route('admin.roles.show', $role) }}" class="text-body fw-semibold">{{ $role->name }}</a>
+                                                </h6>
+                                                @if(in_array($role->name, ['Administrateur', 'Jeune', 'Chef de groupe']))
+                                                    <span class="badge bg-secondary-subtle text-secondary fs-10">SYSTÈME</span>
+                                                @else
+                                                    <span class="badge bg-info-subtle text-info fs-10">PERSONNALISÉ</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3 d-flex justify-content-between border-top border-bottom py-2">
+                                        <div class="text-center w-50 border-end">
+                                            <small class="text-muted d-block mb-1">Permissions</small>
+                                            <span class="badge bg-info-subtle text-info fs-12">
+                                                <i class="ri-key-2-line me-1"></i>{{ $role->permissions_count }}
+                                            </span>
+                                        </div>
+                                        <div class="text-center w-50">
+                                            <small class="text-muted d-block mb-1">Utilisateurs</small>
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <div class="avatar-group me-2">
+                                                    @php $users = $role->users()->take(3)->get(); @endphp
+                                                    @foreach($users as $user)
+                                                        <div class="avatar-group-item">
+                                                            @if($user->photo)
+                                                                 <img src="{{ asset('storage/' . $user->photo) }}" alt="" class="rounded-circle avatar-xxs">
+                                                            @else
+                                                                <div class="avatar-xxs">
+                                                                    <span class="avatar-title rounded-circle bg-primary-subtle text-primary fs-10">
+                                                                        {{ strtoupper(substr($user->first_name, 0, 1)) }}
+                                                                    </span>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    @endforeach
+                                                    @if($role->users_count > 3)
+                                                        <div class="avatar-group-item">
+                                                            <div class="avatar-xxs">
+                                                                <span class="avatar-title rounded-circle bg-light text-primary fs-10">+{{ $role->users_count - 3 }}</span>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <span class="text-muted small">({{ $role->users_count }})</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <a href="{{ route('admin.roles.show', $role) }}" class="btn btn-sm btn-info flex-grow-1" title="Voir">
+                                            <i class="ri-eye-fill me-1"></i>Voir
+                                        </a>
+                                        @unless(in_array($role->name, ['Administrateur']))
+                                        <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-primary flex-grow-1" title="Modifier">
+                                            <i class="ri-pencil-fill me-1"></i>Modifier
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-danger flex-grow-1" 
+                                                @click="deleteTarget = '{{ route('admin.roles.destroy', $role) }}'; deleteName = '{{ $role->name }}'" title="Supprimer">
+                                            <i class="ri-delete-bin-5-fill me-1"></i>Supprimer
+                                        </button>
+                                        @endunless
+                                    </div>
+                                </div>
+                            </div>
+                            @empty
+                            <div class="noresult py-4 text-center border rounded">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                                <h5 class="mt-2 text-muted">Désolé ! Aucun rôle trouvé.</h5>
+                            </div>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
             </div>

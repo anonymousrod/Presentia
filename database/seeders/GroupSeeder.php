@@ -84,6 +84,41 @@ class GroupSeeder extends Seeder
             $jeunes[5]->id => ['joined_at' => now()],
         ]);
 
+        // 3. Création de 27 groupes supplémentaires pour avoir au moins 30 groupes
+        $leaders = User::role('Chef de groupe')
+            ->whereNotIn('email', ['chef1@eber.org', 'chef2@eber.org', 'chef3@eber.org'])
+            ->get();
+
+        $categories = ['Flambeaux', 'Claires', 'Aînés', 'Cadets', 'Poussins'];
+        for ($i = 1; $i <= 27; $i++) {
+            $leader = $leaders->get($i - 1) ?? $chef1;
+            $category = $categories[array_rand($categories)];
+            
+            $group = Group::firstOrCreate(
+                ['name' => "Groupe de District {$i}"],
+                [
+                    'description' => "Description pour le groupe de district {$i} de catégorie {$category}.",
+                    'category' => $category,
+                    'leader_id' => $leader->id,
+                ]
+            );
+
+            // Assigner des membres au hasard
+            $randomJeunes = User::role('Jeune')
+                ->inRandomOrder()
+                ->limit(rand(5, 12))
+                ->pluck('id')
+                ->toArray();
+
+            $syncData = [];
+            foreach ($randomJeunes as $jeuneId) {
+                $syncData[$jeuneId] = ['joined_at' => now()->subDays(rand(1, 100))];
+            }
+            $syncData[$leader->id] = ['joined_at' => now()->subDays(100)];
+
+            $group->members()->syncWithoutDetaching($syncData);
+        }
+
         $this->command->info('✅ Groupes créés et membres assignés avec succès !');
     }
 }

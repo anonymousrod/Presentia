@@ -21,9 +21,9 @@
                     <label class="form-label">Recherche</label>
                     <input type="text" name="search" class="form-control" value="{{ request('search') }}" placeholder="Nom ou catégorie...">
                 </div>
-                <div class="col-md-6 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary me-2">Filtrer</button>
-                    <a href="{{ route('admin.groups.index') }}" class="btn btn-secondary">Réinitialiser</a>
+                <div class="col-12 col-md-6 d-flex gap-2 align-items-end mt-2 mt-md-0">
+                    <button type="submit" class="btn btn-primary flex-grow-1">Filtrer</button>
+                    <a href="{{ route('admin.groups.index') }}" class="btn btn-secondary flex-shrink-0">Réinitialiser</a>
                 </div>
             </form>
         </div>
@@ -34,7 +34,8 @@
             <h5 class="mb-0">Liste des groupes</h5>
         </div>
         <div class="card-body p-0">
-            <div class="table-responsive">
+            {{-- VUE DESKTOP --}}
+            <div class="table-responsive d-none d-md-block">
                 <table class="table table-hover table-striped mb-0">
                     <thead class="table-light">
                         <tr>
@@ -85,6 +86,60 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            {{-- VUE MOBILE (Cartes) --}}
+            <div class="d-md-none p-3">
+                <div class="d-flex flex-column gap-3">
+                    @forelse($groups as $group)
+                    <div class="card border border-light shadow-sm mb-0">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ $group->name }}</h6>
+                                    <span class="badge bg-soft-primary text-primary">{{ $group->category ?? 'Sans catégorie' }}</span>
+                                </div>
+                                <span class="badge bg-primary rounded-pill"><i class="mdi mdi-account-group me-1"></i>{{ $group->members_count }}</span>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted d-block mb-1">Chef de groupe</small>
+                                @if($group->leader)
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-xxs flex-shrink-0" style="width: 20px; height: 20px;">
+                                            <div class="avatar-title rounded-circle bg-info-subtle text-info fs-10">
+                                                {{ strtoupper(substr($group->leader->first_name, 0, 1) . substr($group->leader->name, 0, 1)) }}
+                                            </div>
+                                        </div>
+                                        <span class="fs-13 fw-medium text-truncate">{{ $group->leader->first_name }} {{ $group->leader->name }}</span>
+                                    </div>
+                                @else
+                                    <span class="text-muted fs-13 fst-italic">Non désigné</span>
+                                @endif
+                            </div>
+                            <div class="d-flex gap-2 border-top pt-3">
+                                <a href="{{ route('admin.groups.show', $group) }}" class="btn btn-sm btn-info flex-grow-1" title="Voir">
+                                    <i class="mdi mdi-eye me-1"></i>Voir
+                                </a>
+                                <a href="{{ route('admin.groups.edit', $group) }}" class="btn btn-sm btn-primary flex-grow-1" title="Modifier">
+                                    <i class="mdi mdi-pencil me-1"></i>Modif
+                                </a>
+                                <form action="{{ route('admin.groups.destroy', $group) }}" method="POST" class="d-flex confirm-archive-group m-0" data-group-name="{{ $group->name }}" style="flex-grow: 1;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger w-100" title="Archiver">
+                                        <i class="mdi mdi-archive me-1"></i>Archiver
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-4 text-muted">
+                        <i class="mdi mdi-account-group fs-24 d-block mb-2"></i>
+                        Aucun groupe trouvé.
+                    </div>
+                    @endforelse
+                </div>
             </div>
         </div>
         @if($groups->hasPages())

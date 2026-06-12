@@ -41,9 +41,9 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary me-2">Filtrer</button>
-                    <button type="button" class="btn btn-secondary" id="btn-reset">Réinitialiser</button>
+                <div class="col-12 col-md-2 d-flex gap-2 align-items-end mt-2 mt-md-0">
+                    <button type="submit" class="btn btn-primary flex-grow-1">Filtrer</button>
+                    <button type="button" class="btn btn-secondary flex-shrink-0" id="btn-reset">Réinitialiser</button>
                 </div>
             </form>
         </div>
@@ -55,7 +55,8 @@
             <h5 class="mb-0">Liste des activités</h5>
         </div>
         <div class="card-body p-0">
-            <div class="table-responsive">
+            {{-- VUE DESKTOP --}}
+            <div class="table-responsive d-none d-md-block">
                 <table class="table table-hover table-striped mb-0">
                     <thead class="table-light">
                         <tr>
@@ -125,6 +126,75 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            {{-- VUE MOBILE (Cartes) --}}
+            <div class="d-md-none p-3">
+                <div class="d-flex flex-column gap-3">
+                    @forelse($activities as $activity)
+                    <div class="card border border-light shadow-sm mb-0">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ $activity->title }}</h6>
+                                    <span class="badge bg-soft-info text-info">{{ $activity->type->label() }}</span>
+                                </div>
+                                <span class="badge bg-{{ match($activity->status->value) {
+                                    'PUBLISHED' => 'success',
+                                    'DRAFT' => 'warning',
+                                    'CANCELLED' => 'danger',
+                                    'ARCHIVED' => 'secondary',
+                                    default => 'primary'
+                                } }}">
+                                    {{ $activity->status->label() }}
+                                </span>
+                            </div>
+                            
+                            <div class="mb-3 text-muted fs-13">
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="mdi mdi-calendar-clock me-2 text-primary"></i>
+                                    <span>{{ $activity->start_time->format('d/m/Y H:i') }} - {{ $activity->end_time->format('H:i') }}</span>
+                                </div>
+                                @if($activity->location)
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="mdi mdi-map-marker me-2 text-success"></i>
+                                    <span>{{ $activity->location }}</span>
+                                </div>
+                                @endif
+                                <div class="d-flex align-items-center">
+                                    <i class="mdi mdi-eye-outline me-2 text-info"></i>
+                                    <span>
+                                        @if($activity->visibility === \App\Enums\ActivityVisibility::GROUP)
+                                            Groupe: {{ $activity->group?->name ?? 'N/A' }}
+                                        @elseif($activity->visibility === \App\Enums\ActivityVisibility::ROLE)
+                                            Rôle: {{ $activity->role?->name ?? 'N/A' }}
+                                        @else
+                                            Tout le monde
+                                        @endif
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-2 flex-wrap border-top pt-3">
+                                <a href="{{ route('admin.activities.show', $activity) }}" class="btn btn-sm btn-info flex-grow-1" title="Voir">
+                                    <i class="mdi mdi-eye me-1"></i>Voir
+                                </a>
+                                <a href="{{ route('admin.activities.edit', $activity) }}" class="btn btn-sm btn-primary flex-grow-1" title="Modifier">
+                                    <i class="mdi mdi-pencil me-1"></i>Modif
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger flex-grow-1" onclick="confirmDelete({{ $activity->id }})" title="Supprimer">
+                                    <i class="mdi mdi-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-4 text-muted border rounded bg-light">
+                        <i class="mdi mdi-calendar-remove fs-24 d-block mb-2"></i>
+                        Aucune activité trouvée.
+                    </div>
+                    @endforelse
+                </div>
             </div>
         </div>
         <div class="card-footer">

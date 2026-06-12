@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="card overflow-hidden">
+<div class="row justify-content-center mx-0 mx-md-auto">
+    <div class="col-12 col-md-8 col-lg-6 px-0 px-md-3">
+        <div class="card overflow-hidden border-0 shadow-sm" style="border-radius: 0; border-top-left-radius: 12px; border-top-right-radius: 12px;">
             <div class="card-header bg-primary text-white text-center py-3">
                 <h4 class="mb-0 text-white"><i class="mdi mdi-qrcode-scan me-2"></i>Scanner de Présence</h4>
             </div>
@@ -12,7 +12,7 @@
                     <p class="text-muted mb-4">Placez le QR Code de l'activité dans le cadre ci-dessous pour valider votre présence.</p>
                     
                     <div id="reader-container" class="position-relative mb-4">
-                        <div id="reader" style="width: 100%; max-width: 500px; margin: 0 auto; border-radius: 12px; overflow: hidden; border: 2px solid #eff2f7;"></div>
+                        <div id="reader" style="width: 100%; max-width: 500px; margin: 0 auto; border-radius: 8px; overflow: hidden; border: 1px solid #eff2f7;"></div>
                         <div id="scan-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none" style="background: rgba(255,255,255,0.7); z-index: 10; display: flex; align-items: center; justify-content: center;">
                             <div class="spinner-border text-primary" role="status">
                                 <span class="visually-hidden">Validation...</span>

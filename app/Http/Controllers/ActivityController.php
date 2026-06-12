@@ -45,17 +45,19 @@ class ActivityController extends Controller
                 });
             }
         } else {
-            $query->where(function ($q) use ($groupIds, $roleIds) {
-                $q->where('visibility', ActivityVisibility::ALL)
-                  ->orWhere(function ($sub) use ($groupIds) {
-                      $sub->where('visibility', ActivityVisibility::GROUP)
-                          ->whereIn('visibility_group_id', $groupIds);
-                  })
-                  ->orWhere(function ($sub) use ($roleIds) {
-                      $sub->where('visibility', ActivityVisibility::ROLE)
-                          ->whereIn('visibility_role_id', $roleIds);
-                  });
-            });
+            if (!$user->hasRole('Administrateur')) {
+                $query->where(function ($q) use ($groupIds, $roleIds) {
+                    $q->where('visibility', ActivityVisibility::ALL)
+                      ->orWhere(function ($sub) use ($groupIds) {
+                          $sub->where('visibility', ActivityVisibility::GROUP)
+                              ->whereIn('visibility_group_id', $groupIds);
+                      })
+                      ->orWhere(function ($sub) use ($roleIds) {
+                          $sub->where('visibility', ActivityVisibility::ROLE)
+                              ->whereIn('visibility_role_id', $roleIds);
+                      });
+                });
+            }
         }
 
         // Optional search/filter by type if needed
@@ -82,7 +84,7 @@ class ActivityController extends Controller
             }
         }
 
-        $activities = $query->orderBy('start_time', 'asc')->paginate(10);
+        $activities = $query->orderBy('start_time', 'asc')->paginate(10)->withQueryString();
 
         // Get all user's registrations to show registration status
         $myRegistrations = $user->registrations()
@@ -128,6 +130,10 @@ class ActivityController extends Controller
      */
     protected function authorizeVisibility(Activity $activity, $user)
     {
+        if ($user && $user->hasRole('Administrateur')) {
+            return;
+        }
+
         if ($activity->visibility === ActivityVisibility::ALL) {
             return;
         }

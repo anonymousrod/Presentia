@@ -2,16 +2,16 @@
 
 @section('content')
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <a href="{{ route('admin.activities.index') }}" class="btn btn-outline-secondary btn-sm">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <a href="{{ route('admin.activities.index') }}" class="btn btn-outline-secondary btn-sm align-self-start align-self-md-auto">
             <i class="mdi mdi-arrow-left"></i> Retour à la liste
         </a>
-        <div class="d-flex gap-2">
+        <div class="d-flex flex-wrap gap-2">
             <a href="{{ route('admin.activities.download-registrations', $activity) }}" class="btn btn-outline-primary btn-sm">
-                <i class="mdi mdi-file-pdf-box"></i> Liste d'inscriptions (PDF)
+                <i class="mdi mdi-file-pdf-box"></i> Inscriptions (PDF)
             </a>
             <a href="{{ route('admin.activities.download-attendance', $activity) }}" class="btn btn-outline-success btn-sm">
-                <i class="mdi mdi-file-pdf-box"></i> Liste de présence (PDF)
+                <i class="mdi mdi-file-pdf-box"></i> Présence (PDF)
             </a>
         </div>
     </div>
@@ -20,7 +20,7 @@
         <!-- Main details -->
         <div class="col-md-8">
             <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
                     <h4 class="mb-0">{{ $activity->title }}</h4>
                     <span class="badge bg-{{ match($activity->status->value) {
                         'PUBLISHED' => 'success',
@@ -90,15 +90,15 @@
                     });
                 }
             }">
-                <div class="card-header d-flex align-items-center">
+                <div class="card-header d-flex flex-column flex-md-row align-items-md-center gap-3">
                     <h5 class="card-title mb-0 flex-grow-1">Inscriptions</h5>
-                    <div class="d-flex gap-2">
-                        <span class="badge bg-success-subtle text-success">{{ $activity->registrations->where('status', \App\Enums\RegistrationStatus::PRESENT)->where('is_waitlisted', false)->count() }} Inscrit(s)</span>
-                        <span class="badge bg-info-subtle text-info">{{ $activity->registrations->where('status', \App\Enums\RegistrationStatus::UNCERTAIN)->where('is_waitlisted', false)->count() }} Incertain(s)</span>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-success-subtle text-success border border-success border-opacity-25">{{ $activity->registrations->where('status', \App\Enums\RegistrationStatus::PRESENT)->where('is_waitlisted', false)->count() }} Inscrit(s)</span>
+                        <span class="badge bg-info-subtle text-info border border-info border-opacity-25">{{ $activity->registrations->where('status', \App\Enums\RegistrationStatus::UNCERTAIN)->where('is_waitlisted', false)->count() }} Incertain(s)</span>
                         @if($activity->capacity)
-                            <span class="badge bg-warning-subtle text-warning">{{ $activity->registrations->where('is_waitlisted', true)->count() }} Liste d'attente</span>
+                            <span class="badge bg-warning-subtle text-warning border border-warning border-opacity-25">{{ $activity->registrations->where('is_waitlisted', true)->count() }} Attente</span>
                         @endif
-                        <span class="badge bg-danger-subtle text-danger">{{ $activity->registrations->where('status', \App\Enums\RegistrationStatus::ABSENT_JUSTIFIED)->count() }} Désinscrit(s)</span>
+                        <span class="badge bg-danger-subtle text-danger border border-danger border-opacity-25">{{ $activity->registrations->where('status', \App\Enums\RegistrationStatus::ABSENT_JUSTIFIED)->count() }} Désinscrit(s)</span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -106,11 +106,11 @@
                     <div class="row g-2 mb-3">
                         <div class="col-md-7">
                             <div class="search-box position-relative">
-                                <input type="text" x-model="search" class="form-control" placeholder="Rechercher un membre (nom, email)...">
+                                <input type="text" x-model="search" class="form-control bg-light border-light" placeholder="Rechercher un membre...">
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <select x-model="statusFilter" class="form-select">
+                        <div class="col-6 col-md-3">
+                            <select x-model="statusFilter" class="form-select bg-light border-light">
                                 <option value="">Tous les statuts</option>
                                 <option value="inscrit">Inscrit</option>
                                 <option value="incertain">Incertain</option>
@@ -120,14 +120,53 @@
                                 <option value="desinscrit">Désinscrit</option>
                             </select>
                         </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-light w-100" @click="search = ''; statusFilter = '';">
-                                Réinitialiser
+                        <div class="col-6 col-md-2">
+                            <button type="button" class="btn btn-soft-secondary w-100" @click="search = ''; statusFilter = '';">
+                                Reset
                             </button>
                         </div>
                     </div>
 
-                    <div class="table-responsive">
+                    <div class="d-md-none">
+                        <template x-for="reg in filteredRegistrations" :key="reg.id">
+                            <div class="card mb-3 border shadow-none">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start mb-2">
+                                        <div class="flex-grow-1">
+                                            <h6 class="fs-15 mb-1"><a :href="reg.user_url" class="text-body" x-text="reg.name"></a></h6>
+                                            <div class="text-muted fs-13"><i class="mdi mdi-email-outline me-1"></i><span x-text="reg.email"></span></div>
+                                        </div>
+                                        <div class="flex-shrink-0 ms-2">
+                                            <span class="badge fs-11 px-2 py-1" 
+                                                  :class="{
+                                                      'bg-success-subtle text-success': reg.status === 'inscrit',
+                                                      'bg-info-subtle text-info': reg.status === 'incertain',
+                                                      'bg-warning-subtle text-warning': reg.status === 'attente',
+                                                      'bg-danger-subtle text-danger': reg.status === 'desinscrit'
+                                                  }"
+                                                  x-text="reg.status === 'inscrit' ? 'Inscrit' : (reg.status === 'incertain' ? 'Incertain' : (reg.status === 'attente' ? 'Liste d\'attente' : 'Désinscrit'))">
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-light p-2 rounded mt-2">
+                                        <div class="d-flex justify-content-between fs-12 mb-1">
+                                            <span class="text-muted"><i class="mdi mdi-calendar-clock me-1"></i>Inscrit le:</span>
+                                            <span class="fw-medium" x-text="reg.date"></span>
+                                        </div>
+                                        <div class="fs-12" x-show="reg.status === 'desinscrit'">
+                                            <span class="text-muted d-block mb-1"><i class="mdi mdi-message-text-outline me-1"></i>Motif:</span>
+                                            <span class="fw-medium text-danger" x-text="reg.justification || 'Aucun motif renseigné'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <template x-if="filteredRegistrations.length === 0">
+                            <div class="text-center py-4 text-muted">Aucun membre inscrit trouvé.</div>
+                        </template>
+                    </div>
+
+                    <div class="table-responsive d-none d-md-block">
                         <table class="table table-hover table-striped mb-0">
                             <thead class="table-light">
                                 <tr>
@@ -200,13 +239,13 @@
                     });
                 }
             }">
-                <div class="card-header d-flex align-items-center">
+                <div class="card-header d-flex flex-column flex-md-row align-items-md-center gap-3">
                     <h5 class="card-title mb-0 flex-grow-1">Liste de présence digitale</h5>
-                    <div class="d-flex gap-2">
-                        <span class="badge bg-success-subtle text-success">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::PRESENT)->count() }} Présent(s)</span>
-                        <span class="badge bg-warning-subtle text-warning">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::LATE)->count() }} En retard</span>
-                        <span class="badge bg-danger-subtle text-danger">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::ABSENT)->count() }} Absent(s)</span>
-                        <span class="badge bg-info-subtle text-info">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::EXCUSED)->count() }} Excusé(s)</span>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-success-subtle text-success border border-success border-opacity-25">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::PRESENT)->count() }} Présent(s)</span>
+                        <span class="badge bg-warning-subtle text-warning border border-warning border-opacity-25">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::LATE)->count() }} En retard</span>
+                        <span class="badge bg-danger-subtle text-danger border border-danger border-opacity-25">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::ABSENT)->count() }} Absent(s)</span>
+                        <span class="badge bg-info-subtle text-info border border-info border-opacity-25">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::EXCUSED)->count() }} Excusé(s)</span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -214,11 +253,11 @@
                     <div class="row g-2 mb-3">
                         <div class="col-md-7">
                             <div class="search-box position-relative">
-                                <input type="text" x-model="search" class="form-control" placeholder="Rechercher un présent (nom, email)...">
+                                <input type="text" x-model="search" class="form-control bg-light border-light" placeholder="Rechercher un présent...">
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <select x-model="statusFilter" class="form-select">
+                        <div class="col-6 col-md-3">
+                            <select x-model="statusFilter" class="form-select bg-light border-light">
                                 <option value="">Tous les statuts</option>
                                 <option value="PRESENT">Présent</option>
                                 <option value="LATE">En retard</option>
@@ -226,14 +265,60 @@
                                 <option value="EXCUSED">Excusé</option>
                             </select>
                         </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-light w-100" @click="search = ''; statusFilter = '';">
-                                Réinitialiser
+                        <div class="col-6 col-md-2">
+                            <button type="button" class="btn btn-soft-secondary w-100" @click="search = ''; statusFilter = '';">
+                                Reset
                             </button>
                         </div>
                     </div>
 
-                    <div class="table-responsive">
+                    <div class="d-md-none">
+                        <template x-for="att in filteredAttendances" :key="att.id">
+                            <div class="card mb-3 border shadow-none">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start mb-2">
+                                        <div class="flex-grow-1">
+                                            <h6 class="fs-15 mb-1"><a :href="att.user_url" class="text-body" x-text="att.name"></a></h6>
+                                            <div class="text-muted fs-13"><i class="mdi mdi-email-outline me-1"></i><span x-text="att.email"></span></div>
+                                        </div>
+                                        <div class="flex-shrink-0 ms-2">
+                                            <span class="badge fs-11 px-2 py-1" 
+                                                  :class="{
+                                                      'bg-success-subtle text-success': att.status === 'PRESENT',
+                                                      'bg-warning-subtle text-warning': att.status === 'LATE',
+                                                      'bg-danger-subtle text-danger': att.status === 'ABSENT',
+                                                      'bg-info-subtle text-info': att.status === 'EXCUSED'
+                                                  }"
+                                                  x-text="att.status === 'PRESENT' ? 'Présent' : (att.status === 'LATE' ? 'En retard' : (att.status === 'ABSENT' ? 'Absent' : 'Excusé'))">
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-light p-2 rounded mt-2">
+                                        <div class="d-flex justify-content-between fs-12 mb-1">
+                                            <span class="text-muted"><i class="mdi mdi-clock-outline me-1"></i>Heure:</span>
+                                            <span class="fw-medium" x-text="att.time"></span>
+                                        </div>
+                                        <div class="d-flex justify-content-between fs-12 mb-1">
+                                            <span class="text-muted"><i class="mdi mdi-cellphone-link me-1"></i>Moyen:</span>
+                                            <span class="badge" :class="att.source === 'qr_code' ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary'">
+                                                <i class="mdi" :class="att.source === 'qr_code' ? 'mdi-qrcode' : 'mdi-hand-pointing-right'"></i>
+                                                <span x-text="att.source === 'qr_code' ? 'QR Code' : 'Manuel'"></span>
+                                            </span>
+                                        </div>
+                                        <div class="fs-12 mt-2" x-show="att.note">
+                                            <span class="text-muted d-block mb-1"><i class="mdi mdi-message-text-outline me-1"></i>Note:</span>
+                                            <span class="fw-medium" x-text="att.note"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <template x-if="filteredAttendances.length === 0">
+                            <div class="text-center py-4 text-muted">Aucun émargement trouvé.</div>
+                        </template>
+                    </div>
+
+                    <div class="table-responsive d-none d-md-block">
                         <table class="table table-hover table-striped mb-0">
                             <thead class="table-light">
                                 <tr>

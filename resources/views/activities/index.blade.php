@@ -52,7 +52,7 @@
 
 {{-- =================== FILTRES =================== --}}
 <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body py-3 px-4">
+    <div class="card-body p-3 p-md-4">
         <form action="{{ route('activities.index') }}" method="GET" class="row g-3 align-items-end" id="filter-form">
             @if(request('manageable'))
                 <input type="hidden" name="manageable" value="{{ request('manageable') }}">
@@ -105,12 +105,12 @@
             </div>
 
             {{-- Actions --}}
-            <div class="col-md-2 d-flex gap-2">
+            <div class="col-12 col-md-2 d-flex gap-2 mt-3 mt-md-0">
                 <button type="submit" class="btn btn-primary flex-grow-1" style="border-radius: 0.5rem;">
                     <i class="mdi mdi-filter-outline me-1"></i>Filtrer
                 </button>
                 <button type="button" id="btn-reset"
-                        class="btn btn-icon"
+                        class="btn btn-icon flex-shrink-0"
                         title="Réinitialiser les filtres"
                         style="border-radius: 0.5rem; width:42px; height:42px; background: rgba(var(--vz-secondary-rgb), 0.12); color: var(--vz-secondary-color); border: 1px solid rgba(var(--vz-secondary-rgb), 0.2);">
                     <i class="mdi mdi-refresh fs-16"></i>
@@ -179,14 +179,14 @@
             $capacityPct = $activity->capacity ? min(100, round(($registeredCount / $activity->capacity) * 100)) : null;
         @endphp
 
-        <div class="col-xl-4 col-md-6">
+        <div class="col-12 col-md-6 col-xl-4">
             <div class="card border-0 shadow-sm h-100 activity-card {{ $temporalState === 'finished' ? 'activity-finished' : '' }}"
                  style="border-radius: 0.75rem; border-left: 4px solid {{ $cardAccent }} !important; transition: transform 0.2s, box-shadow 0.2s;">
 
                 {{-- Accent top bar --}}
                 <div style="height: 3px; background: {{ $cardAccent }}; border-radius: 0.75rem 0.75rem 0 0; margin-left: -4px;"></div>
 
-                <div class="card-body p-4 d-flex flex-column gap-3">
+                <div class="card-body p-3 p-md-4 d-flex flex-column gap-3">
 
                     {{-- Ligne 1 : Badges état + inscription --}}
                     <div class="d-flex align-items-start justify-content-between gap-2">
@@ -298,7 +298,7 @@
                     <hr class="my-0" style="border-color: rgba(var(--vz-border-color-translucent), 1);">
 
                     {{-- Pied de carte : responsable + actions --}}
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
                         <div>
                             @if($activity->responsible)
                                 <div class="d-flex align-items-center gap-2">
@@ -315,12 +315,12 @@
                             @endif
                         </div>
 
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 w-100 w-sm-auto justify-content-end mt-2 mt-sm-0">
                             {{-- Bouton Émarger (vue gestion) --}}
                             @if(request('manageable') == 1)
                                 @can('manage', $activity)
                                     <a href="{{ route('activities.attendance.index', $activity) }}"
-                                       class="btn btn-sm px-3"
+                                       class="btn btn-sm px-3 flex-grow-1 flex-sm-grow-0 text-center"
                                        style="border-radius: 2rem; font-size: 0.8rem;
                                               background: rgba(var(--vz-success-rgb), 0.15);
                                               color: var(--vz-success);
@@ -334,12 +334,12 @@
                             {{-- Bouton Inscription / Voir --}}
                             @if($activity->start_time->lte(now()))
                                 @if($regStatus && $regStatus !== 'ABSENT_JUSTIFIED')
-                                    <span class="d-flex align-items-center gap-1"
+                                    <span class="d-flex align-items-center justify-content-center gap-1 flex-grow-1 flex-sm-grow-0"
                                           style="font-size: 0.8rem; color: var(--vz-success);">
                                         <i class="mdi mdi-check-circle"></i>Inscrit
                                     </span>
                                 @else
-                                    <span class="d-flex align-items-center gap-1 text-muted"
+                                    <span class="d-flex align-items-center justify-content-center gap-1 text-muted flex-grow-1 flex-sm-grow-0"
                                           style="font-size: 0.8rem;">
                                         <i class="mdi mdi-close-circle-outline"></i>Non inscrit
                                     </span>
@@ -347,13 +347,13 @@
                             @else
                                 @if(!$regStatus || $regStatus === \App\Enums\RegistrationStatus::ABSENT_JUSTIFIED->value)
                                     <a href="{{ route('activities.show', $activity) }}"
-                                       class="btn btn-sm btn-primary px-3"
+                                       class="btn btn-sm btn-primary px-3 flex-grow-1 flex-sm-grow-0 text-center"
                                        style="border-radius: 2rem; font-size: 0.8rem;">
                                         <i class="mdi mdi-plus me-1"></i>S'inscrire
                                     </a>
                                 @else
                                     <a href="{{ route('activities.show', $activity) }}"
-                                       class="btn btn-sm btn-outline-primary px-3"
+                                       class="btn btn-sm btn-outline-primary px-3 flex-grow-1 flex-sm-grow-0 text-center"
                                        style="border-radius: 2rem; font-size: 0.8rem;">
                                         <i class="mdi mdi-cog-outline me-1"></i>Gérer
                                     </a>

@@ -36,8 +36,15 @@ class User extends Authenticatable
         'password',
         'status',
         'photo',
+        'cover_photo',
         'birth_date',
         'qr_version',
+        'education_field',
+        'professional_status',
+        'current_profession',
+        'education_level',
+        'residence_municipality',
+        'residence_neighborhood',
     ];
 
     protected $hidden = [

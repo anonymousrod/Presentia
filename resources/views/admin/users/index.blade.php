@@ -42,9 +42,9 @@
                         <option value="SUSPENDED" {{ request('status') === 'SUSPENDED' ? 'selected' : '' }}>Suspendu</option>
                     </select>
                 </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary me-2">Filtrer</button>
-                    <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Réinitialiser</a>
+                <div class="col-12 col-md-4 d-flex gap-2 align-items-end mt-2 mt-md-0">
+                    <button type="submit" class="btn btn-primary flex-grow-1">Filtrer</button>
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-secondary flex-shrink-0">Réinitialiser</a>
                 </div>
             </form>
         </div>
@@ -67,7 +67,8 @@
                 </div>
             </div>
             <div class="card-body p-0">
-                <div class="table-responsive">
+                {{-- VUE DESKTOP --}}
+                <div class="table-responsive d-none d-md-block">
                     <table class="table table-hover table-striped mb-0">
                         <thead class="table-light">
                             <tr>
@@ -138,6 +139,63 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                {{-- VUE MOBILE (Cartes) --}}
+                <div class="d-md-none p-3">
+                    <div class="d-flex flex-column gap-3">
+                        @forelse($users as $user)
+                        <div class="card border border-light shadow-sm mb-0">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input class="form-check-input user-checkbox" type="checkbox" name="user_ids[]" value="{{ $user->id }}">
+                                        @if($user->photo)
+                                            <img src="{{ asset('storage/' . $user->photo) }}" alt="Photo" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                                        @else
+                                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px;">
+                                                {{ strtoupper(substr($user->first_name, 0, 1) . substr($user->name, 0, 1)) }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <span class="badge bg-{{ match($user->status->value) {
+                                        'ACTIVE' => 'success',
+                                        'PENDING' => 'warning',
+                                        'INACTIVE' => 'secondary',
+                                        'SUSPENDED' => 'danger',
+                                        default => 'primary'
+                                    } }}">
+                                        {{ $user->status->label() }}
+                                    </span>
+                                </div>
+                                <div class="mb-3">
+                                    <h6 class="fw-bold mb-1">{{ $user->first_name }} {{ $user->name }}</h6>
+                                    <div class="text-muted fs-13"><i class="mdi mdi-email-outline me-1"></i>{{ $user->email }}</div>
+                                    <div class="text-muted fs-13"><i class="mdi mdi-phone-outline me-1"></i>{{ $user->phone }}</div>
+                                </div>
+                                <div class="d-flex gap-2 flex-wrap border-top pt-3">
+                                    <a href="{{ route('admin.users.permissions.edit', $user) }}" class="btn btn-sm btn-outline-warning flex-grow-1" title="Permissions">
+                                        <i class="mdi mdi-key me-1"></i>Perms
+                                    </a>
+                                    <a href="{{ route('admin.users.show', $user) }}" class="btn btn-sm btn-info flex-grow-1" title="Voir">
+                                        <i class="mdi mdi-eye me-1"></i>Voir
+                                    </a>
+                                    <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-primary flex-grow-1" title="Modifier">
+                                        <i class="mdi mdi-pencil me-1"></i>Modif
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger flex-grow-1" onclick="confirmDelete({{ $user->id }})" title="Supprimer">
+                                        <i class="mdi mdi-trash-can"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        @empty
+                        <div class="text-center py-4 text-muted">
+                            <i class="mdi mdi-account-search fs-24 d-block mb-2"></i>
+                            Aucun membre trouvé.
+                        </div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
             <div class="card-footer">

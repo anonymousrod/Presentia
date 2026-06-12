@@ -62,7 +62,7 @@
     <!-- Left Column: Activity Details -->
     <div class="col-lg-8">
         <div class="card shadow-sm border-0 mb-4">
-            <div class="card-body p-4">
+            <div class="card-body p-3 p-md-4">
                 <div class="d-flex align-items-center mb-4">
                     <div class="flex-grow-1">
                         <span class="badge bg-soft-info text-info fs-12 uppercase p-2 px-3 rounded-pill">{{ $activity->type->label() }}</span>
@@ -196,7 +196,7 @@
                         <i class="mdi mdi-clipboard-check-outline me-2"></i>Gestion des Présences
                     </h5>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-3 p-md-4">
                     <p class="text-muted fs-13">
                         En tant que chef de groupe ou administrateur, vous pouvez gérer les présences en temps réel pour cette activité.
                     </p>
@@ -212,7 +212,7 @@
                 <h5 class="card-title mb-0 fw-bold text-primary"><i class="mdi mdi-cog-outline me-2"></i>Mon Inscription</h5>
             </div>
             
-            <div class="card-body p-4">
+            <div class="card-body p-3 p-md-4">
                 <!-- Current status card indicator -->
                 <div class="mb-4 text-center p-3 rounded-3 
                     @if(!$myRegistration) bg-soft-secondary text-secondary

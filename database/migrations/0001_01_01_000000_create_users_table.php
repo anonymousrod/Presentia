@@ -18,7 +18,17 @@ return new class () extends Migration {
                   ->default('PENDING')
                   ->index();
             $table->string('photo')->nullable();
+            $table->string('cover_photo')->nullable();
             $table->date('birth_date')->nullable();
+            
+            // Profil Complété
+            $table->string('education_field')->nullable();
+            $table->string('professional_status')->nullable();
+            $table->string('current_profession')->nullable();
+            $table->string('education_level')->nullable();
+            $table->string('residence_municipality')->nullable();
+            $table->string('residence_neighborhood')->nullable();
+
             $table->unsignedInteger('qr_version')->default(1);
             $table->rememberToken();
             $table->timestamps();

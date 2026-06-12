@@ -35,7 +35,7 @@ class ActivityController extends Controller
             $query->where('status', $request->status);
         }
 
-        $activities = $query->orderBy('start_time', 'desc')->paginate(10);
+        $activities = $query->orderBy('start_time', 'desc')->paginate(10)->withQueryString();
 
         return view('admin.activities.index', compact('activities'));
     }

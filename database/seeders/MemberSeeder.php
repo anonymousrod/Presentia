@@ -75,6 +75,30 @@ class MemberSeeder extends Seeder
             $user->syncRoles(['Jeune']);
         }
 
+        // 3. Génération de membres supplémentaires avec Faker pour atteindre au moins 100 utilisateurs
+        $faker = \Faker\Factory::create('fr_FR');
+        $hashedPassword = Hash::make('Password@1234!');
+        for ($i = 1; $i <= 90; $i++) {
+            $email = "jeune_fake{$i}@eber.org";
+            $user = User::firstOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $faker->lastName(),
+                    'first_name' => $faker->firstName(),
+                    'phone' => '+229' . $faker->numberBetween(90000000, 99999999),
+                    'password' => $hashedPassword,
+                    'status' => UserStatus::ACTIVE,
+                ]
+            );
+
+            // Assign roles: 20 of them Chef de groupe and the rest are Jeune
+            if ($i <= 20) {
+                $user->syncRoles(['Jeune', 'Chef de groupe']);
+            } else {
+                $user->syncRoles(['Jeune']);
+            }
+        }
+
         $this->command->info('✅ Chefs de groupe et jeunes créés avec succès !');
     }
 }

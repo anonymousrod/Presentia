@@ -46,6 +46,13 @@ Route::middleware(['auth'])->group(function () {
     Route::match(['get', 'post'], 'attendance/validate', [App\Http\Controllers\AttendanceController::class, 'validate'])
         ->name('attendance.validate')
         ->middleware('signed');
+
+    // Profile & Settings
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile', [App\Http\Controllers\ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/profile/avatar', [App\Http\Controllers\ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+    Route::post('/profile/cover', [App\Http\Controllers\ProfileController::class, 'updateCover'])->name('profile.cover');
 });
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {

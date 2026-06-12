@@ -215,6 +215,10 @@ class RegistrationController extends Controller
      */
     protected function authorizeVisibility(Activity $activity, $user)
     {
+        if ($user && $user->hasRole('Administrateur')) {
+            return;
+        }
+
         if ($activity->visibility === \App\Enums\ActivityVisibility::ALL) {
             return;
         }
