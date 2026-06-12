@@ -48,13 +48,19 @@
         <!--end col-->
         <div class="col-12 col-lg-auto order-last order-lg-0">
             <div class="row text text-white-50 text-center">
-                <div class="col-lg-6 col-6">
+                <div class="col-lg-4 col-4">
+                    <div class="p-2">
+                        <h4 class="text-white mb-1">{{ $user->groups()->count() }}</h4>
+                        <p class="fs-14 mb-0">Groupes</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-4">
                     <div class="p-2">
                         <h4 class="text-white mb-1">{{ $user->registrations()->count() }}</h4>
                         <p class="fs-14 mb-0">Inscriptions</p>
                     </div>
                 </div>
-                <div class="col-lg-6 col-6">
+                <div class="col-lg-4 col-4">
                     <div class="p-2">
                         <h4 class="text-white mb-1">{{ $user->attendances()->count() }}</h4>
                         <p class="fs-14 mb-0">Présences</p>
@@ -132,6 +138,69 @@
                 <p class="text-muted mt-2 mb-0 fs-13">Complétez toutes vos informations pour atteindre 100%.</p>
             </div>
         </div>
+
+        <!-- Card: Académique & Pro -->
+        <div class="card ribbon-box border shadow-none mb-4">
+            <div class="card-body">
+                <div class="ribbon ribbon-success round-shape">Académique & Pro</div>
+                <div class="mt-4">
+                    <ul class="list-unstyled vstack gap-2 mb-0">
+                        <li>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 avatar-xs">
+                                    <div class="avatar-title rounded bg-secondary-subtle text-secondary">
+                                        <i class="ri-book-open-line"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1 fs-14">Niveau d'études</h6>
+                                    <p class="text-muted mb-0">{{ $user->education_level ?? 'Non renseigné' }}</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 avatar-xs">
+                                    <div class="avatar-title rounded bg-secondary-subtle text-secondary">
+                                        <i class="ri-microscope-line"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1 fs-14">Domaine d'études</h6>
+                                    <p class="text-muted mb-0">{{ $user->education_field ?? 'Non renseigné' }}</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 avatar-xs">
+                                    <div class="avatar-title rounded bg-warning-subtle text-warning">
+                                        <i class="ri-briefcase-line"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1 fs-14">Statut professionnel</h6>
+                                    <p class="text-muted mb-0">{{ $user->professional_status ?? 'Non renseigné' }}</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 avatar-xs">
+                                    <div class="avatar-title rounded bg-warning-subtle text-warning">
+                                        <i class="ri-building-4-line"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1 fs-14">Profession actuelle</h6>
+                                    <p class="text-muted mb-0">{{ $user->current_profession ?? 'Non renseigné' }}</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
     <!--end col-->
     
@@ -145,6 +214,16 @@
                     <li class="nav-item">
                         <a class="nav-link {{ !$showPasswordTab ? 'active' : '' }}" data-bs-toggle="tab" href="#personalDetails" role="tab">
                             <i class="fas fa-home"></i> Informations Personnelles
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#groups" role="tab">
+                            <i class="fas fa-users"></i> Mes Groupes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#activities" role="tab">
+                            <i class="fas fa-calendar-check"></i> Mes Activités
                         </a>
                     </li>
                     <li class="nav-item">
@@ -294,6 +373,132 @@
                         </form>
                     </div>
                     <!--end tab-pane-->
+
+                    <div class="tab-pane" id="groups" role="tabpanel">
+                        <h5 class="card-title mb-4">Mes Groupes d'appartenance</h5>
+                        <div class="table-responsive table-card">
+                            <table class="table table-borderless table-nowrap align-middle mb-0">
+                                <thead class="table-light text-muted">
+                                    <tr>
+                                        <th scope="col">Nom du groupe</th>
+                                        <th scope="col">Rôle</th>
+                                        <th scope="col">Date d'adhésion</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $memberGroups = $user->groups->keyBy('id');
+                                        $ledGroups = $user->ledGroups->keyBy('id');
+                                        $allGroups = $memberGroups->merge($ledGroups);
+                                    @endphp
+
+                                    @forelse($allGroups as $group)
+                                    @php
+                                        $isLeader = $ledGroups->has($group->id);
+                                        $isMember = $memberGroups->has($group->id);
+                                        
+                                        // Get pivot from memberGroups collection since merge might overwrite with ledGroups (which lacks pivot)
+                                        $originalGroup = $memberGroups->get($group->id);
+                                        $joinedAt = $originalGroup && $originalGroup->pivot && $originalGroup->pivot->joined_at 
+                                                    ? \Carbon\Carbon::parse($originalGroup->pivot->joined_at)->format('d M Y') 
+                                                    : '-';
+                                    @endphp
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-xs me-2">
+                                                    <div class="avatar-title bg-primary-subtle text-primary rounded-circle fs-16">
+                                                        {{ substr($group->name, 0, 1) }}
+                                                    </div>
+                                                </div>
+                                                <h6 class="fs-14 mb-0">{{ $group->name }}</h6>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if($isLeader)
+                                                <span class="badge bg-success-subtle text-success">Leader</span>
+                                            @endif
+                                            @if($isMember && !$isLeader)
+                                                <span class="badge bg-secondary-subtle text-secondary">Membre</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $joinedAt }}</td>
+                                        <td>
+                                            <a href="{{ route('admin.groups.show', $group->id) }}" class="btn btn-sm btn-soft-info" data-bs-toggle="tooltip" title="Voir le groupe">
+                                                <i class="ri-eye-fill"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center p-4">
+                                            <div class="text-muted">
+                                                <i class="ri-group-line display-5 text-muted mb-3 d-block"></i>
+                                                Vous n'appartenez à aucun groupe pour le moment.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--end tab-pane-->
+
+                    <div class="tab-pane" id="activities" role="tabpanel">
+                        <h5 class="card-title mb-4">Mes Présences aux Activités</h5>
+                        <div class="table-responsive table-card">
+                            <table class="table table-borderless table-nowrap align-middle mb-0">
+                                <thead class="table-light text-muted">
+                                    <tr>
+                                        <th scope="col">Activité</th>
+                                        <th scope="col">Date scannée</th>
+                                        <th scope="col">Statut</th>
+                                        <th scope="col">Source</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $attendances = $user->attendances()->with('activity')->orderBy('scanned_at', 'desc')->get();
+                                    @endphp
+                                    @forelse($attendances as $attendance)
+                                    <tr>
+                                        <td class="text-wrap" style="max-width: 250px;">
+                                            <h6 class="fs-14 mb-0">{{ $attendance->activity->title ?? 'Activité inconnue' }}</h6>
+                                            <p class="text-muted fs-12 mb-0">{{ $attendance->activity?->start_date?->format('d M Y') ?? '' }}</p>
+                                        </td>
+                                        <td>{{ $attendance->scanned_at?->format('d M Y à H:i') ?? '-' }}</td>
+                                        <td>
+                                            @if($attendance->status->value === 'PRESENT')
+                                                <span class="badge bg-success-subtle text-success"><i class="ri-check-line align-bottom"></i> Présent</span>
+                                            @elseif($attendance->status->value === 'ABSENT')
+                                                <span class="badge bg-danger-subtle text-danger"><i class="ri-close-line align-bottom"></i> Absent</span>
+                                            @elseif($attendance->status->value === 'LATE')
+                                                <span class="badge bg-warning-subtle text-warning"><i class="ri-time-line align-bottom"></i> En retard</span>
+                                            @else
+                                                <span class="badge bg-secondary-subtle text-secondary">{{ $attendance->status->label() }}</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-body">{{ $attendance->scan_source ?? 'N/A' }}</span>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center p-4">
+                                            <div class="text-muted">
+                                                <i class="ri-calendar-event-line display-5 text-muted mb-3 d-block"></i>
+                                                Aucune présence enregistrée.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--end tab-pane-->
                     
                     <div class="tab-pane {{ $showPasswordTab ? 'active' : '' }}" id="changePassword" role="tabpanel">
                         @if (session('status') === 'password-updated')
@@ -345,4 +550,20 @@
     <!--end col-->
 </div>
 <!--end row-->
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var hash = window.location.hash;
+        if (hash) {
+            var triggerEl = document.querySelector('ul.nav a[href="' + hash + '"]');
+            if (triggerEl) {
+                var tab = new bootstrap.Tab(triggerEl);
+                tab.show();
+            }
+        }
+    });
+</script>
+@endpush
+
 @endsection

@@ -114,31 +114,15 @@
                                 </ul>
                             </div>
                         </li>
-                        @elseif(auth()->check())
-                            @if(auth()->user()->hasRole('Chef de groupe'))
-                                @php
-                                    $firstLedGroup = auth()->user()->ledGroups()->first();
-                                @endphp
-                                @if($firstLedGroup)
-                                <li class="nav-item">
-                                    <a class="nav-link menu-link" href="{{ route('admin.groups.show', $firstLedGroup) }}">
-                                        <i class="mdi mdi-account-group-outline"></i> <span>Mon Groupe</span>
-                                    </a>
-                                </li>
-                                @endif
-                            @elseif(auth()->user()->hasRole('Jeune'))
-                                @php
-                                    $firstGroup = auth()->user()->groups()->wherePivotNull('left_at')->first();
-                                @endphp
-                                @if($firstGroup)
-                                <li class="nav-item">
-                                    <a class="nav-link menu-link" href="{{ route('admin.groups.show', $firstGroup) }}">
-                                        <i class="mdi mdi-account-group-outline"></i> <span>Mon Groupe</span>
-                                    </a>
-                                </li>
-                                @endif
-                            @endif
                         @endif
+
+                        <!-- @if(auth()->check())
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{{ route('profile.edit') }}#groups">
+                                <i class="mdi mdi-account-group-outline"></i> <span>Mes Groupes</span>
+                            </a>
+                        </li>
+                        @endif -->
 
                         {{-- 5. Gestion des membres --}}
                         @if(auth()->check() && auth()->user()->can('manage-users'))

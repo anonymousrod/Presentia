@@ -39,7 +39,7 @@
                 </div>
             </div>
             <div class="d-flex gap-2 flex-shrink-0">
-                <a href="{{ route('admin.groups.index') }}" class="btn btn-sm btn-outline-secondary px-3" style="border-radius: 0.5rem;">
+                <a href="javascript:history.back()" class="btn btn-sm btn-outline-secondary px-3" style="border-radius: 0.5rem;">
                     <i class="mdi mdi-arrow-left me-1"></i>Retour
                 </a>
                 @can('update', $group)
