@@ -93,7 +93,7 @@ class GroupSeeder extends Seeder
         for ($i = 1; $i <= 27; $i++) {
             $leader = $leaders->get($i - 1) ?? $chef1;
             $category = $categories[array_rand($categories)];
-            
+
             $group = Group::firstOrCreate(
                 ['name' => "Groupe de District {$i}"],
                 [

@@ -219,7 +219,7 @@ class ActivitySeeder extends Seeder
             $responsible = $allChefs->isNotEmpty() ? $allChefs->random() : $chef1;
             $type = $activityTypes[array_rand($activityTypes)];
             $status = $activityStatuses[array_rand($activityStatuses)];
-            
+
             // 70% chance of being PUBLISHED
             if (rand(1, 10) <= 7) {
                 $status = ActivityStatus::PUBLISHED;

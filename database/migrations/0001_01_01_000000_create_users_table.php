@@ -20,7 +20,7 @@ return new class () extends Migration {
             $table->string('photo')->nullable();
             $table->string('cover_photo')->nullable();
             $table->date('birth_date')->nullable();
-            
+
             // Profil Complété
             $table->string('education_field')->nullable();
             $table->string('professional_status')->nullable();
