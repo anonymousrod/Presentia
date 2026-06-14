@@ -20,12 +20,7 @@ class GroupSeeder extends Seeder
         // Récupérer les jeunes
         $jeunes = User::whereIn('email', [
             'jeune1@eber.org',
-            'jeune2@eber.org',
-            'jeune3@eber.org',
-            'jeune4@eber.org',
-            'jeune5@eber.org',
-            'jeune6@eber.org',
-            'jeune7@eber.org'
+            'jeune2@eber.org'
         ])->orderBy('id', 'asc')->get();
 
         if (!$chef1 || !$chef2 || !$chef3 || $jeunes->isEmpty()) {
@@ -61,63 +56,50 @@ class GroupSeeder extends Seeder
             ]
         );
 
+        $groupD = Group::firstOrCreate(
+            ['name' => 'Groupe Cadets'],
+            [
+                'description' => 'Groupe des jeunes cadets.',
+                'category' => 'Cadets',
+                'leader_id' => $chef1->id,
+            ]
+        );
+
+        $groupE = Group::firstOrCreate(
+            ['name' => 'Groupe Poussins'],
+            [
+                'description' => 'Groupe des enfants.',
+                'category' => 'Poussins',
+                'leader_id' => $chef2->id,
+            ]
+        );
+
         // 2. Assigner les membres aux groupes
-        // Group A members : Paul (chef), Jean (0), Alice (1), Emma (4)
         $groupA->members()->syncWithoutDetaching([
             $chef1->id => ['joined_at' => now()],
             $jeunes[0]->id => ['joined_at' => now()],
             $jeunes[1]->id => ['joined_at' => now()],
-            $jeunes[4]->id => ['joined_at' => now()],
         ]);
 
-        // Group B members : Sarah (chef), Bob (2), Charlie (3), Emma (4)
         $groupB->members()->syncWithoutDetaching([
             $chef2->id => ['joined_at' => now()],
-            $jeunes[2]->id => ['joined_at' => now()],
-            $jeunes[3]->id => ['joined_at' => now()],
-            $jeunes[4]->id => ['joined_at' => now()],
+            $jeunes[0]->id => ['joined_at' => now()],
         ]);
 
-        // Group C members : Marc (chef), Julie (5)
         $groupC->members()->syncWithoutDetaching([
             $chef3->id => ['joined_at' => now()],
-            $jeunes[5]->id => ['joined_at' => now()],
+            $jeunes[1]->id => ['joined_at' => now()],
         ]);
 
-        // 3. Création de 27 groupes supplémentaires pour avoir au moins 30 groupes
-        $leaders = User::role('Chef de groupe')
-            ->whereNotIn('email', ['chef1@eber.org', 'chef2@eber.org', 'chef3@eber.org'])
-            ->get();
+        $groupD->members()->syncWithoutDetaching([
+            $chef1->id => ['joined_at' => now()],
+            $jeunes[0]->id => ['joined_at' => now()],
+        ]);
 
-        $categories = ['Flambeaux', 'Claires', 'Aînés', 'Cadets', 'Poussins'];
-        for ($i = 1; $i <= 27; $i++) {
-            $leader = $leaders->get($i - 1) ?? $chef1;
-            $category = $categories[array_rand($categories)];
-
-            $group = Group::firstOrCreate(
-                ['name' => "Groupe de District {$i}"],
-                [
-                    'description' => "Description pour le groupe de district {$i} de catégorie {$category}.",
-                    'category' => $category,
-                    'leader_id' => $leader->id,
-                ]
-            );
-
-            // Assigner des membres au hasard
-            $randomJeunes = User::role('Jeune')
-                ->inRandomOrder()
-                ->limit(rand(5, 12))
-                ->pluck('id')
-                ->toArray();
-
-            $syncData = [];
-            foreach ($randomJeunes as $jeuneId) {
-                $syncData[$jeuneId] = ['joined_at' => now()->subDays(rand(1, 100))];
-            }
-            $syncData[$leader->id] = ['joined_at' => now()->subDays(100)];
-
-            $group->members()->syncWithoutDetaching($syncData);
-        }
+        $groupE->members()->syncWithoutDetaching([
+            $chef2->id => ['joined_at' => now()],
+            $jeunes[1]->id => ['joined_at' => now()],
+        ]);
 
         $this->command->info('✅ Groupes créés et membres assignés avec succès !');
     }

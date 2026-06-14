@@ -36,7 +36,7 @@ class GroupController extends Controller
             });
         }
 
-        $groups = $query->orderBy('name')->paginate(15)->withQueryString();
+        $groups = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
 
         return view('admin.groups.index', compact('groups'));
     }

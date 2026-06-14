@@ -84,7 +84,7 @@ class ActivityController extends Controller
             }
         }
 
-        $activities = $query->orderBy('start_time', 'asc')->paginate(10)->withQueryString();
+        $activities = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         // Get all user's registrations to show registration status
         $myRegistrations = $user->registrations()

@@ -38,7 +38,7 @@ class UserController extends Controller
         }
 
         // Pagination
-        $users = $query->paginate(20)->withQueryString();
+        $users = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
 
         return view('admin.users.index', compact('users'));
     }
