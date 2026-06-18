@@ -43,7 +43,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Gate manage-users requise pour la protection des routes d'administration
         \Illuminate\Support\Facades\Gate::define('manage-users', function ($user) {
-            return $user->hasRole('Administrateur') 
+            return $user->hasRole('Administrateur')
                 || $user->hasPermissionTo('member.view')
                 || $user->hasPermissionTo('member.create')
                 || $user->hasPermissionTo('member.edit');
