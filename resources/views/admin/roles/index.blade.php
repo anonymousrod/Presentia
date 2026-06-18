@@ -76,9 +76,11 @@
                     <div class="d-flex align-items-center">
                         <h5 class="card-title mb-0 flex-grow-1">Liste des Rôles</h5>
                         <div class="flex-shrink-0">
+                            @can('role.manage')
                             <a href="{{ route('admin.roles.create') }}" class="btn btn-success add-btn">
                                 <i class="ri-add-line align-bottom me-1"></i> Nouveau rôle
                             </a>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -163,6 +165,7 @@
                                                 </a>
                                             </li>
                                             @unless(in_array($role->name, ['Administrateur']))
+                                            @can('role.manage')
                                             <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Modifier">
                                                 <a href="{{ route('admin.roles.edit', $role) }}" class="text-primary d-inline-block edit-item-btn">
                                                     <i class="ri-pencil-fill fs-16"></i>
@@ -175,6 +178,7 @@
                                                     <i class="ri-delete-bin-5-fill fs-16"></i>
                                                 </a>
                                             </li>
+                                            @endcan
                                             @endunless
                                         </ul>
                                     </td>
@@ -264,6 +268,7 @@
                                             <i class="ri-eye-fill me-1"></i>Voir
                                         </a>
                                         @unless(in_array($role->name, ['Administrateur']))
+                                        @can('role.manage')
                                         <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-primary flex-grow-1" title="Modifier">
                                             <i class="ri-pencil-fill me-1"></i>Modifier
                                         </a>
@@ -271,6 +276,7 @@
                                                 @click="deleteTarget = '{{ route('admin.roles.destroy', $role) }}'; deleteName = '{{ $role->name }}'" title="Supprimer">
                                             <i class="ri-delete-bin-5-fill me-1"></i>Supprimer
                                         </button>
+                                        @endcan
                                         @endunless
                                     </div>
                                 </div>

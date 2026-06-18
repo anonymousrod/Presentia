@@ -21,6 +21,8 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', User::class);
+
         $query = User::query();
 
         // Recherche textuelle
@@ -48,6 +50,7 @@ class UserController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', User::class);
         return view('admin.users.create');
     }
 
@@ -56,6 +59,8 @@ class UserController extends Controller
      */
     public function store(CreateUserRequest $request)
     {
+        $this->authorize('create', User::class);
+
         $tempPassword = Str::random(10);
 
         $user = new User([
@@ -80,6 +85,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        $this->authorize('view', $user);
         return view('admin.users.show', compact('user'));
     }
 
@@ -88,6 +94,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
         return view('admin.users.edit', compact('user'));
     }
 
@@ -96,6 +103,8 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
+        $this->authorize('update', $user);
+
         $data = $request->validated();
 
         // Traitement de la photo avec intervention/image
@@ -127,6 +136,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
+
         if ($user->attendances()->count() > 0 || $user->registrations()->count() > 0) {
             // Soft delete
             $user->delete();
@@ -146,6 +157,8 @@ class UserController extends Controller
     public function restore($id)
     {
         $user = User::withTrashed()->findOrFail($id);
+        $this->authorize('restore', $user);
+
         $user->restore();
 
         return redirect()->route('admin.users.index')
@@ -157,6 +170,8 @@ class UserController extends Controller
      */
     public function bulkUpdateStatus(Request $request)
     {
+        $this->authorize('update', User::class);
+
         $request->validate([
             'user_ids' => 'required|array',
             'user_ids.*' => 'exists:users,id',
@@ -173,6 +188,7 @@ class UserController extends Controller
      */
     public function export(Request $request)
     {
+        $this->authorize('export', User::class);
         $query = User::with('roles', 'groups')->orderBy('name');
 
         $statusFilter = null;

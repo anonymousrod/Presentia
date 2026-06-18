@@ -15,6 +15,8 @@ class QrCodeController extends Controller
      */
     public function generate(Activity $activity)
     {
+        $this->authorize('qrcode.generate');
+
         $expires = $activity->end_time;
 
         $url = URL::temporarySignedRoute(
@@ -35,6 +37,8 @@ class QrCodeController extends Controller
      */
     public function revoke(Activity $activity)
     {
+        $this->authorize('qrcode.revoke');
+
         $activity->increment('qr_version');
 
         session()->forget("activity_qr_url_{$activity->id}");
@@ -49,6 +53,8 @@ class QrCodeController extends Controller
      */
     public function downloadPdf(Activity $activity)
     {
+        $this->authorize('qrcode.generate');
+
         $url = session("activity_qr_url_{$activity->id}");
 
         if (!$url) {

@@ -85,10 +85,11 @@
                         </li>
                     </ul>
                     <div class="flex-shrink-0 d-flex gap-2 mt-3 mt-sm-0">
+                        @can('role.manage')
                         <a href="{{ route('admin.users.permissions.edit', $user) }}" class="btn btn-warning w-100 w-sm-auto">
                             <i class="ri-key-line align-bottom"></i> Permissions
                         </a>
-                       
+                        @endcan
                     </div>
                 </div>
                 <!-- Tab panes -->

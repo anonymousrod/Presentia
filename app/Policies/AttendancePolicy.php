@@ -79,12 +79,12 @@ class AttendancePolicy
      */
     public function validateManual(User $user, Attendance $attendance): Response
     {
-        if ($user->can(PermissionEnum::ATTENDANCE_VIEW->value) && $user->can(PermissionEnum::ATTENDANCE_VALIDATE_MANUAL->value)) {
+        if ($user->can(PermissionEnum::ATTENDANCE_VIEW->value) && ($user->can(PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value) || $user->can(PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_OWN->value))) {
             return Response::allow();
         }
 
         // Règle contextuelle : le chef de groupe valide uniquement pour son groupe
-        if ($user->can(PermissionEnum::ATTENDANCE_VALIDATE_MANUAL->value)) {
+        if ($user->can(PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value) || $user->can(PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_OWN->value)) {
             $memberBelongsToLeadersGroup = $user->ledGroups()
                 ->whereHas('members', fn ($q) => $q->where('users.id', $attendance->user_id))
                 ->exists();

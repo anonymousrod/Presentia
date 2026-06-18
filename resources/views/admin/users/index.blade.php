@@ -5,18 +5,22 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestion des membres</h2>
         <div class="d-flex gap-2">
+            @can('member.export')
             <a href="{{ route('admin.users.export', request()->all()) }}"
                class="btn btn-outline-primary d-flex align-items-center gap-2"
                style="border-radius: 0.5rem;">
                 <i class="mdi mdi-file-pdf-outline fs-16"></i>
                 <span>Exporter PDF</span>
             </a>
+            @endcan
+            @can('member.create')
             <a href="{{ route('admin.users.create') }}"
                class="btn btn-primary d-flex align-items-center gap-2"
                style="border-radius: 0.5rem;">
                 <i class="mdi mdi-plus fs-16"></i>
                 <span>Nouveau membre</span>
             </a>
+            @endcan
         </div>
     </div>
 
@@ -57,6 +61,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Liste des membres</h5>
                 <div class="d-flex align-items-center">
+                    @can('member.edit')
                     <select name="status" class="form-select form-select-sm me-2" required>
                         <option value="">Actions en masse...</option>
                         <option value="ACTIVE">Activer</option>
@@ -64,6 +69,7 @@
                         <option value="SUSPENDED">Suspendre</option>
                     </select>
                     <button type="submit" class="btn btn-sm btn-outline-primary">Appliquer</button>
+                    @endcan
                 </div>
             </div>
             <div class="card-body p-0">
@@ -73,7 +79,9 @@
                         <thead class="table-light">
                             <tr>
                                 <th>
+                                    @can('member.edit')
                                     <input class="form-check-input" type="checkbox" id="selectAll">
+                                    @endcan
                                 </th>
                                 <th>Photo</th>
                                 <th>Nom complet</th>
@@ -87,7 +95,9 @@
                             @forelse($users as $user)
                             <tr>
                                 <td>
+                                    @can('member.edit')
                                     <input class="form-check-input user-checkbox" type="checkbox" name="user_ids[]" value="{{ $user->id }}">
+                                    @endcan
                                 </td>
                                 <td>
                                     @if($user->photo)
@@ -118,18 +128,24 @@
                                 </td>
                                 <td>{{ $user->created_at->format('d/m/Y') }}</td>
                                 <td class="text-end">
+                                    @can('role.manage')
                                     <a href="{{ route('admin.users.permissions.edit', $user) }}" class="btn btn-sm btn-outline-warning" title="Permissions">
                                         <i class="mdi mdi-key"></i>
                                     </a>
+                                    @endcan
                                     <a href="{{ route('admin.users.show', $user) }}" class="btn btn-sm btn-info" title="Voir">
                                         <i class="mdi mdi-eye"></i>
                                     </a>
+                                    @can('member.edit')
                                     <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-primary" title="Modifier">
                                         <i class="mdi mdi-pencil"></i>
                                     </a>
+                                    @endcan
+                                    @can('member.delete')
                                     <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $user->id }})" title="Supprimer">
                                         <i class="mdi mdi-trash-can"></i>
                                     </button>
+                                    @endcan
                                 </td>
                             </tr>
                             @empty
@@ -149,7 +165,9 @@
                             <div class="card-body p-3">
                                 <div class="d-flex align-items-center justify-content-between mb-3">
                                     <div class="d-flex align-items-center gap-2">
+                                        @can('member.edit')
                                         <input class="form-check-input user-checkbox" type="checkbox" name="user_ids[]" value="{{ $user->id }}">
+                                        @endcan
                                         @if($user->photo)
                                             <img src="{{ asset('storage/' . $user->photo) }}" alt="Photo" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
                                         @else
@@ -174,18 +192,24 @@
                                     <div class="text-muted fs-13"><i class="mdi mdi-phone-outline me-1"></i>{{ $user->phone }}</div>
                                 </div>
                                 <div class="d-flex gap-2 flex-wrap border-top pt-3">
+                                    @can('role.manage')
                                     <a href="{{ route('admin.users.permissions.edit', $user) }}" class="btn btn-sm btn-outline-warning flex-grow-1" title="Permissions">
                                         <i class="mdi mdi-key me-1"></i>Perms
                                     </a>
+                                    @endcan
                                     <a href="{{ route('admin.users.show', $user) }}" class="btn btn-sm btn-info flex-grow-1" title="Voir">
                                         <i class="mdi mdi-eye me-1"></i>Voir
                                     </a>
+                                    @can('member.edit')
                                     <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-primary flex-grow-1" title="Modifier">
                                         <i class="mdi mdi-pencil me-1"></i>Modif
                                     </a>
+                                    @endcan
+                                    @can('member.delete')
                                     <button type="button" class="btn btn-sm btn-danger flex-grow-1" onclick="confirmDelete({{ $user->id }})" title="Supprimer">
                                         <i class="mdi mdi-trash-can"></i>
                                     </button>
+                                    @endcan
                                 </div>
                             </div>
                         </div>

@@ -78,6 +78,21 @@
 <div x-data="attendanceManager()" x-init="init()" class="row">
     <div class="col-12">
 
+        {{-- Message d'information sur la portée de validation --}}
+        @if(isset($validationScopeMessage) && $validationScopeMessage)
+        <div class="alert alert-{{ $validationScopeType }} border-0 mb-4 shadow-sm d-flex align-items-center gap-3 p-3" style="border-radius: 0.5rem;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                 style="width:40px; height:40px; background: rgba(var(--vz-{{ $validationScopeType }}-rgb), 0.2);">
+                <i class="mdi mdi-information-outline fs-20" style="color: var(--vz-{{ $validationScopeType }});"></i>
+            </div>
+            <div>
+                <p class="mb-0" style="font-size: 0.9rem;">
+                    {!! $validationScopeMessage !!}
+                </p>
+            </div>
+        </div>
+        @endif
+
         {{-- Bannière activité clôturée --}}
         <template x-if="isClosed">
             <div class="alert border-0 mb-4 shadow-sm d-flex align-items-center gap-3 p-4"

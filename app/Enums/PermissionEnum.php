@@ -36,16 +36,14 @@ enum PermissionEnum: string
     case ACTIVITY_VIEW    = 'activity.view';
     case ACTIVITY_CREATE  = 'activity.create';
     case ACTIVITY_EDIT    = 'activity.edit';
-    case ACTIVITY_PUBLISH = 'activity.publish';
-    case ACTIVITY_CANCEL  = 'activity.cancel';
-    case ACTIVITY_ARCHIVE = 'activity.archive';
 
     // ----------------------------------------------------------------
     // Présences
     // ----------------------------------------------------------------
     case ATTENDANCE_VIEW             = 'attendance.view';
     case ATTENDANCE_VIEW_OWN         = 'attendance.view_own';  // Chef : son groupe uniquement
-    case ATTENDANCE_VALIDATE_MANUAL  = 'attendance.validate_manual';
+    case ATTENDANCE_VALIDATE_MANUAL_ALL  = 'attendance.validate_manual_all';
+    case ATTENDANCE_VALIDATE_MANUAL_OWN  = 'attendance.validate_manual_own';
     case ATTENDANCE_SCAN_QR          = 'attendance.scan_qr';
 
     // ----------------------------------------------------------------
@@ -123,12 +121,10 @@ enum PermissionEnum: string
             self::ACTIVITY_VIEW            => 'Voir les activités',
             self::ACTIVITY_CREATE          => 'Créer une activité',
             self::ACTIVITY_EDIT            => 'Modifier une activité',
-            self::ACTIVITY_PUBLISH         => 'Publier une activité',
-            self::ACTIVITY_CANCEL          => 'Annuler une activité',
-            self::ACTIVITY_ARCHIVE         => 'Archiver une activité',
             self::ATTENDANCE_VIEW          => 'Voir toutes les présences',
             self::ATTENDANCE_VIEW_OWN      => 'Voir les présences de son groupe',
-            self::ATTENDANCE_VALIDATE_MANUAL => 'Valider manuellement une présence',
+            self::ATTENDANCE_VALIDATE_MANUAL_ALL => 'Valider manuellement la présence de tout le monde',
+            self::ATTENDANCE_VALIDATE_MANUAL_OWN => 'Valider manuellement la présence pour mon groupe',
             self::ATTENDANCE_SCAN_QR       => 'Scanner un QR code',
             self::REGISTRATION_CREATE      => 'S\'inscrire à une activité',
             self::REGISTRATION_EDIT_OWN    => 'Modifier sa propre inscription',

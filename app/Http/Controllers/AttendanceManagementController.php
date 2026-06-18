@@ -35,8 +35,8 @@ class AttendanceManagementController extends Controller
                       ->where('status', '!=', \App\Enums\RegistrationStatus::ABSENT_JUSTIFIED->value);
             })->whereNull('deleted_at');
 
-            // If the user is not an admin, filter to members of groups led by this user
-            if (!$user->hasRole('Administrateur')) {
+            // If the user does not have global validation permission, filter to members of groups led by this user
+            if (!$user->can(\App\Enums\PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value)) {
                 $ledGroupIds = $user->ledGroups()->pluck('groups.id')->toArray();
                 $membersQuery->whereHas('groups', function ($q) use ($ledGroupIds) {
                     $q->whereIn('groups.id', $ledGroupIds)
@@ -63,7 +63,7 @@ class AttendanceManagementController extends Controller
                   ->whereNull('left_at');
             });
         } else {
-            if (!$user->hasRole('Administrateur')) {
+            if (!$user->can(\App\Enums\PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value)) {
                 $ledGroupIds = $user->ledGroups()->pluck('groups.id')->toArray();
                 $allEligibleQuery->whereHas('groups', function ($q) use ($ledGroupIds) {
                     $q->whereIn('groups.id', $ledGroupIds)
@@ -76,7 +76,24 @@ class AttendanceManagementController extends Controller
         $existingMemberIds = $members->pluck('id')->toArray();
         $otherEligibleUsers = $allEligibleQuery->whereNotIn('id', $existingMemberIds)->get();
 
-        return view('activities.attendance', compact('activity', 'members', 'isClosed', 'otherEligibleUsers'));
+        // Determine validation scope message
+        $validationScopeMessage = '';
+        $validationScopeType = 'info'; // info, primary, warning
+
+        if ($activity->visibility_group_id) {
+            $validationScopeMessage = "Vous validez actuellement les présences pour le groupe spécifique associé à cette activité : <strong>{$activity->group->name}</strong>.";
+            $validationScopeType = 'primary';
+        } else {
+            if ($user->can(\App\Enums\PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value)) {
+                $validationScopeMessage = "Vous avez les droits globaux. Vous validez les présences pour <strong>TOUS les participants inscrits</strong> à cette activité globale.";
+                $validationScopeType = 'success';
+            } else {
+                $validationScopeMessage = "Vous validez les présences <strong>uniquement pour les membres de votre groupe</strong> inscrits à cette activité globale.";
+                $validationScopeType = 'info';
+            }
+        }
+
+        return view('activities.attendance', compact('activity', 'members', 'isClosed', 'otherEligibleUsers', 'validationScopeMessage', 'validationScopeType'));
     }
 
     /**
@@ -104,8 +121,8 @@ class AttendanceManagementController extends Controller
                 ->exists();
         } else {
             // Global or Role activity
-            if (Auth::user()->hasRole('Administrateur')) {
-                // Admin can manage any active user
+            if (Auth::user()->can(\App\Enums\PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value)) {
+                // Global permission can manage any active user
                 $belongs = User::where('id', $userId)->whereNull('deleted_at')->exists();
             } else {
                 // Chef de groupe can manage members of their led groups
@@ -181,8 +198,8 @@ class AttendanceManagementController extends Controller
                       ->where('status', '!=', \App\Enums\RegistrationStatus::ABSENT_JUSTIFIED->value);
             })->whereNull('deleted_at');
 
-            // If the user is not an admin, filter to members of groups led by this user
-            if (!$user->hasRole('Administrateur')) {
+            // If the user does not have global validation permission, filter to members of groups led by this user
+            if (!$user->can(\App\Enums\PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value)) {
                 $ledGroupIds = $user->ledGroups()->pluck('groups.id')->toArray();
                 $membersQuery->whereHas('groups', function ($q) use ($ledGroupIds) {
                     $q->whereIn('groups.id', $ledGroupIds)
@@ -235,7 +252,7 @@ class AttendanceManagementController extends Controller
                 ->exists();
         } else {
             // Global or Role activity
-            if (Auth::user()->hasRole('Administrateur')) {
+            if (Auth::user()->can(\App\Enums\PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value)) {
                 $belongs = User::where('id', $userId)->whereNull('deleted_at')->exists();
             } else {
                 $ledGroupIds = Auth::user()->ledGroups()->pluck('groups.id')->toArray();

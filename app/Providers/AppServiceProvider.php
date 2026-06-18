@@ -43,7 +43,18 @@ class AppServiceProvider extends ServiceProvider
 
         // Gate manage-users requise pour la protection des routes d'administration
         \Illuminate\Support\Facades\Gate::define('manage-users', function ($user) {
-            return $user->hasRole('Administrateur') || $user->hasPermissionTo('member.create');
+            return $user->hasRole('Administrateur') 
+                || $user->hasPermissionTo('member.view')
+                || $user->hasPermissionTo('member.create')
+                || $user->hasPermissionTo('member.edit');
+        });
+
+        // Gate access-activities requise pour la gestion des activités
+        \Illuminate\Support\Facades\Gate::define('access-activities', function ($user) {
+            return $user->hasRole('Administrateur')
+                || $user->hasPermissionTo('activity.view')
+                || $user->hasPermissionTo('activity.create')
+                || $user->hasPermissionTo('activity.edit');
         });
 
         // Gate access-group-management requise pour la gestion des groupes (Administrateurs ou Chefs de groupe)

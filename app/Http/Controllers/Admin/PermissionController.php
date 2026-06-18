@@ -23,6 +23,8 @@ class PermissionController extends Controller
      */
     public function editUserPermissions(User $user)
     {
+        $this->authorize('permission.manage');
+
         $permissions = Permission::orderBy('name')->get();
         $roles = Role::orderBy('name')->get();
 
@@ -56,6 +58,8 @@ class PermissionController extends Controller
      */
     public function updateUserPermissions(Request $request, User $user)
     {
+        $this->authorize('permission.manage');
+
         $data = $request->validate([
             'roles'         => ['nullable', 'array'],
             'roles.*'       => ['string', 'exists:roles,name'],

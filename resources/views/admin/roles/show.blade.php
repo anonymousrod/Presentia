@@ -83,7 +83,23 @@
                         <h5 class="card-title mb-0">Permissions Associées</h5>
                     </div>
                     <div class="card-body">
-                        @php use App\Enums\PermissionEnum; @endphp
+                        @php 
+                            use App\Enums\PermissionEnum; 
+                            $resourceTranslations = [
+                                'member' => 'Membres',
+                                'group' => 'Groupes',
+                                'activity' => 'Activités',
+                                'attendance' => 'Présences',
+                                'registration' => 'Inscriptions',
+                                'notification' => 'Notifications',
+                                'stats' => 'Statistiques',
+                                'report' => 'Rapports',
+                                'role' => 'Rôles',
+                                'permission' => 'Permissions',
+                                'audit' => 'Audit & Logs',
+                                'qrcode' => 'Codes QR'
+                            ];
+                        @endphp
 
                         <div class="row g-4">
                             @forelse($groupedPermissions as $resource => $permissions)
@@ -94,7 +110,7 @@
                                                 <i class="ri-stack-line"></i>
                                             </div>
                                         </div>
-                                        <h6 class="mb-0 text-uppercase fw-bold text-muted small letter-spacing-1">{{ $resource }}</h6>
+                                        <h6 class="mb-0 text-uppercase fw-bold text-muted small letter-spacing-1">{{ $resourceTranslations[$resource] ?? ucfirst($resource) }}</h6>
                                         <div class="flex-grow-1 border-top border-top-dashed ms-3 opacity-25"></div>
                                     </div>
                                     

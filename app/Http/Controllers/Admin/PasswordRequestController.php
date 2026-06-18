@@ -17,6 +17,8 @@ class PasswordRequestController extends Controller
      */
     public function index()
     {
+        $this->authorize('member.edit');
+
         $requests = PasswordResetRequest::with('user')
             ->where('status', 'PENDING')
             ->orderBy('created_at', 'desc')
@@ -30,6 +32,8 @@ class PasswordRequestController extends Controller
      */
     public function validateRequest(PasswordResetRequest $passwordResetRequest)
     {
+        $this->authorize('member.edit');
+
         if ($passwordResetRequest->status !== 'PENDING') {
             return back()->with('error', 'Cette demande a déjà été traitée ou a expiré.');
         }

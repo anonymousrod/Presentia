@@ -21,6 +21,8 @@ class ActivityController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Activity::class);
+
         $query = Activity::with(['responsible', 'group', 'role']);
 
         if ($request->filled('search')) {
@@ -45,6 +47,8 @@ class ActivityController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Activity::class);
+
         $responsibles = User::all();
         $groups = Group::all();
         $roles = Role::all();
@@ -57,6 +61,8 @@ class ActivityController extends Controller
      */
     public function store(StoreActivityRequest $request)
     {
+        $this->authorize('create', Activity::class);
+
         $activity = Activity::create($request->validated());
 
         if ($activity->status === ActivityStatus::PUBLISHED) {
@@ -72,8 +78,28 @@ class ActivityController extends Controller
      */
     public function show(Activity $activity)
     {
-        $activity->load(['responsible', 'group', 'role', 'registrations.user', 'attendances.user']);
-        return view('admin.activities.show', compact('activity'));
+        $this->authorize('view', $activity);
+        $user = auth()->user();
+        $listType = '';
+
+        if ($user->hasRole('Administrateur') || $user->can(\App\Enums\PermissionEnum::ATTENDANCE_VIEW->value)) {
+            $activity->load(['responsible', 'group', 'role', 'registrations.user.groups', 'attendances.user.groups']);
+            $listType = 'Globale';
+        } else {
+            // Filter attendances for user's own group
+            $ledGroupIds = $user->ledGroups()->pluck('groups.id')->toArray();
+            $activity->load(['responsible', 'group', 'role', 'registrations.user.groups']);
+            $activity->load(['attendances' => function ($query) use ($ledGroupIds) {
+                $query->whereHas('user.groups', function ($q) use ($ledGroupIds) {
+                    $q->whereIn('groups.id', $ledGroupIds);
+                });
+            }, 'attendances.user.groups']);
+            $listType = 'Mon Groupe';
+        }
+
+        $allGroups = \App\Models\Group::orderBy('name')->get();
+
+        return view('admin.activities.show', compact('activity', 'listType', 'allGroups'));
     }
 
     /**
@@ -81,6 +107,8 @@ class ActivityController extends Controller
      */
     public function downloadRegistrationsPdf(Activity $activity)
     {
+        $this->authorize('view', $activity);
+
         $activity->load(['responsible', 'group', 'role', 'registrations.user.groups']);
 
         // Filter valid registrations (non-waitlisted, status PRESENT or UNCERTAIN)
@@ -115,6 +143,8 @@ class ActivityController extends Controller
      */
     public function downloadAttendancePdf(Activity $activity)
     {
+        $this->authorize('view', $activity);
+
         $activity->load(['responsible', 'group', 'role', 'attendances.user.groups']);
 
         // Retrieve valid attendances (Present or Late or Excused or Absent)
@@ -147,6 +177,8 @@ class ActivityController extends Controller
      */
     public function edit(Activity $activity)
     {
+        $this->authorize('update', $activity);
+
         $responsibles = User::all();
         $groups = Group::all();
         $roles = Role::all();
@@ -159,6 +191,8 @@ class ActivityController extends Controller
      */
     public function update(UpdateActivityRequest $request, Activity $activity)
     {
+        $this->authorize('update', $activity);
+
         $oldStatus = $activity->status;
 
         $activity->update($request->validated());
@@ -177,6 +211,8 @@ class ActivityController extends Controller
      */
     public function destroy(Activity $activity)
     {
+        $this->authorize('delete', $activity);
+
         $activity->delete();
 
         return redirect()->route('admin.activities.index')

@@ -31,18 +31,24 @@ class ActivityController extends Controller
         $query = Activity::where('status', ActivityStatus::PUBLISHED);
 
         if ($request->get('manageable') == 1) {
-            if ($user->hasRole('Administrateur')) {
-                // Admins can manage all activities. We can optionally filter to group-restricted ones or show all.
-                // Let's show all published activities.
-            } else {
+            if ($user->hasRole('Administrateur') || $user->can(\App\Enums\PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value)) {
+                // Admins et ceux qui peuvent tout gérer voient tout
+            } elseif ($user->can(\App\Enums\PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_OWN->value)) {
                 $ledGroupIds = $user->ledGroups()->pluck('groups.id')->toArray();
-                $query->where(function ($q) use ($ledGroupIds) {
-                    $q->where('visibility', ActivityVisibility::ALL)
-                      ->orWhere(function ($sub) use ($ledGroupIds) {
-                          $sub->where('visibility', ActivityVisibility::GROUP)
-                              ->whereIn('visibility_group_id', $ledGroupIds);
-                      });
-                });
+                if (empty($ledGroupIds)) {
+                    // S'il n'est chef d'aucun groupe, il ne peut rien gérer
+                    $query->where('id', 0);
+                } else {
+                    $query->where(function ($q) use ($ledGroupIds) {
+                        $q->where('visibility', ActivityVisibility::ALL)
+                          ->orWhere(function ($sub) use ($ledGroupIds) {
+                              $sub->where('visibility', ActivityVisibility::GROUP)
+                                  ->whereIn('visibility_group_id', $ledGroupIds);
+                          });
+                    });
+                }
+            } else {
+                $query->where('id', 0);
             }
         } else {
             if (!$user->hasRole('Administrateur')) {

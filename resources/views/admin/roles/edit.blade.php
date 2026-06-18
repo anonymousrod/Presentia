@@ -87,7 +87,23 @@
                         <div class="border-top border-top-dashed pt-4 mt-4">
                             <h5 class="fs-15 mb-3">Attribution des Permissions <span class="badge bg-info-subtle text-info fs-11 ms-2">Groupées par ressource</span></h5>
                             
-                            @php use App\Enums\PermissionEnum; @endphp
+                            @php 
+                                use App\Enums\PermissionEnum; 
+                                $resourceTranslations = [
+                                    'member' => 'Membres',
+                                    'group' => 'Groupes',
+                                    'activity' => 'Activités',
+                                    'attendance' => 'Présences',
+                                    'registration' => 'Inscriptions',
+                                    'notification' => 'Notifications',
+                                    'stats' => 'Statistiques',
+                                    'report' => 'Rapports',
+                                    'role' => 'Rôles',
+                                    'permission' => 'Permissions',
+                                    'audit' => 'Audit & Logs',
+                                    'qrcode' => 'Codes QR'
+                                ];
+                            @endphp
 
                             <div class="accordion custom-accordionwithicon accordion-border-box" id="permissionsAccordion">
                                 @foreach($groupedPermissions as $resource => $permissions)
@@ -101,12 +117,34 @@
                                                 } else {
                                                     this.selected = [...this.all];
                                                 }
+                                            },
+                                            handleExclusive(value, checked) {
+                                                if (!checked) return;
+                                                
+                                                const exclusives = {
+                                                    'attendance.validate_manual_all': 'attendance.validate_manual_own',
+                                                    'attendance.validate_manual_own': 'attendance.validate_manual_all',
+                                                    'attendance.view': 'attendance.view_own',
+                                                    'attendance.view_own': 'attendance.view',
+                                                    'group.view': 'group.view_own',
+                                                    'group.view_own': 'group.view',
+                                                    'activity.view': 'activity.view_own',
+                                                    'activity.view_own': 'activity.view',
+                                                    'report.export_global': 'report.export_own_group',
+                                                    'report.export_own_group': 'report.export_global',
+                                                    'stats.view_global': 'stats.view_own_group',
+                                                    'stats.view_own_group': 'stats.view_global'
+                                                };
+
+                                                if (exclusives[value]) {
+                                                    this.selected = this.selected.filter(item => item !== exclusives[value]);
+                                                }
                                             }
                                          }">
                                         <h2 class="accordion-header" id="heading-{{ $resource }}">
                                             <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $resource }}" aria-expanded="false" aria-controls="collapse-{{ $resource }}">
                                                 <div class="d-flex align-items-center w-100 me-3">
-                                                    <span class="text-uppercase letter-spacing-1 fs-12">{{ $resource }}</span>
+                                                    <span class="text-uppercase letter-spacing-1 fs-12">{{ $resourceTranslations[$resource] ?? ucfirst($resource) }}</span>
                                                     <span class="badge bg-primary-subtle text-primary ms-2">{{ $permissions->count() }}</span>
                                                 </div>
                                             </button>
@@ -129,7 +167,8 @@
                                                                            name="permissions[]" 
                                                                            value="{{ $permission->name }}" 
                                                                            id="perm-{{ $permission->id }}"
-                                                                           x-model="selected">
+                                                                           x-model="selected"
+                                                                           @change="handleExclusive($event.target.value, $event.target.checked)">
                                                                     <label class="form-check-label ms-2 cursor-pointer" for="perm-{{ $permission->id }}">
                                                                         <span class="fs-13 fw-semibold d-block">
                                                                             {{ PermissionEnum::tryFrom($permission->name)?->label() ?? $permission->name }}

@@ -23,6 +23,11 @@ class GroupSeeder extends Seeder
             'jeune2@eber.org'
         ])->orderBy('id', 'asc')->get();
 
+        // Récupérer le bureau exécutif
+        $president = User::where('email', 'president@eber.org')->first();
+        $vp = User::where('email', 'vp@eber.org')->first();
+        $bureau = User::where('email', 'bureau@eber.org')->first();
+
         if (!$chef1 || !$chef2 || !$chef3 || $jeunes->isEmpty()) {
             $this->command->error('❌ Échec : Les utilisateurs nécessaires sont introuvables.');
             return;
@@ -89,6 +94,9 @@ class GroupSeeder extends Seeder
         $groupC->members()->syncWithoutDetaching([
             $chef3->id => ['joined_at' => now()],
             $jeunes[1]->id => ['joined_at' => now()],
+            $president->id => ['joined_at' => now()],
+            $vp->id => ['joined_at' => now()],
+            $bureau->id => ['joined_at' => now()],
         ]);
 
         $groupD->members()->syncWithoutDetaching([

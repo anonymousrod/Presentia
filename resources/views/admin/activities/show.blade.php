@@ -68,6 +68,7 @@
             <div class="card" x-data="{
                 search: '',
                 statusFilter: '',
+                groupFilter: '',
                 registrations: [
                     @foreach($activity->registrations as $reg)
                     {
@@ -77,7 +78,8 @@
                         date: '{{ $reg->created_at->format('d/m/Y H:i') }}',
                         status: '{{ $reg->is_waitlisted ? 'attente' : (($reg->status?->value ?? $reg->status) === 'PRESENT' ? 'inscrit' : (($reg->status?->value ?? $reg->status) === 'UNCERTAIN' ? 'incertain' : 'desinscrit')) }}',
                         justification: '{{ addslashes($reg->justification ?: '') }}',
-                        user_url: '{{ route('admin.users.show', $reg->user_id) }}'
+                        user_url: '{{ route('admin.users.show', $reg->user_id) }}',
+                        group_ids: [{{ $reg->user->groups->pluck('id')->join(',') }}]
                     },
                     @endforeach
                 ],
@@ -86,7 +88,8 @@
                         const matchesSearch = r.name.toLowerCase().includes(this.search.toLowerCase()) || 
                                               r.email.toLowerCase().includes(this.search.toLowerCase());
                         const matchesStatus = this.statusFilter === '' || r.status === this.statusFilter;
-                        return matchesSearch && matchesStatus;
+                        const matchesGroup = this.groupFilter === '' || r.group_ids.includes(parseInt(this.groupFilter));
+                        return matchesSearch && matchesStatus && matchesGroup;
                     });
                 }
             }">
@@ -104,12 +107,22 @@
                 <div class="card-body">
                     <!-- Filters row -->
                     <div class="row g-2 mb-3">
-                        <div class="col-md-7">
+                        <div class="col-md-{{ isset($listType) && $listType === 'Globale' ? '5' : '8' }}">
                             <div class="search-box position-relative">
                                 <input type="text" x-model="search" class="form-control bg-light border-light" placeholder="Rechercher un membre...">
                             </div>
                         </div>
+                        @if(isset($listType) && $listType === 'Globale')
                         <div class="col-6 col-md-3">
+                            <select x-model="groupFilter" class="form-select bg-light border-light">
+                                <option value="">Tous les groupes</option>
+                                @foreach($allGroups as $g)
+                                    <option value="{{ $g->id }}">{{ $g->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+                        <div class="col-6 col-md-2">
                             <select x-model="statusFilter" class="form-select bg-light border-light">
                                 <option value="">Tous les statuts</option>
                                 <option value="inscrit">Inscrit</option>
@@ -121,7 +134,7 @@
                             </select>
                         </div>
                         <div class="col-6 col-md-2">
-                            <button type="button" class="btn btn-soft-secondary w-100" @click="search = ''; statusFilter = '';">
+                            <button type="button" class="btn btn-soft-secondary w-100" @click="search = ''; statusFilter = ''; groupFilter = '';">
                                 Reset
                             </button>
                         </div>
@@ -213,9 +226,11 @@
             </div>
 
             <!-- Liste de présence -->
+            @if(auth()->user()->can('attendance.view') || auth()->user()->can('attendance.view_own'))
             <div class="card mt-4" x-data="{
                 search: '',
                 statusFilter: '',
+                groupFilter: '',
                 attendances: [
                     @foreach($activity->attendances as $att)
                     {
@@ -226,7 +241,8 @@
                         status: '{{ $att->status->value }}',
                         source: '{{ $att->scan_source }}',
                         note: '{{ addslashes($att->note ?: '') }}',
-                        user_url: '{{ route('admin.users.show', $att->user_id) }}'
+                        user_url: '{{ route('admin.users.show', $att->user_id) }}',
+                        group_ids: [{{ $att->user->groups->pluck('id')->join(',') }}]
                     },
                     @endforeach
                 ],
@@ -235,12 +251,18 @@
                         const matchesSearch = a.name.toLowerCase().includes(this.search.toLowerCase()) || 
                                               a.email.toLowerCase().includes(this.search.toLowerCase());
                         const matchesStatus = this.statusFilter === '' || a.status === this.statusFilter;
-                        return matchesSearch && matchesStatus;
+                        const matchesGroup = this.groupFilter === '' || a.group_ids.includes(parseInt(this.groupFilter));
+                        return matchesSearch && matchesStatus && matchesGroup;
                     });
                 }
             }">
                 <div class="card-header d-flex flex-column flex-md-row align-items-md-center gap-3">
-                    <h5 class="card-title mb-0 flex-grow-1">Liste de présence digitale</h5>
+                    <h5 class="card-title mb-0 flex-grow-1">
+                        Liste de présence digitale
+                        @if(isset($listType))
+                            <span class="badge {{ $listType === 'Globale' ? 'bg-primary' : 'bg-info' }} ms-2" style="font-size: 0.75rem;">{{ $listType }}</span>
+                        @endif
+                    </h5>
                     <div class="d-flex flex-wrap gap-2">
                         <span class="badge bg-success-subtle text-success border border-success border-opacity-25">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::PRESENT)->count() }} Présent(s)</span>
                         <span class="badge bg-warning-subtle text-warning border border-warning border-opacity-25">{{ $activity->attendances->where('status', \App\Enums\AttendanceStatus::LATE)->count() }} En retard</span>
@@ -251,12 +273,22 @@
                 <div class="card-body">
                     <!-- Filters row -->
                     <div class="row g-2 mb-3">
-                        <div class="col-md-7">
+                        <div class="col-md-{{ isset($listType) && $listType === 'Globale' ? '5' : '8' }}">
                             <div class="search-box position-relative">
                                 <input type="text" x-model="search" class="form-control bg-light border-light" placeholder="Rechercher un présent...">
                             </div>
                         </div>
+                        @if(isset($listType) && $listType === 'Globale')
                         <div class="col-6 col-md-3">
+                            <select x-model="groupFilter" class="form-select bg-light border-light">
+                                <option value="">Tous les groupes</option>
+                                @foreach($allGroups as $g)
+                                    <option value="{{ $g->id }}">{{ $g->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+                        <div class="col-6 col-md-2">
                             <select x-model="statusFilter" class="form-select bg-light border-light">
                                 <option value="">Tous les statuts</option>
                                 <option value="PRESENT">Présent</option>
@@ -266,7 +298,7 @@
                             </select>
                         </div>
                         <div class="col-6 col-md-2">
-                            <button type="button" class="btn btn-soft-secondary w-100" @click="search = ''; statusFilter = '';">
+                            <button type="button" class="btn btn-soft-secondary w-100" @click="search = ''; statusFilter = ''; groupFilter = '';">
                                 Reset
                             </button>
                         </div>
@@ -371,6 +403,7 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
 
         <!-- Sidebar details -->
@@ -412,12 +445,16 @@
                     </div>
 
                     <div class="d-grid gap-2 mt-4">
+                        @can('activity.edit')
                         <a href="{{ route('admin.activities.edit', $activity) }}" class="btn btn-primary">
                             <i class="mdi mdi-pencil"></i> Modifier l'activité
                         </a>
+                        @endcan
+                        @can('activity.delete')
                         <button type="button" class="btn btn-outline-danger" onclick="confirmDelete()">
                             <i class="mdi mdi-trash-can"></i> Supprimer
                         </button>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -478,15 +515,19 @@
                         </div>
 
                         <div class="d-grid gap-2">
+                            @can('qrcode.generate')
                             <a href="{{ route('admin.activities.qr.pdf', $activity) }}" class="btn btn-soft-success">
                                 <i class="mdi mdi-download"></i> Télécharger le PDF
                             </a>
+                            @endcan
+                            @can('qrcode.generate')
                             <form id="revokeQrForm" action="{{ route('admin.activities.qr.revoke', $activity) }}" method="POST">
                                 @csrf
                                 <button type="submit" class="btn btn-soft-danger w-100">
                                     <i class="mdi mdi-cancel"></i> Révoquer / Désactiver
                                 </button>
                             </form>
+                            @endcan
                         </div>
                     @else
                         <div class="py-3">
@@ -494,12 +535,14 @@
                             <p class="text-muted fs-13">Aucun QR Code d'émargement actif pour cette activité.</p>
                         </div>
 
+                        @can('qrcode.generate')
                         <form action="{{ route('admin.activities.qr.generate', $activity) }}" method="POST">
                             @csrf
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="mdi mdi-qrcode"></i> Générer un QR Code
                             </button>
                         </form>
+                        @endcan
                     @endif
                 </div>
             </div>

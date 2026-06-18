@@ -51,7 +51,23 @@
                         <div class="border-top border-top-dashed pt-4 mt-4">
                             <h5 class="fs-15 mb-3">Attribution des Permissions <span class="badge bg-info-subtle text-info fs-11 ms-2">Groupées par ressource</span></h5>
                             
-                            @php use App\Enums\PermissionEnum; @endphp
+                            @php 
+                                use App\Enums\PermissionEnum; 
+                                $resourceTranslations = [
+                                    'member' => 'Membres',
+                                    'group' => 'Groupes',
+                                    'activity' => 'Activités',
+                                    'attendance' => 'Présences',
+                                    'registration' => 'Inscriptions',
+                                    'notification' => 'Notifications',
+                                    'stats' => 'Statistiques',
+                                    'report' => 'Rapports',
+                                    'role' => 'Rôles',
+                                    'permission' => 'Permissions',
+                                    'audit' => 'Audit & Logs',
+                                    'qrcode' => 'Codes QR'
+                                ];
+                            @endphp
 
                             <div class="accordion custom-accordionwithicon accordion-border-box" id="permissionsAccordion">
                                 @foreach($groupedPermissions as $resource => $permissions)
@@ -70,7 +86,7 @@
                                         <h2 class="accordion-header" id="heading-{{ $resource }}">
                                             <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $resource }}" aria-expanded="false" aria-controls="collapse-{{ $resource }}">
                                                 <div class="d-flex align-items-center w-100 me-3">
-                                                    <span class="text-uppercase letter-spacing-1 fs-12">{{ $resource }}</span>
+                                                    <span class="text-uppercase letter-spacing-1 fs-12">{{ $resourceTranslations[$resource] ?? ucfirst($resource) }}</span>
                                                     <span class="badge bg-primary-subtle text-primary ms-2">{{ $permissions->count() }}</span>
                                                 </div>
                                             </button>

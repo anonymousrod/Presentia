@@ -22,6 +22,8 @@ class RoleController extends Controller
      */
     public function index()
     {
+        $this->authorize('role.manage');
+
         $roles = Role::withCount('users', 'permissions')
             ->orderBy('name')
             ->get();
@@ -34,6 +36,8 @@ class RoleController extends Controller
      */
     public function create()
     {
+        $this->authorize('role.manage');
+
         $permissions = Permission::orderBy('name')->get();
 
         // Grouper les permissions par catégorie (ressource)
@@ -50,6 +54,8 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('role.manage');
+
         $data = $request->validate([
             'name'          => ['required', 'string', 'max:255', 'unique:roles,name'],
             'permissions'   => ['nullable', 'array'],
@@ -69,6 +75,8 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
+        $this->authorize('role.manage');
+
         $rolePermissions = $role->permissions()->orderBy('name')->get();
         $groupedPermissions = $rolePermissions->groupBy(function ($permission) {
             $parts = explode('.', $permission->name);
@@ -83,6 +91,8 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
+        $this->authorize('role.manage');
+
         if (in_array($role->name, ['Administrateur'])) {
             return redirect()->route('admin.roles.index')
                 ->with('error', "Le rôle 'Administrateur' ne peut pas être modifié.");
@@ -105,6 +115,8 @@ class RoleController extends Controller
      */
     public function update(Request $request, Role $role)
     {
+        $this->authorize('role.manage');
+
         if (in_array($role->name, ['Administrateur'])) {
             return redirect()->route('admin.roles.index')
                 ->with('error', "Le rôle 'Administrateur' ne peut pas être modifié.");
@@ -129,6 +141,8 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
+        $this->authorize('role.manage');
+
         try {
             $this->permissionService->deleteRole($role);
 

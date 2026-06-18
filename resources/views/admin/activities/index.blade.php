@@ -5,9 +5,11 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestion des activités</h2>
         <div>
+            @can('activity.create')
             <a href="{{ route('admin.activities.create') }}" class="btn btn-primary">
                 <i class="mdi mdi-plus"></i> Nouvelle activité
             </a>
+            @endcan
         </div>
     </div>
 
@@ -111,12 +113,16 @@
                                 <a href="{{ route('admin.activities.show', $activity) }}" class="btn btn-sm btn-info" title="Voir">
                                     <i class="mdi mdi-eye"></i>
                                 </a>
+                                @can('activity.edit')
                                 <a href="{{ route('admin.activities.edit', $activity) }}" class="btn btn-sm btn-primary" title="Modifier">
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
+                                @endcan
+                                @can('activity.delete')
                                 <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $activity->id }})" title="Supprimer">
                                     <i class="mdi mdi-trash-can"></i>
                                 </button>
+                                @endcan
                             </td>
                         </tr>
                         @empty
@@ -179,12 +185,16 @@
                                 <a href="{{ route('admin.activities.show', $activity) }}" class="btn btn-sm btn-info flex-grow-1" title="Voir">
                                     <i class="mdi mdi-eye me-1"></i>Voir
                                 </a>
+                                @can('activity.edit')
                                 <a href="{{ route('admin.activities.edit', $activity) }}" class="btn btn-sm btn-primary flex-grow-1" title="Modifier">
                                     <i class="mdi mdi-pencil me-1"></i>Modif
                                 </a>
+                                @endcan
+                                @can('activity.delete')
                                 <button type="button" class="btn btn-sm btn-danger flex-grow-1" onclick="confirmDelete({{ $activity->id }})" title="Supprimer">
                                     <i class="mdi mdi-trash-can"></i>
                                 </button>
+                                @endcan
                             </div>
                         </div>
                     </div>

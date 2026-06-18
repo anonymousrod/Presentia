@@ -63,20 +63,26 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::get('users/export', [App\Http\Controllers\Admin\UserController::class, 'export'])->name('users.export');
         Route::post('users/{user}/restore', [App\Http\Controllers\Admin\UserController::class, 'restore'])->name('users.restore');
         Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+    });
 
-        // Activities Admin
+    // Activities Admin
+    Route::middleware(['can:access-activities'])->group(function () {
         Route::post('activities/{activity}/qr/generate', [App\Http\Controllers\Admin\QrCodeController::class, 'generate'])->name('activities.qr.generate');
         Route::post('activities/{activity}/qr/revoke', [App\Http\Controllers\Admin\QrCodeController::class, 'revoke'])->name('activities.qr.revoke');
         Route::get('activities/{activity}/qr/pdf', [App\Http\Controllers\Admin\QrCodeController::class, 'downloadPdf'])->name('activities.qr.pdf');
         Route::get('activities/{activity}/download-registrations', [App\Http\Controllers\Admin\ActivityController::class, 'downloadRegistrationsPdf'])->name('activities.download-registrations');
         Route::get('activities/{activity}/download-attendance', [App\Http\Controllers\Admin\ActivityController::class, 'downloadAttendancePdf'])->name('activities.download-attendance');
         Route::resource('activities', App\Http\Controllers\Admin\ActivityController::class);
+    });
 
-        // Password Requests (WhatsApp)
+    // Password Requests (WhatsApp)
+    Route::middleware(['can:manage-users'])->group(function () {
         Route::get('password-requests', [App\Http\Controllers\Admin\PasswordRequestController::class, 'index'])->name('password-requests.index');
         Route::post('password-requests/{passwordResetRequest}/validate', [App\Http\Controllers\Admin\PasswordRequestController::class, 'validateRequest'])->name('password-requests.validate');
+    });
 
-        // Roles & Permissions CRUD
+    // Roles & Permissions CRUD
+    Route::middleware(['can:role.manage'])->group(function () {
         Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
         Route::get('users/{user}/permissions', [App\Http\Controllers\Admin\PermissionController::class, 'editUserPermissions'])->name('users.permissions.edit');
         Route::post('users/{user}/permissions', [App\Http\Controllers\Admin\PermissionController::class, 'updateUserPermissions'])->name('users.permissions.update');

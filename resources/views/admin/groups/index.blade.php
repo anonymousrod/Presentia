@@ -4,9 +4,11 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestion des groupes</h2>
+        @can('group.create')
         <a href="{{ route('admin.groups.create') }}" class="btn btn-primary">
             <i class="mdi mdi-plus"></i> Nouveau groupe
         </a>
+        @endcan
     </div>
 
     @if(session('success'))
@@ -67,9 +69,12 @@
                                 <a href="{{ route('admin.groups.show', $group) }}" class="btn btn-sm btn-info" title="Voir">
                                     <i class="mdi mdi-eye"></i>
                                 </a>
+                                @can('group.edit')
                                 <a href="{{ route('admin.groups.edit', $group) }}" class="btn btn-sm btn-primary" title="Modifier">
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
+                                @endcan
+                                @can('group.delete')
                                 <form action="{{ route('admin.groups.destroy', $group) }}" method="POST" class="d-inline confirm-archive-group" data-group-name="{{ $group->name }}">
                                     @csrf
                                     @method('DELETE')
@@ -77,6 +82,7 @@
                                         <i class="mdi mdi-archive"></i>
                                     </button>
                                 </form>
+                                @endcan
                             </td>
                         </tr>
                         @empty
@@ -120,9 +126,12 @@
                                 <a href="{{ route('admin.groups.show', $group) }}" class="btn btn-sm btn-info flex-grow-1" title="Voir">
                                     <i class="mdi mdi-eye me-1"></i>Voir
                                 </a>
+                                @can('group.edit')
                                 <a href="{{ route('admin.groups.edit', $group) }}" class="btn btn-sm btn-primary flex-grow-1" title="Modifier">
                                     <i class="mdi mdi-pencil me-1"></i>Modif
                                 </a>
+                                @endcan
+                                @can('group.delete')
                                 <form action="{{ route('admin.groups.destroy', $group) }}" method="POST" class="d-flex confirm-archive-group m-0" data-group-name="{{ $group->name }}" style="flex-grow: 1;">
                                     @csrf
                                     @method('DELETE')
@@ -130,6 +139,7 @@
                                         <i class="mdi mdi-archive me-1"></i>Archiver
                                     </button>
                                 </form>
+                                @endcan
                             </div>
                         </div>
                     </div>
