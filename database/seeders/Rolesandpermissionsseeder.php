@@ -28,10 +28,16 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Administrateur — bypass via Policy::before(), mais on lui donne tout
         $admin = Role::firstOrCreate(['name' => 'Administrateur', 'guard_name' => 'web']);
+        $admin->code = 'admin';
+        $admin->is_system = true;
+        $admin->save();
         $admin->syncPermissions(Permission::all());
 
         // Jeune — accès minimal : consulter, s'inscrire, scanner
         $jeune = Role::firstOrCreate(['name' => 'Jeune', 'guard_name' => 'web']);
+        $jeune->code = 'default_user';
+        $jeune->is_system = true;
+        $jeune->save();
         $jeune->syncPermissions([
             'activity.view',
             'registration.create',
@@ -43,6 +49,9 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Chef de groupe — gestion de son groupe uniquement
         $chef = Role::firstOrCreate(['name' => 'Chef de groupe', 'guard_name' => 'web']);
+        $chef->code = 'group_leader';
+        $chef->is_system = true;
+        $chef->save();
         $chef->syncPermissions([
             'activity.view',
             'registration.create',
@@ -59,6 +68,9 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Membre du bureau — vision globale, pas de gestion des comptes
         $bureau = Role::firstOrCreate(['name' => 'Membre du bureau', 'guard_name' => 'web']);
+        $bureau->code = 'bureau_member';
+        $bureau->is_system = false;
+        $bureau->save();
         $bureau->syncPermissions([
             'activity.view',
             'activity.create',
@@ -81,6 +93,9 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Président — supervision globale + communication
         $president = Role::firstOrCreate(['name' => 'Président', 'guard_name' => 'web']);
+        $president->code = 'president';
+        $president->is_system = false;
+        $president->save();
         $president->syncPermissions([
             'activity.view',
             'activity.create',
@@ -105,6 +120,9 @@ class RolesAndPermissionsSeeder extends Seeder
         // Vice-président — permissions identiques au Président par défaut
         // (les différences sont gérées via permissions directes sur l'utilisateur)
         $vp = Role::firstOrCreate(['name' => 'Vice-président', 'guard_name' => 'web']);
+        $vp->code = 'vice_president';
+        $vp->is_system = false;
+        $vp->save();
         $vp->syncPermissions([
             'activity.view',
             'activity.create',

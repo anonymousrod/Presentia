@@ -73,7 +73,7 @@
 
             <div class="card" id="roleList">
                 <div class="card-header border-0">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
                         <h5 class="card-title mb-0 flex-grow-1">Liste des Rôles</h5>
                         <div class="flex-shrink-0">
                             @can('role.manage')
@@ -112,7 +112,7 @@
                                                 <h5 class="fs-14 mb-1">
                                                     <a href="{{ route('admin.roles.show', $role) }}" class="text-body fw-semibold">{{ $role->name }}</a>
                                                 </h5>
-                                                @if(in_array($role->name, ['Administrateur', 'Jeune', 'Chef de groupe']))
+                                                @if($role->is_system)
                                                     <span class="badge bg-secondary-subtle text-secondary fs-10">SYSTÈME</span>
                                                 @else
                                                     <span class="badge bg-info-subtle text-info fs-10">PERSONNALISÉ</span>
@@ -164,13 +164,14 @@
                                                     <i class="ri-eye-fill fs-16"></i>
                                                 </a>
                                             </li>
-                                            @unless(in_array($role->name, ['Administrateur']))
+                                            @unless($role->code === 'admin')
                                             @can('role.manage')
                                             <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Modifier">
                                                 <a href="{{ route('admin.roles.edit', $role) }}" class="text-primary d-inline-block edit-item-btn">
                                                     <i class="ri-pencil-fill fs-16"></i>
                                                 </a>
                                             </li>
+                                            @unless($role->is_system)
                                             <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Supprimer">
                                                 <a class="text-danger d-inline-block remove-item-btn" 
                                                    href="javascript:void(0)"
@@ -178,6 +179,7 @@
                                                     <i class="ri-delete-bin-5-fill fs-16"></i>
                                                 </a>
                                             </li>
+                                            @endunless
                                             @endcan
                                             @endunless
                                         </ul>
@@ -216,7 +218,7 @@
                                                 <h6 class="fw-bold mb-1">
                                                     <a href="{{ route('admin.roles.show', $role) }}" class="text-body fw-semibold">{{ $role->name }}</a>
                                                 </h6>
-                                                @if(in_array($role->name, ['Administrateur', 'Jeune', 'Chef de groupe']))
+                                                @if($role->is_system)
                                                     <span class="badge bg-secondary-subtle text-secondary fs-10">SYSTÈME</span>
                                                 @else
                                                     <span class="badge bg-info-subtle text-info fs-10">PERSONNALISÉ</span>
@@ -267,15 +269,17 @@
                                         <a href="{{ route('admin.roles.show', $role) }}" class="btn btn-sm btn-info flex-grow-1" title="Voir">
                                             <i class="ri-eye-fill me-1"></i>Voir
                                         </a>
-                                        @unless(in_array($role->name, ['Administrateur']))
+                                        @unless($role->code === 'admin')
                                         @can('role.manage')
                                         <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-primary flex-grow-1" title="Modifier">
                                             <i class="ri-pencil-fill me-1"></i>Modifier
                                         </a>
+                                        @unless($role->is_system)
                                         <button type="button" class="btn btn-sm btn-danger flex-grow-1" 
                                                 @click="deleteTarget = '{{ route('admin.roles.destroy', $role) }}'; deleteName = '{{ $role->name }}'" title="Supprimer">
                                             <i class="ri-delete-bin-5-fill me-1"></i>Supprimer
                                         </button>
+                                        @endunless
                                         @endcan
                                         @endunless
                                     </div>

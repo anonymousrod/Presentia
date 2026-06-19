@@ -11,6 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->trustProxies(at: '*');
         $middleware->appendToGroup('web', \App\Http\Middleware\ForcePasswordChange::class);
         $middleware->appendToGroup('web', \App\Http\Middleware\AuditRequestMiddleware::class);
     })

@@ -25,6 +25,8 @@ class RoleController extends Controller
         $this->authorize('role.manage');
 
         $roles = Role::withCount('users', 'permissions')
+            ->orderByRaw("CASE WHEN code = 'admin' THEN 1 ELSE 2 END")
+            ->orderBy('is_system', 'desc')
             ->orderBy('name')
             ->get();
 
@@ -93,7 +95,7 @@ class RoleController extends Controller
     {
         $this->authorize('role.manage');
 
-        if (in_array($role->name, ['Administrateur'])) {
+        if ($role->code === 'admin') {
             return redirect()->route('admin.roles.index')
                 ->with('error', "Le rôle 'Administrateur' ne peut pas être modifié.");
         }
@@ -117,7 +119,7 @@ class RoleController extends Controller
     {
         $this->authorize('role.manage');
 
-        if (in_array($role->name, ['Administrateur'])) {
+        if ($role->code === 'admin') {
             return redirect()->route('admin.roles.index')
                 ->with('error', "Le rôle 'Administrateur' ne peut pas être modifié.");
         }

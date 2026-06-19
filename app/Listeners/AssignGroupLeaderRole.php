@@ -13,8 +13,9 @@ class AssignGroupLeaderRole
     {
         $leader = $event->newLeader;
 
-        if (! $leader->hasRole('Chef de groupe')) {
-            $leader->assignRole('Chef de groupe');
+        $groupLeaderRole = \Spatie\Permission\Models\Role::where('code', 'group_leader')->first();
+        if ($groupLeaderRole && ! $leader->hasRole($groupLeaderRole->name)) {
+            $leader->assignRole($groupLeaderRole->name);
         }
     }
 }

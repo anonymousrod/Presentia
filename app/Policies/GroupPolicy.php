@@ -81,8 +81,9 @@ class GroupPolicy
             return Response::allow();
         }
 
-        // Un chef de groupe peut modifier uniquement SON groupe
-        if ($user->hasRole('Chef de groupe') && $group->leader_id === $user->id) {
+        // 2. Si le rôle 'Chef de groupe' est assigné, il ne peut modifier que SON groupe
+        $groupLeaderRole = \Spatie\Permission\Models\Role::where('code', 'group_leader')->first();
+        if ($groupLeaderRole && $user->hasRole($groupLeaderRole->name) && $group->leader_id === $user->id) {
             return Response::allow();
         }
 
@@ -109,7 +110,8 @@ class GroupPolicy
             return Response::allow();
         }
 
-        if ($user->hasRole('Chef de groupe') && $group->leader_id === $user->id) {
+        $groupLeaderRole = \Spatie\Permission\Models\Role::where('code', 'group_leader')->first();
+        if ($groupLeaderRole && $user->hasRole($groupLeaderRole->name) && $group->leader_id === $user->id) {
             return Response::allow();
         }
 

@@ -38,9 +38,10 @@ class GroupObserver
             // 1. Assign "Chef de groupe" role to the new leader if set
             if ($newLeaderId) {
                 $newLeader = User::find($newLeaderId);
-                if ($newLeader && \Spatie\Permission\Models\Role::where('name', 'Chef de groupe')->exists()) {
-                    if (!$newLeader->hasRole('Chef de groupe')) {
-                        $newLeader->assignRole('Chef de groupe');
+                $groupLeaderRole = \Spatie\Permission\Models\Role::where('code', 'group_leader')->first();
+                if ($newLeader && $groupLeaderRole) {
+                    if (!$newLeader->hasRole($groupLeaderRole->name)) {
+                        $newLeader->assignRole($groupLeaderRole->name);
                     }
                 }
 
@@ -69,11 +70,14 @@ class GroupObserver
 
                 if (!$oldLeaderStillLeads) {
                     $oldLeader = User::find($oldLeaderId);
-                    if ($oldLeader && $oldLeader->hasRole('Chef de groupe')) {
-                        $oldLeader->removeRole('Chef de groupe');
-                        // Ensure they still have the default 'Jeune' role
-                        if (!$oldLeader->hasRole('Jeune') && \Spatie\Permission\Models\Role::where('name', 'Jeune')->exists()) {
-                            $oldLeader->assignRole('Jeune');
+                    $groupLeaderRole = \Spatie\Permission\Models\Role::where('code', 'group_leader')->first();
+                    if ($oldLeader && $groupLeaderRole && $oldLeader->hasRole($groupLeaderRole->name)) {
+                        $oldLeader->removeRole($groupLeaderRole->name);
+
+                        // Ensure they still have the default role
+                        $defaultRole = \Spatie\Permission\Models\Role::where('code', 'default_user')->first();
+                        if ($defaultRole && !$oldLeader->hasRole($defaultRole->name)) {
+                            $oldLeader->assignRole($defaultRole->name);
                         }
                     }
                 }
@@ -94,11 +98,14 @@ class GroupObserver
 
             if (!$leaderStillLeads) {
                 $leader = User::find($group->leader_id);
-                if ($leader && $leader->hasRole('Chef de groupe')) {
-                    $leader->removeRole('Chef de groupe');
-                    // Ensure they still have the default 'Jeune' role
-                    if (!$leader->hasRole('Jeune') && \Spatie\Permission\Models\Role::where('name', 'Jeune')->exists()) {
-                        $leader->assignRole('Jeune');
+                $groupLeaderRole = \Spatie\Permission\Models\Role::where('code', 'group_leader')->first();
+                if ($leader && $groupLeaderRole && $leader->hasRole($groupLeaderRole->name)) {
+                    $leader->removeRole($groupLeaderRole->name);
+
+                    // Ensure they still have the default role
+                    $defaultRole = \Spatie\Permission\Models\Role::where('code', 'default_user')->first();
+                    if ($defaultRole && !$leader->hasRole($defaultRole->name)) {
+                        $leader->assignRole($defaultRole->name);
                     }
                 }
             }

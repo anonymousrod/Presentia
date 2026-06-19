@@ -47,7 +47,7 @@ class PermissionService
      */
     public function deleteRole(Role $role): void
     {
-        if (in_array($role->name, ['Administrateur', 'Jeune', 'Chef de groupe'])) {
+        if ($role->is_system) {
             throw new \Exception("Le rôle système '{$role->name}' ne peut pas être supprimé.");
         }
 
@@ -69,9 +69,15 @@ class PermissionService
      */
     public function syncUserRoles(User $user, array $roleNames): void
     {
-        // Toujours s'assurer que le rôle par défaut 'Jeune' reste assigné à l'utilisateur
-        if (!in_array('Jeune', $roleNames) && Role::where('name', 'Jeune')->exists()) {
-            $roleNames[] = 'Jeune';
+        $defaultRole = Role::where('code', 'default_user')->first();
+        if ($defaultRole && !in_array($defaultRole->name, $roleNames)) {
+            $roleNames[] = $defaultRole->name;
+        }
+
+        // Préserver le rôle 'Chef de groupe' s'il l'a déjà (il est géré automatiquement, pas via l'interface)
+        $groupLeaderRole = Role::where('code', 'group_leader')->first();
+        if ($groupLeaderRole && $user->hasRole($groupLeaderRole->name) && !in_array($groupLeaderRole->name, $roleNames)) {
+            $roleNames[] = $groupLeaderRole->name;
         }
 
         $user->syncRoles($roleNames);
