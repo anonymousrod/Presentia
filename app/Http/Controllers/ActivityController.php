@@ -77,7 +77,7 @@ class ActivityController extends Controller
 
         // Default status_filter to 'upcoming' if not present in request query
         $statusFilter = $request->has('status_filter') ? $request->input('status_filter') : 'upcoming';
-        
+
         // If they explicitly chose "all", we keep it as 'all' but do not filter.
         if (!empty($statusFilter) && $statusFilter !== 'all') {
             $now = now();

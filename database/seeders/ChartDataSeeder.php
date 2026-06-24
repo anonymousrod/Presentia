@@ -19,21 +19,21 @@ class ChartDataSeeder extends Seeder
 
         $groupsData = [
             'Béthel' => [
-                'ADJAZO Dorcas', 'HOULO Ruth-Esther', 'BLECO Pontien', 'GAGNON Bienvenu', 
-                'AGOSSOU Pierrette', 'KOUDOUKOUI Belvida', 'HOUNKPEVI Fresnel', 
+                'ADJAZO Dorcas', 'HOULO Ruth-Esther', 'BLECO Pontien', 'GAGNON Bienvenu',
+                'AGOSSOU Pierrette', 'KOUDOUKOUI Belvida', 'HOUNKPEVI Fresnel',
                 'HOUNDEKPONDJI Odyas', 'AIDEHOU Steve'
             ],
             'Cana' => [
-                'YABI Béatrice', 'HOULO Mahounan Isabelle', 'AGBO Josaphat', 
-                'HOUNDEKPONDJI Melyas', 'AHONKLOO Thierry', 'ADJOVI Doris', 
+                'YABI Béatrice', 'HOULO Mahounan Isabelle', 'AGBO Josaphat',
+                'HOUNDEKPONDJI Melyas', 'AHONKLOO Thierry', 'ADJOVI Doris',
                 'SOGBOSSI Marcellin', 'ADJAZO Raïssa', 'AZOMAN Acquilas', 'AMOUSSOU Françoise'
             ],
             'Éden' => [
                 'KODONON Kenneth', 'EZEBADA Charlotte', 'HINLIN Ghislain'
             ],
             'Galilée' => [
-                'KOUMONDJI Guy Morel', 'ATCHOUKE Estelle', 'OKESESAN Victoria', 
-                'HOUNKANRIN Salomon', 'AZOMAN Kyria', 'METO Ulrich', 'SENA Georgette', 
+                'KOUMONDJI Guy Morel', 'ATCHOUKE Estelle', 'OKESESAN Victoria',
+                'HOUNKANRIN Salomon', 'AZOMAN Kyria', 'METO Ulrich', 'SENA Georgette',
                 'KOUDOUKOUI Joy\'s', 'DOUTETIEN Alexine', 'DAGBEDJI Romario', 'ADIGBE Mardochée'
             ],
             'Salem' => [
@@ -41,16 +41,16 @@ class ChartDataSeeder extends Seeder
                 'Membre Salem 5', 'Membre Salem 6', 'Membre Salem 7'
             ],
             'Shalom' => [
-                'TETEGAN Exaucé', 'KIKI Emmanuel', 'DJOMATIN Béni-Christ', 'METOEVI Justin', 
+                'TETEGAN Exaucé', 'KIKI Emmanuel', 'DJOMATIN Béni-Christ', 'METOEVI Justin',
                 'HOUNGNINOU Merveille Élodie', 'AKALO Paulin', 'GNIMAGNON Espoir', 'DAGBELOU Joann'
             ],
             'Siloé' => [
-                'CHABI Ashley', 'AYITCHEDEHOU Ezéchiel', 'AHOKPE Noëlie', 'ADJANOHOUN Esther', 
-                'GNONLONFOUN Chantal', 'BLEKO Carine', 'AGOSSOU Pierre', 'KAHO Débora', 
+                'CHABI Ashley', 'AYITCHEDEHOU Ezéchiel', 'AHOKPE Noëlie', 'ADJANOHOUN Esther',
+                'GNONLONFOUN Chantal', 'BLEKO Carine', 'AGOSSOU Pierre', 'KAHO Débora',
                 'AYITCHEDEHOU Obed', 'ASSAN Nelly', 'AHOKOU Anne'
             ],
             'Sinaï' => [
-                'HESSOU Jules', 'IFATOUMA Abdias', 'ADJANOHOUN Néhémie', 'AYITCHEDEHOU Ezéchias', 
+                'HESSOU Jules', 'IFATOUMA Abdias', 'ADJANOHOUN Néhémie', 'AYITCHEDEHOU Ezéchias',
                 'SOSSA Naomi', 'SEWLAN Lazare', 'DAVI Christian', 'BELMBAYE Frédéric'
             ],
         ];
@@ -102,7 +102,7 @@ class ChartDataSeeder extends Seeder
                     ]
                 );
                 $user->syncRoles(['Jeune']);
-                
+
                 // Assigner au groupe
                 $group->members()->syncWithoutDetaching([$user->id => ['joined_at' => now()]]);
             }
@@ -120,7 +120,7 @@ class ChartDataSeeder extends Seeder
 
         $ecoleDimancheDates = ['2026-02-22', '2026-03-01', '2026-03-08', '2026-03-15', '2026-03-22', '2026-03-29', '2026-04-19', '2026-04-26', '2026-05-31'];
         $ecoleDimancheActivities = [];
-        
+
         foreach ($ecoleDimancheDates as $date) {
             $ecoleDimancheActivities[] = \App\Models\Activity::create([
                 'title' => 'École de dimanche',
@@ -156,14 +156,16 @@ class ChartDataSeeder extends Seeder
         // 3. CRÉATION DES PRÉSENCES (Aléatoires pour les tests)
         // ---------------------------------------------------------
         $this->command->info('✍️ Assignation des présences aléatoires...');
-        
-        $allUsers = User::whereHas('roles', function($q){ $q->where('name', 'Jeune'); })->get();
-        
+
+        $allUsers = User::whereHas('roles', function ($q) {
+            $q->where('name', 'Jeune');
+        })->get();
+
         // Présences pour l'École de dimanche
         foreach ($ecoleDimancheActivities as $activity) {
             $attendeesCount = rand(10, 27); // Selon le graphe 1 (entre 10 et 27)
             $attendees = $allUsers->random(min($attendeesCount, $allUsers->count()));
-            
+
             foreach ($attendees as $attendee) {
                 \App\Models\Attendance::create([
                     'user_id' => $attendee->id,
@@ -176,9 +178,9 @@ class ChartDataSeeder extends Seeder
 
         // Présences pour les Activités locales
         foreach ($localesActivities as $activity) {
-            $attendeesCount = rand(20, 45); 
+            $attendeesCount = rand(20, 45);
             $attendees = $allUsers->random(min($attendeesCount, $allUsers->count()));
-            
+
             foreach ($attendees as $attendee) {
                 \App\Models\Attendance::create([
                     'user_id' => $attendee->id,
