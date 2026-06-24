@@ -18,7 +18,7 @@ class Activity extends Model
     protected $fillable = [
         'title',
         'description',
-        'type',
+        'activity_type_id',
         'status',
         'visibility',
         'visibility_group_id',
@@ -35,10 +35,18 @@ class Activity extends Model
     protected $casts = [
         'start_time' => 'datetime',
         'end_time'   => 'datetime',
-        'type'       => \App\Enums\ActivityType::class,
+        // 'type' is now a relation
         'status'     => \App\Enums\ActivityStatus::class,
         'visibility' => \App\Enums\ActivityVisibility::class,
     ];
+
+    /**
+     * Le type de l'activité.
+     */
+    public function activityType(): BelongsTo
+    {
+        return $this->belongsTo(ActivityType::class);
+    }
 
     /**
      * Le responsable de l'activité.

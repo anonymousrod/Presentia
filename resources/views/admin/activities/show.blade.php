@@ -415,7 +415,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <strong>Type d'activité :</strong>
-                        <p><span class="badge bg-soft-info text-info fs-12">{{ $activity->type->label() }}</span></p>
+                        <p><span class="badge fs-12" style="background-color: {{ $activity->activityType?->color ?? '#17a2b8' }}; color: white;">{{ $activity->activityType?->name ?? 'N/A' }}</span></p>
                     </div>
 
                     <div class="mb-3">

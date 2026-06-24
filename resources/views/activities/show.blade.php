@@ -65,7 +65,7 @@
             <div class="card-body p-3 p-md-4">
                 <div class="d-flex align-items-center mb-4">
                     <div class="flex-grow-1">
-                        <span class="badge bg-soft-info text-info fs-12 uppercase p-2 px-3 rounded-pill">{{ $activity->type->label() }}</span>
+                        <span class="badge fs-12 uppercase p-2 px-3 rounded-pill" style="background-color: {{ $activity->activityType?->color ?? '#17a2b8' }}; color: white;">{{ $activity->activityType?->name ?? 'N/A' }}</span>
                     </div>
                     <div class="flex-shrink-0">
                         @if($hasStarted)

@@ -26,7 +26,7 @@
                 <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
                     <span class="badge rounded-pill px-3 py-2 fs-11"
                           style="background: rgba(var(--vz-primary-rgb), 0.15); color: var(--vz-primary);">
-                        <i class="mdi mdi-tag-outline me-1"></i>{{ $activity->type->label() }}
+                        <i class="mdi mdi-tag-outline me-1"></i>{{ $activity->activityType?->name ?? 'N/A' }}
                     </span>
                     @if($isClosed)
                         <span class="badge bg-danger rounded-pill px-3 py-2 fs-11">

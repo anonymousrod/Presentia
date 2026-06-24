@@ -29,8 +29,10 @@
                     <label class="form-label">Type</label>
                     <select name="type" class="form-select">
                         <option value="">Tous les types</option>
-                        @foreach(\App\Enums\ActivityType::cases() as $type)
-                            <option value="{{ $type->value }}" {{ request('type') === $type->value ? 'selected' : '' }}>{{ $type->label() }}</option>
+                        @foreach($activityTypes as $type)
+                            <option value="{{ $type->id }}" {{ request('type') == $type->id ? 'selected' : '' }}>
+                                {{ $type->name }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -82,7 +84,7 @@
                                 @endif
                             </td>
                             <td>
-                                <span class="badge bg-soft-info text-info">{{ $activity->type->label() }}</span>
+                                <span class="badge" style="background-color: {{ $activity->activityType?->color ?? '#17a2b8' }}; color: white;">{{ $activity->activityType?->name ?? 'N/A' }}</span>
                             </td>
                             <td>{{ $activity->start_time->format('d/m/Y H:i') }}</td>
                             <td>{{ $activity->end_time->format('d/m/Y H:i') }}</td>
@@ -143,7 +145,7 @@
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div>
                                     <h6 class="fw-bold mb-1">{{ $activity->title }}</h6>
-                                    <span class="badge bg-soft-info text-info">{{ $activity->type->label() }}</span>
+                                    <span class="badge" style="background-color: {{ $activity->activityType?->color ?? '#17a2b8' }}; color: white;">{{ $activity->activityType?->name ?? 'N/A' }}</span>
                                 </div>
                                 <span class="badge bg-{{ match($activity->status->value) {
                                     'PUBLISHED' => 'success',

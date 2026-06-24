@@ -3,7 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use App\Enums\ActivityStatus;
-use App\Enums\ActivityType;
+// Removed ActivityType enum
 use App\Enums\ActivityVisibility;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
@@ -46,7 +46,7 @@ class StoreActivityRequest extends FormRequest
         return [
             'title'               => ['required', 'string', 'max:255'],
             'description'         => ['nullable', 'string'],
-            'type'                => ['required', new Enum(ActivityType::class)],
+            'activity_type_id'    => ['required', 'exists:activity_types,id'],
             'status'              => ['required', new Enum(ActivityStatus::class)],
             'visibility'          => ['required', new Enum(ActivityVisibility::class)],
             'visibility_group_id' => ['required_if:visibility,GROUP', 'nullable', 'exists:groups,id'],

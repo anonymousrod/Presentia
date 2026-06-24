@@ -72,13 +72,14 @@ class ActivityController extends Controller
         }
 
         if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            $query->where('activity_type_id', $request->type);
         }
 
         // Default status_filter to 'upcoming' if not present in request query
         $statusFilter = $request->has('status_filter') ? $request->input('status_filter') : 'upcoming';
-
-        if (!empty($statusFilter)) {
+        
+        // If they explicitly chose "all", we keep it as 'all' but do not filter.
+        if (!empty($statusFilter) && $statusFilter !== 'all') {
             $now = now();
             if ($statusFilter === 'upcoming') {
                 $query->where('start_time', '>', $now);
@@ -90,7 +91,7 @@ class ActivityController extends Controller
             }
         }
 
-        $activities = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $activities = $query->orderBy('created_at', 'desc')->paginate(10)->appends(array_merge(request()->query(), ['status_filter' => $statusFilter]));
 
         // Get all user's registrations to show registration status
         $myRegistrations = $user->registrations()
@@ -102,7 +103,9 @@ class ActivityController extends Controller
             ->pluck('is_waitlisted', 'activity_id')
             ->toArray();
 
-        return view('activities.index', compact('activities', 'myRegistrations', 'myWaitlists'));
+        $activityTypes = \App\Models\ActivityType::orderBy('name')->get();
+
+        return view('activities.index', compact('activities', 'myRegistrations', 'myWaitlists', 'activityTypes'));
     }
 
     /**

@@ -37,13 +37,15 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="type" class="form-label">Type d'activité <span class="text-danger">*</span></label>
-                                <select class="form-select @error('type') is-invalid @enderror" id="type" name="type" required>
-                                    <option value="">Sélectionner un type</option>
-                                    @foreach(\App\Enums\ActivityType::cases() as $type)
-                                        <option value="{{ $type->value }}" {{ old('type') === $type->value ? 'selected' : '' }}>{{ $type->label() }}</option>
+                                <select name="activity_type_id" id="activity_type_id" class="form-select @error('activity_type_id') is-invalid @enderror" required>
+                                    <option value="">Sélectionnez un type</option>
+                                    @foreach($activityTypes as $type)
+                                        <option value="{{ $type->id }}" {{ old('activity_type_id') == $type->id ? 'selected' : '' }}>
+                                            {{ $type->name }}
+                                        </option>
                                     @endforeach
                                 </select>
-                                @error('type')
+                                @error('activity_type_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>

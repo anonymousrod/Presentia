@@ -11,7 +11,7 @@ return new class () extends Migration {
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->enum('type', ['CULTE', 'REUNION', 'FORMATION', 'SORTIE', 'AUTRE']);
+            $table->foreignId('activity_type_id')->constrained()->cascadeOnDelete();
             $table->enum('status', ['DRAFT', 'PUBLISHED', 'CANCELLED', 'ARCHIVED'])
                   ->default('DRAFT')
                   ->index();

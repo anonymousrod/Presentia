@@ -73,6 +73,11 @@
                                                 Toutes les activités
                                             </a>
                                         </li>
+                                        <li class="nav-item">
+                                            <a href="{{ route('admin.activity-types.index') }}" class="nav-link">
+                                                Types d'activités
+                                            </a>
+                                        </li>
                                         @endcan
                                         @can('activity.create')
                                         <li class="nav-item">

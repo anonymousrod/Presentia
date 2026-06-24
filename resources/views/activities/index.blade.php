@@ -80,9 +80,9 @@
                 </label>
                 <select name="type" class="form-select" style="border-radius: 0.5rem;">
                     <option value="">Tous les types</option>
-                    @foreach(\App\Enums\ActivityType::cases() as $type)
-                        <option value="{{ $type->value }}" {{ request('type') === $type->value ? 'selected' : '' }}>
-                            {{ $type->label() }}
+                    @foreach($activityTypes as $type)
+                        <option value="{{ $type->id }}" {{ request('type') == $type->id ? 'selected' : '' }}>
+                            {{ $type->name }}
                         </option>
                     @endforeach
                 </select>
@@ -97,7 +97,7 @@
                     $statusFilter = request()->has('status_filter') ? request('status_filter') : 'upcoming';
                 @endphp
                 <select name="status_filter" class="form-select" style="border-radius: 0.5rem;">
-                    <option value="" {{ $statusFilter === '' || $statusFilter === null ? 'selected' : '' }}>Tous les statuts</option>
+                    <option value="all" {{ $statusFilter === 'all' || $statusFilter === null || $statusFilter === '' ? 'selected' : '' }}>Tous les statuts</option>
                     <option value="upcoming"  {{ $statusFilter === 'upcoming'  ? 'selected' : '' }}>🕐 À venir</option>
                     <option value="ongoing"   {{ $statusFilter === 'ongoing'   ? 'selected' : '' }}>🟢 En cours</option>
                     <option value="finished"  {{ $statusFilter === 'finished'  ? 'selected' : '' }}>✅ Terminée</option>
@@ -194,7 +194,7 @@
                             {{-- Badge type --}}
                             <span class="badge rounded-pill px-2 py-1"
                                   style="background: rgba(var(--vz-info-rgb), 0.15); color: var(--vz-info); font-size: 0.72rem; border: 1px solid rgba(var(--vz-info-rgb), 0.25);">
-                                <i class="mdi mdi-tag-outline me-1"></i>{{ $activity->type->label() }}
+                                <i class="mdi mdi-tag-outline me-1"></i>{{ $activity->activityType?->name ?? 'N/A' }}
                             </span>
                             {{-- Badge état temporel --}}
                             <span class="badge rounded-pill px-2 py-1 d-inline-flex align-items-center"

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Group;
 use App\Models\User;
+use App\Models\ActivityType;
 use Spatie\Permission\Models\Role;
 use App\Events\ActivityCreated;
 use App\Http\Requests\Admin\StoreActivityRequest;
@@ -30,16 +31,18 @@ class ActivityController extends Controller
         }
 
         if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            $query->where('activity_type_id', $request->type);
         }
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        $activities = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $activities = $query->orderBy('created_at', 'desc')->paginate(10)->appends(request()->query());
 
-        return view('admin.activities.index', compact('activities'));
+        $activityTypes = ActivityType::orderBy('name')->get();
+
+        return view('admin.activities.index', compact('activities', 'activityTypes'));
     }
 
     /**
@@ -53,7 +56,9 @@ class ActivityController extends Controller
         $groups = Group::all();
         $roles = Role::all();
 
-        return view('admin.activities.create', compact('responsibles', 'groups', 'roles'));
+        $activityTypes = ActivityType::orderBy('name')->get();
+
+        return view('admin.activities.create', compact('responsibles', 'groups', 'roles', 'activityTypes'));
     }
 
     /**
@@ -183,7 +188,9 @@ class ActivityController extends Controller
         $groups = Group::all();
         $roles = Role::all();
 
-        return view('admin.activities.edit', compact('activity', 'responsibles', 'groups', 'roles'));
+        $activityTypes = ActivityType::orderBy('name')->get();
+
+        return view('admin.activities.edit', compact('activity', 'responsibles', 'groups', 'roles', 'activityTypes'));
     }
 
     /**
