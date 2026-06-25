@@ -7,7 +7,6 @@ use App\Models\Activity;
 use App\Models\ActivityType;
 use App\Models\Attendance;
 use App\Models\Group;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

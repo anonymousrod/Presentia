@@ -111,4 +111,3 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::get('/chart/affluence-by-activity', [App\Http\Controllers\Admin\StatisticsController::class, 'chartAffluenceByActivity'])->name('chart.affluence-by-activity');
     });
 });
-
