@@ -1,14 +1,97 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Modifier le groupe « {{ $group->name }} »</h2>
-        <a href="{{ route('admin.groups.show', $group) }}" class="btn btn-secondary">
-            <i class="mdi mdi-arrow-left"></i> Retour
-        </a>
-    </div>
+@push('css')
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+<style>
+    /* Thematic Section Headers */
+    .section-header {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--vz-primary);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .section-header i {
+        margin-right: 0.5rem;
+        font-size: 1.2rem;
+    }
+    .section-header::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(var(--vz-primary-rgb), 0.15);
+        margin-left: 1rem;
+    }
 
+    /* Custom Inputs */
+    .premium-input {
+        border-radius: 0.5rem;
+        padding: 0.65rem 1rem;
+        transition: all 0.3s ease;
+    }
+    .premium-input:focus {
+        border-color: var(--vz-primary);
+        box-shadow: 0 0 0 0.25rem rgba(var(--vz-primary-rgb), 0.15);
+    }
+    
+    /* Save Button */
+    .btn-save {
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 10px rgba(var(--vz-primary-rgb), 0.3);
+        transition: all 0.3s;
+    }
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(var(--vz-primary-rgb), 0.4);
+    }
+
+    .ts-wrapper.form-select {
+        padding: 0;
+        border: none;
+        height: auto;
+    }
+    .ts-control {
+        border-radius: 0.5rem;
+        border: 1px solid var(--vz-border-color);
+        padding: 0.65rem 1rem;
+        transition: all 0.3s ease;
+    }
+    .ts-control.focus {
+        border-color: var(--vz-primary);
+        box-shadow: 0 0 0 0.25rem rgba(var(--vz-primary-rgb), 0.15);
+    }
+    .ts-dropdown {
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+    }
+</style>
+@endpush
+
+@section('content')
+
+<div class="row mb-3 pb-1 mt-4 px-4">
+    <div class="col-12">
+        <div class="d-flex align-items-lg-center flex-lg-row flex-column justify-content-between">
+            <div class="flex-grow-1">
+                <h4 class="fs-16 mb-1">Modifier le groupe « {{ $group->name }} »</h4>
+                <p class="text-muted mb-0">Modifiez les informations du groupe ci-dessous.</p>
+            </div>
+            <div class="mt-3 mt-lg-0">
+                <a href="{{ route('admin.groups.show', $group) }}" class="btn btn-soft-secondary d-flex align-items-center gap-1">
+                    <i class="mdi mdi-arrow-left"></i> Retour au groupe
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid max-w-1200 px-4">
     @if($errors->any())
         <div class="alert alert-danger">
             <ul class="mb-0">
@@ -19,90 +102,91 @@
         </div>
     @endif
 
-    <div class="card">
-        <div class="card-body">
-            <form action="{{ route('admin.groups.update', $group) }}" method="POST">
-                @csrf
-                @method('PUT')
+    <form action="{{ route('admin.groups.update', $group) }}" method="POST">
+        @csrf
+        @method('PUT')
+        
+        <div class="row g-4">
+            <!-- Left Column: Main Information -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm mb-4" style="border-radius: 1rem;">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="section-header">
+                            <i class="mdi mdi-information-outline"></i> Informations principales
+                        </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="name" class="form-label">Nom du groupe <span class="text-danger">*</span></label>
-                        <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror"
-                            value="{{ old('name', $group->name) }}" required>
-                        @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                    </div>
-                    <div class="col-md-4">
-                        <label for="category" class="form-label">Catégorie</label>
-                        <input type="text" id="category" name="category" class="form-control @error('category') is-invalid @enderror"
-                            value="{{ old('category', $group->category) }}">
-                        @error('category')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                    </div>
-                    <div class="col-md-2">
-                        <label for="color" class="form-label">Couleur</label>
-                        <input type="color" id="color" name="color" class="form-control form-control-color w-100 @error('color') is-invalid @enderror"
-                            value="{{ old('color', $group->color ?? '#3B7DD8') }}" title="Choisir la couleur du groupe">
-                        @error('color')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-medium text-body">Nom du groupe <span class="text-danger">*</span></label>
+                                <input type="text" id="name" name="name" class="form-control premium-input @error('name') is-invalid @enderror"
+                                    value="{{ old('name', $group->name) }}" placeholder="Ex: Groupe Jeunesse" required>
+                                @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="category" class="form-label fw-medium text-body">Catégorie</label>
+                                <input type="text" id="category" name="category" class="form-control premium-input @error('category') is-invalid @enderror"
+                                    value="{{ old('category', $group->category) }}" placeholder="Ex : Louvetisme...">
+                                @error('category')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="form-label fw-medium text-body">Description</label>
+                            <textarea id="description" name="description" class="form-control premium-input @error('description') is-invalid @enderror"
+                                rows="5" placeholder="Description du groupe">{{ old('description', $group->description) }}</textarea>
+                            @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea id="description" name="description" class="form-control @error('description') is-invalid @enderror"
-                        rows="3">{{ old('description', $group->description) }}</textarea>
-                    @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
+            <!-- Right Column: Settings & Submit -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm mb-4" style="border-radius: 1rem; position: sticky; top: 100px;">
+                    <div class="card-body p-4">
+                        <div class="section-header">
+                            <i class="mdi mdi-cog-outline"></i> Configuration
+                        </div>
 
-                <div class="mb-4">
-                    <label for="leader_id" class="form-label">Chef de groupe</label>
-                    <select id="leader_id" name="leader_id" class="form-select @error('leader_id') is-invalid @enderror">
-                        <option value="">— Aucun chef désigné —</option>
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ old('leader_id', $group->leader_id) == $user->id ? 'selected' : '' }}>
-                                {{ $user->first_name }} {{ $user->name }}
-                                @if($user->phone) ({{ $user->phone }}) @endif
-                            </option>
-                        @endforeach
-                    </select>
-                    <div class="form-text text-info">
-                        <i class="mdi mdi-information"></i>
-                        Changer le chef lui attribuera automatiquement le rôle "Chef de groupe".
+                        <div class="mb-4">
+                            <label for="color" class="form-label fw-medium text-body">Couleur <span class="text-danger">*</span></label>
+                            <input type="color" id="color" name="color" class="form-control form-control-color w-100 premium-input px-1 py-1 @error('color') is-invalid @enderror"
+                                value="{{ old('color', $group->color ?? '#3B7DD8') }}" title="Choisir la couleur" style="height: 50px;">
+                            @error('color')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        <hr class="border-dashed my-4">
+
+                        <div class="mb-4">
+                            <label for="leader_id" class="form-label fw-medium text-body">Chef de groupe</label>
+                            <select id="leader_id" name="leader_id" class="form-select @error('leader_id') is-invalid @enderror">
+                                <option value="">— Aucun chef désigné —</option>
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}" {{ old('leader_id', $group->leader_id) == $user->id ? 'selected' : '' }}>
+                                        {{ $user->first_name }} {{ $user->name }}
+                                        @if($user->phone) ({{ $user->phone }}) @endif
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="form-text text-info mt-2" style="font-size: 0.8rem;">
+                                <i class="mdi mdi-information"></i>
+                                Attribue automatiquement le rôle "Chef de groupe".
+                            </div>
+                            @error('leader_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="d-grid mt-4 pt-2">
+                            <button type="submit" class="btn btn-primary btn-save">
+                                <i class="mdi mdi-check-all me-1"></i> Enregistrer
+                            </button>
+                        </div>
                     </div>
-                    @error('leader_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
-
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="mdi mdi-check"></i> Enregistrer les modifications
-                    </button>
-                    <a href="{{ route('admin.groups.show', $group) }}" class="btn btn-secondary">Annuler</a>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
-
-@push('css')
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
-<style>
-    .ts-wrapper.form-select {
-        padding: 0;
-        border: none;
-        height: auto;
-    }
-    .ts-control {
-        border-radius: 0.25rem;
-        border: 1px solid #ced4da;
-        padding: 0.47rem 0.75rem;
-        font-size: 0.875rem;
-    }
-    .ts-dropdown {
-        border-radius: 0.25rem;
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
-        font-size: 0.875rem;
-    }
-</style>
-@endpush
+@endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
@@ -116,4 +200,3 @@
     });
 </script>
 @endpush
-@endsection

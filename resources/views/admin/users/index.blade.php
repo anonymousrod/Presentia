@@ -32,11 +32,11 @@
     <div class="card mb-4">
         <div class="card-body">
             <form action="{{ route('admin.users.index') }}" method="GET" class="row g-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label">Recherche</label>
                     <input type="text" name="search" class="form-control" value="{{ request('search') }}" placeholder="Nom, prénom, téléphone...">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label">Statut</label>
                     <select name="status" class="form-select">
                         <option value="">Tous les statuts</option>
@@ -46,7 +46,15 @@
                         <option value="SUSPENDED" {{ request('status') === 'SUSPENDED' ? 'selected' : '' }}>Suspendu</option>
                     </select>
                 </div>
-                <div class="col-12 col-md-4 d-flex gap-2 align-items-end mt-2 mt-md-0">
+                <div class="col-md-3">
+                    <label class="form-label">Répertoire</label>
+                    <select name="directory" class="form-select">
+                        <option value="">Tous les membres</option>
+                        <option value="recenses" {{ request('directory') === 'recenses' ? 'selected' : '' }}>Membres recensés</option>
+                        <option value="hors_repertoire" {{ request('directory') === 'hors_repertoire' ? 'selected' : '' }}>Hors répertoire</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-3 d-flex gap-2 align-items-end mt-2 mt-md-0">
                     <button type="submit" class="btn btn-primary flex-grow-1">Filtrer</button>
                     <a href="{{ route('admin.users.index') }}" class="btn btn-secondary flex-shrink-0">Réinitialiser</a>
                 </div>

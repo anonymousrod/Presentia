@@ -2,25 +2,132 @@
 
 @section('title', 'Tableau de Bord')
 
+@push('css')
+<style>
+    /* Hero Section */
+    .activity-hero {
+        background-color: #0b0f19;
+        background-image: 
+            radial-gradient(circle at 0% 0%, rgba(var(--vz-primary-rgb), 0.25) 0%, transparent 50%),
+            radial-gradient(circle at 100% 100%, rgba(var(--vz-info-rgb), 0.2) 0%, transparent 50%);
+        padding: 4rem 0 6rem 0;
+        position: relative;
+        overflow: hidden;
+        margin: -1.5rem -1.5rem 2rem -1.5rem;
+        border-bottom-left-radius: 2rem;
+        border-bottom-right-radius: 2rem;
+        box-shadow: inset 0 -20px 40px -20px rgba(0,0,0,0.5);
+    }
+    
+    /* Grid Pattern */
+    .hero-grid {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-image: 
+            linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 1;
+    }
+    
+    /* Glowing Orbs */
+    .hero-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.6;
+        z-index: 0;
+        animation: orbFloat 12s infinite alternate ease-in-out;
+    }
+    .orb-1 {
+        width: 350px; height: 350px;
+        background: var(--vz-primary);
+        top: -150px; left: -100px;
+    }
+    .orb-2 {
+        width: 300px; height: 300px;
+        background: var(--vz-info);
+        bottom: -100px; right: 5%;
+        animation-delay: -6s;
+    }
+
+    @keyframes orbFloat {
+        0% { transform: translateY(0) scale(1); }
+        100% { transform: translateY(40px) scale(1.1); }
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 5;
+    }
+
+    .hero-icon-container {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 130px;
+        height: 130px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 2.5rem;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        transform: rotate(12deg);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.05);
+        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .hero-icon-container:hover {
+        transform: rotate(0deg) scale(1.05);
+    }
+    .hero-icon-container i {
+        font-size: 4.5rem;
+        background: linear-gradient(135deg, #ffffff, rgba(255,255,255,0.4));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+    }
+
+    .hero-badge {
+        background: rgba(var(--vz-primary-rgb), 0.15);
+        border: 1px solid rgba(var(--vz-primary-rgb), 0.3);
+        color: #fff;
+        backdrop-filter: blur(5px);
+    }
+</style>
+@endpush
+
 @section('content')
     <div class="row">
         <div class="col">
 
             <div class="h-100">
-                <div class="row mb-3 pb-1">
-                    <div class="col-12">
-                        <div class="d-flex align-items-lg-center flex-lg-row flex-column">
-                            <div class="flex-grow-1">
-                                <h4 class="fs-16 mb-1">Bonjour, {{ auth()->user()->first_name }} !</h4>
-                                <p class="text-muted mb-0">Voici un résumé de l'activité sur Presentia aujourd'hui.</p>
+                <div class="activity-hero px-4">
+                    <div class="hero-grid"></div>
+                    <div class="hero-orb orb-1"></div>
+                    <div class="hero-orb orb-2"></div>
+                    
+                    <div class="container-fluid max-w-1200 hero-content">
+                        <div class="row align-items-center">
+                            <div class="col-lg-8">
+                                <div class="d-flex align-items-center mb-4">
+                                    <span class="badge hero-badge px-3 py-2 rounded-pill shadow-sm" style="font-size: 0.75rem; letter-spacing: 1px;"><i class="mdi mdi-view-dashboard text-warning me-1"></i> TABLEAU DE BORD</span>
+                                </div>
+                                <h1 class="text-white fw-bold display-4 mb-3" style="letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">Bonjour, <span style="color: var(--vz-primary); filter: brightness(1.3);">{{ auth()->user()->first_name }} !</span></h1>
+                                <p class="fs-16 mb-0" style="max-width: 550px; line-height: 1.6; color: rgba(255,255,255,0.7);">
+                                    Voici un résumé complet de l'activité sur Presentia aujourd'hui.
+                                </p>
                             </div>
-                        </div><!-- end card header -->
+                            <div class="col-lg-4 d-none d-lg-flex justify-content-end align-items-center">
+                                <div class="hero-icon-container">
+                                    <i class="mdi mdi-view-dashboard-outline"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <!--end col-->
                 </div>
-                <!--end row-->
 
-                <div class="row">
+                <div class="row" style="margin-top: -5rem; position: relative; z-index: 10;">
                     <div class="col-12 col-md-6 col-xl-3">
                         <!-- card -->
                         <div class="card card-animate">

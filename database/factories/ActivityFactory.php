@@ -31,6 +31,7 @@ class ActivityFactory extends Factory
             'location' => fake()->address(),
             'capacity' => 50,
             'qr_version' => 1,
+            'is_registration_required' => true,
         ];
     }
 }

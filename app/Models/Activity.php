@@ -30,6 +30,7 @@ class Activity extends Model
         'responsible_id',
         'cancellation_reason',
         'qr_version',
+        'is_registration_required',
     ];
 
     protected $casts = [
@@ -38,6 +39,7 @@ class Activity extends Model
         // 'type' is now a relation
         'status'     => \App\Enums\ActivityStatus::class,
         'visibility' => \App\Enums\ActivityVisibility::class,
+        'is_registration_required' => 'boolean',
     ];
 
     /**

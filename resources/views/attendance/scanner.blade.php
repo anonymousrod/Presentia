@@ -119,8 +119,17 @@
             // Extraction des paramètres si c'est une URL complète
             let targetUrl = url;
             
+            try {
+                // On remplace le domaine du QR Code (ex: 127.0.0.1:8000) par le domaine actuel (ex: ngrok)
+                // Cela évite l'erreur 'failed to fetch' quand on scanne depuis un téléphone
+                let parsedUrl = new URL(url);
+                targetUrl = window.location.origin + parsedUrl.pathname + parsedUrl.search;
+            } catch (e) {
+                // Si l'URL n'est pas absolue, on la laisse telle quelle
+            }
+            
             // On vérifie que c'est une URL de validation
-            if (!url.includes('/attendance/validate') && !url.includes('/attendance/scan')) {
+            if (!targetUrl.includes('/attendance/validate') && !targetUrl.includes('/attendance/scan')) {
                 showFinalResult(false, "QR Code Invalide", "Ce QR Code n'est pas reconnu par le système de présence.");
                 return;
             }

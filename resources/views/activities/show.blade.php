@@ -207,6 +207,21 @@
             </div>
         @endcan
 
+        @if(!$activity->is_registration_required)
+            <div class="card shadow-sm border-0 animate__animated animate__fadeIn">
+                <div class="card-header bg-soft-info border-0 py-3">
+                    <h5 class="card-title mb-0 fw-bold text-info"><i class="mdi mdi-door-open me-2"></i>Entrée libre</h5>
+                </div>
+                <div class="card-body p-3 p-md-4 text-center">
+                    <div class="mb-3">
+                        <i class="mdi mdi-information-outline text-info" style="font-size: 3rem;"></i>
+                    </div>
+                    <p class="text-muted fs-14 mb-0">
+                        L'inscription préalable n'est pas requise pour cette activité. Vous pourrez directement scanner le QR Code sur place pour valider votre présence.
+                    </p>
+                </div>
+            </div>
+        @else
         <div class="card shadow-sm border-0">
             <div class="card-header bg-soft-primary border-0 py-3">
                 <h5 class="card-title mb-0 fw-bold text-primary"><i class="mdi mdi-cog-outline me-2"></i>Mon Inscription</h5>
@@ -355,6 +370,7 @@
                 </form>
             </div>
         </div>
+        @endif
     </div>
 </div>
 

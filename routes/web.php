@@ -44,8 +44,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('attendance/scan', [App\Http\Controllers\AttendanceScanController::class, 'scanner'])->name('attendance.scan');
     Route::get('attendance/success/{activity}', [App\Http\Controllers\AttendanceScanController::class, 'success'])->name('attendance.success');
     Route::match(['get', 'post'], 'attendance/validate', [App\Http\Controllers\AttendanceController::class, 'validate'])
-        ->name('attendance.validate')
-        ->middleware('signed');
+        ->name('attendance.validate');
 
     // Profile & Settings
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');

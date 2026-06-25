@@ -34,6 +34,10 @@ class UpdateActivityRequest extends FormRequest
         if ($visibility !== 'ROLE') {
             $this->merge(['visibility_role_id' => null]);
         }
+
+        if (!$this->has('is_registration_required')) {
+            $this->merge(['is_registration_required' => false]);
+        }
     }
 
     /**
@@ -57,6 +61,7 @@ class UpdateActivityRequest extends FormRequest
             'capacity'            => ['nullable', 'integer', 'min:1'],
             'responsible_id'      => ['nullable', 'exists:users,id'],
             'cancellation_reason' => ['required_if:status,CANCELLED', 'nullable', 'string'],
+            'is_registration_required' => ['nullable', 'boolean'],
         ];
     }
 

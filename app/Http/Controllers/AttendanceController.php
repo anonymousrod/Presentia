@@ -16,7 +16,40 @@ class AttendanceController extends Controller
      */
     public function validate(Request $request)
     {
-        // La signature est vérifiée par le middleware 'signed' dans les routes
+        // Validation personnalisée de la signature pour supporter ngrok / localhost
+        $isValid = $request->hasValidSignature();
+        
+        if (!$isValid) {
+            $signature = $request->query('signature');
+            $query = $request->query();
+            unset($query['signature']);
+            
+            $queryString = http_build_query($query);
+            $urlPath = $request->path();
+            
+            $possibleHosts = [
+                'http://127.0.0.1:8000',
+                'http://localhost:8000',
+                config('app.url')
+            ];
+            
+            $matched = false;
+            foreach ($possibleHosts as $host) {
+                $host = rtrim($host, '/');
+                $testUrl = $host . '/' . $urlPath . ($queryString ? '?' . $queryString : '');
+                if (hash_equals(hash_hmac('sha256', $testUrl, config('app.key')), (string) $signature)) {
+                    $matched = true;
+                    break;
+                }
+            }
+            
+            if (!$matched) {
+                if ($request->ajax()) {
+                    return response()->json(['status' => 'error', 'message' => 'Lien expiré ou signature invalide (Problème de domaine ngrok/localhost).'], 403);
+                }
+                abort(403, 'Lien expiré ou signature invalide.');
+            }
+        }
 
         $activityId = $request->query('activity');
         $version = $request->query('v');
@@ -30,7 +63,7 @@ class AttendanceController extends Controller
 
         $isRegistered = $registration && $registration->status !== 'ABSENT_JUSTIFIED';
 
-        if (!$isRegistered) {
+        if ($activity->is_registration_required && !$isRegistered) {
             $errorMessage = "Vous ne pouvez pas valider votre présence sans être inscrit à cette activité.";
             if ($activity->start_time->lte(now())) {
                 $errorMessage .= " Vous ne pouvez plus vous inscrire à cette activité. Veuillez contacter votre responsable de groupe ou le Président de la jeunesse afin qu'il puisse marquer votre présence.";

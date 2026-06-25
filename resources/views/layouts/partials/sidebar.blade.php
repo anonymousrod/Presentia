@@ -37,7 +37,7 @@
                         {{-- 1. Tableau de bord --}}
                         @if(auth()->check())
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('dashboard') }}">
+                            <a class="nav-link menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                                 <i class="mdi mdi-speedometer"></i> <span>Tableau de bord</span>
                             </a>
                         </li>
@@ -46,7 +46,7 @@
                         {{-- 2. Scanner QR --}}
                         @can('attendance.scan_qr')
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('attendance.scan') }}">
+                            <a class="nav-link menu-link {{ request()->routeIs('attendance.scan') ? 'active' : '' }}" href="{{ route('attendance.scan') }}">
                                 <i class="mdi mdi-qrcode-scan"></i> <span>Scanner QR</span>
                             </a>
                         </li>
@@ -56,39 +56,39 @@
                         @if(auth()->check())
                             @canany(['activity.create', 'activity.edit', 'activity.view', 'attendance.view_own', 'attendance.validate_manual_own', 'attendance.validate_manual_all'])
                             <li class="nav-item">
-                                <a class="nav-link menu-link" href="#sidebarActivities" data-bs-toggle="collapse"
-                                    role="button" aria-expanded="false" aria-controls="sidebarActivities">
+                                <a class="nav-link menu-link {{ request()->routeIs('activities.*', 'admin.activities.*', 'admin.activity-types.*') ? 'active' : '' }}" href="#sidebarActivities" data-bs-toggle="collapse"
+                                    role="button" aria-expanded="{{ request()->routeIs('activities.*', 'admin.activities.*', 'admin.activity-types.*') ? 'true' : 'false' }}" aria-controls="sidebarActivities">
                                     <i class="mdi mdi-calendar-text"></i> <span>Gestion des activités</span>
                                 </a>
-                                <div class="collapse menu-dropdown" id="sidebarActivities">
+                                <div class="collapse menu-dropdown {{ request()->routeIs('activities.*', 'admin.activities.*', 'admin.activity-types.*') ? 'show' : '' }}" id="sidebarActivities">
                                     <ul class="nav nav-sm flex-column">
                                         <li class="nav-item">
-                                            <a href="{{ route('activities.index') }}" class="nav-link">
+                                            <a href="{{ route('activities.index') }}" class="nav-link {{ request()->routeIs('activities.index') && !request()->has('manageable') ? 'active' : '' }}">
                                                 Activités publiées
                                             </a>
                                         </li>
                                         @can('activity.view')
                                         <li class="nav-item">
-                                            <a href="{{ route('admin.activities.index') }}" class="nav-link">
+                                            <a href="{{ route('admin.activities.index') }}" class="nav-link {{ request()->routeIs('admin.activities.*') && !request()->routeIs('admin.activities.create') ? 'active' : '' }}">
                                                 Toutes les activités
                                             </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="{{ route('admin.activity-types.index') }}" class="nav-link">
+                                            <a href="{{ route('admin.activity-types.index') }}" class="nav-link {{ request()->routeIs('admin.activity-types.*') ? 'active' : '' }}">
                                                 Types d'activités
                                             </a>
                                         </li>
                                         @endcan
                                         @can('activity.create')
                                         <li class="nav-item">
-                                            <a href="{{ route('admin.activities.create') }}" class="nav-link">
+                                            <a href="{{ route('admin.activities.create') }}" class="nav-link {{ request()->routeIs('admin.activities.create') ? 'active' : '' }}">
                                                 Créer une activité
                                             </a>
                                         </li>
                                         @endcan
                                         @canany(['attendance.validate_manual_own', 'attendance.validate_manual_all'])
                                         <li class="nav-item">
-                                            <a href="{{ route('activities.index', ['manageable' => 1]) }}" class="nav-link">
+                                            <a href="{{ route('activities.index', ['manageable' => 1]) }}" class="nav-link {{ request()->routeIs('activities.index') && request()->has('manageable') ? 'active' : '' }}">
                                                 Émargement Groupe
                                             </a>
                                         </li>
@@ -98,7 +98,7 @@
                             </li>
                             @else
                             <li class="nav-item">
-                                <a class="nav-link menu-link" href="{{ route('activities.index') }}">
+                                <a class="nav-link menu-link {{ request()->routeIs('activities.*') ? 'active' : '' }}" href="{{ route('activities.index') }}">
                                     <i class="mdi mdi-calendar-text"></i> <span>Activités</span>
                                 </a>
                             </li>
@@ -108,20 +108,20 @@
                         {{-- 4. Gestion des groupes --}}
                         @can('group.view')
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarGroups" data-bs-toggle="collapse"
-                                role="button" aria-expanded="false" aria-controls="sidebarGroups">
+                            <a class="nav-link menu-link {{ request()->routeIs('admin.groups.*') ? 'active' : '' }}" href="#sidebarGroups" data-bs-toggle="collapse"
+                                role="button" aria-expanded="{{ request()->routeIs('admin.groups.*') ? 'true' : 'false' }}" aria-controls="sidebarGroups">
                                 <i class="mdi mdi-account-group-outline"></i> <span>Gestion des groupes</span>
                             </a>
-                            <div class="collapse menu-dropdown" id="sidebarGroups">
+                            <div class="collapse menu-dropdown {{ request()->routeIs('admin.groups.*') ? 'show' : '' }}" id="sidebarGroups">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.groups.index') }}" class="nav-link">
+                                        <a href="{{ route('admin.groups.index') }}" class="nav-link {{ request()->routeIs('admin.groups.index') ? 'active' : '' }}">
                                             Liste des groupes
                                         </a>
                                     </li>
                                     @can('group.create')
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.groups.create') }}" class="nav-link">
+                                        <a href="{{ route('admin.groups.create') }}" class="nav-link {{ request()->routeIs('admin.groups.create') ? 'active' : '' }}">
                                             Créer un groupe
                                         </a>
                                     </li>
@@ -134,7 +134,7 @@
                         {{-- Mes Groupes (Profil) --}}
                         @if(auth()->check())
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('profile.edit') }}#groups">
+                            <a class="nav-link menu-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}" href="{{ route('profile.edit') }}#groups">
                                 <i class="mdi mdi-account-group-outline"></i> <span>Mes Groupes</span>
                             </a>
                         </li>
@@ -143,20 +143,20 @@
                         {{-- 5. Gestion des membres --}}
                         @can('member.view')
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarMembers" data-bs-toggle="collapse"
-                                role="button" aria-expanded="false" aria-controls="sidebarMembers">
+                            <a class="nav-link menu-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="#sidebarMembers" data-bs-toggle="collapse"
+                                role="button" aria-expanded="{{ request()->routeIs('admin.users.*') ? 'true' : 'false' }}" aria-controls="sidebarMembers">
                                 <i class="mdi mdi-account-multiple-outline"></i> <span>Gestion des membres</span>
                             </a>
-                            <div class="collapse menu-dropdown" id="sidebarMembers">
+                            <div class="collapse menu-dropdown {{ request()->routeIs('admin.users.*') ? 'show' : '' }}" id="sidebarMembers">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.users.index') }}" class="nav-link">
+                                        <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
                                             Liste des membres
                                         </a>
                                     </li>
                                     @can('member.create')
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.users.create') }}" class="nav-link">
+                                        <a href="{{ route('admin.users.create') }}" class="nav-link {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
                                             Nouveau membre
                                         </a>
                                     </li>
@@ -203,11 +203,11 @@
                         {{-- Statistiques & Rapports --}}
                         @canany(['stats.view_global', 'stats.view_own_group', 'report.export_global', 'report.export_own_group'])
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarStats" data-bs-toggle="collapse"
-                                role="button" aria-expanded="false" aria-controls="sidebarStats">
+                            <a class="nav-link menu-link {{ request()->routeIs('admin.statistics.*') ? 'active' : '' }}" href="#sidebarStats" data-bs-toggle="collapse"
+                                role="button" aria-expanded="{{ request()->routeIs('admin.statistics.*') ? 'true' : 'false' }}" aria-controls="sidebarStats">
                                 <i class="mdi mdi-chart-bar"></i> <span>Statistiques & Rapports</span>
                             </a>
-                            <div class="collapse menu-dropdown" id="sidebarStats">
+                            <div class="collapse menu-dropdown {{ request()->routeIs('admin.statistics.*') ? 'show' : '' }}" id="sidebarStats">
                                 <ul class="nav nav-sm flex-column">
                                     @can('stats.view_global')
                                     <li class="nav-item">
@@ -232,29 +232,29 @@
                         {{-- Administration --}}
                         @canany(['role.manage', 'permission.manage', 'audit.view', 'member.edit'])
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarAdmin" data-bs-toggle="collapse"
-                                role="button" aria-expanded="false" aria-controls="sidebarAdmin">
+                            <a class="nav-link menu-link {{ request()->routeIs('admin.roles.*', 'admin.password-requests.*', 'admin.audit-logs.*') ? 'active' : '' }}" href="#sidebarAdmin" data-bs-toggle="collapse"
+                                role="button" aria-expanded="{{ request()->routeIs('admin.roles.*', 'admin.password-requests.*', 'admin.audit-logs.*') ? 'true' : 'false' }}" aria-controls="sidebarAdmin">
                                 <i class="mdi mdi-account-cog-outline"></i> <span data-key="t-admin">Administration</span>
                             </a>
-                            <div class="collapse menu-dropdown" id="sidebarAdmin">
+                            <div class="collapse menu-dropdown {{ request()->routeIs('admin.roles.*', 'admin.password-requests.*', 'admin.audit-logs.*') ? 'show' : '' }}" id="sidebarAdmin">
                                 <ul class="nav nav-sm flex-column">
                                     @canany(['role.manage', 'permission.manage'])
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.roles.index') }}" class="nav-link">
+                                        <a href="{{ route('admin.roles.index') }}" class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
                                             Rôles & Permissions
                                         </a>
                                     </li>
                                     @endcanany
                                     @can('member.edit')
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.password-requests.index') }}" class="nav-link">
+                                        <a href="{{ route('admin.password-requests.index') }}" class="nav-link {{ request()->routeIs('admin.password-requests.*') ? 'active' : '' }}">
                                             Demandes de Reset
                                         </a>
                                     </li>
                                     @endcan
                                     @can('audit.view')
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.audit-logs.index') }}" class="nav-link">
+                                        <a href="{{ route('admin.audit-logs.index') }}" class="nav-link {{ request()->routeIs('admin.audit-logs.*') ? 'active' : '' }}">
                                             Logs d'Audit
                                         </a>
                                     </li>

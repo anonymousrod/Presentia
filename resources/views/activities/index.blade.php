@@ -332,7 +332,12 @@
                             @endif
 
                             {{-- Bouton Inscription / Voir --}}
-                            @if($activity->start_time->lte(now()))
+                            @if(!$activity->is_registration_required)
+                                <span class="d-flex align-items-center justify-content-center gap-1 flex-grow-1 flex-sm-grow-0"
+                                      style="font-size: 0.8rem; color: var(--vz-info);">
+                                    <i class="mdi mdi-door-open"></i>Entrée libre
+                                </span>
+                            @elseif($activity->start_time->lte(now()))
                                 @if($regStatus && $regStatus !== 'ABSENT_JUSTIFIED')
                                     <span class="d-flex align-items-center justify-content-center gap-1 flex-grow-1 flex-sm-grow-0"
                                           style="font-size: 0.8rem; color: var(--vz-success);">

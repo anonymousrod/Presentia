@@ -380,6 +380,9 @@
                         if ($searchQuery) {
                             $filters[] = 'Recherche: "' . $searchQuery . '"';
                         }
+                        if (isset($directoryFilter) && $directoryFilter) {
+                            $filters[] = 'Répertoire: ' . $directoryFilter;
+                        }
                     @endphp
                     {{ count($filters) > 0 ? implode(', ', $filters) : 'Aucun' }}
                 </td>

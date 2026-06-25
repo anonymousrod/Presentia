@@ -56,6 +56,7 @@ class ActivitySeeder extends Seeder
                 'location' => 'Grand Temple de Cotonou',
                 'capacity' => 50,
                 'responsible_id' => $chef1->id,
+                'is_registration_required' => true,
             ]
         );
 
@@ -73,6 +74,7 @@ class ActivitySeeder extends Seeder
                 'location' => 'Parc de la Forêt',
                 'capacity' => 20,
                 'responsible_id' => $chef1->id,
+                'is_registration_required' => true,
             ]
         );
 
@@ -90,6 +92,7 @@ class ActivitySeeder extends Seeder
                 'location' => 'Salle Annexe 2',
                 'capacity' => 15,
                 'responsible_id' => $chef3->id,
+                'is_registration_required' => true,
             ]
         );
 
@@ -108,6 +111,7 @@ class ActivitySeeder extends Seeder
                 'location' => 'Bureau du Comité',
                 'capacity' => 10,
                 'responsible_id' => $chef3->id,
+                'is_registration_required' => true,
             ]
         );
 
@@ -124,6 +128,7 @@ class ActivitySeeder extends Seeder
                 'location' => 'Base de Plein Air Nature',
                 'capacity' => 100,
                 'responsible_id' => $chef1->id,
+                'is_registration_required' => true,
             ]
         );
 

@@ -17,6 +17,7 @@ return new class () extends Migration {
                   ->index();
             $table->enum('visibility', ['ALL', 'GROUP', 'ROLE'])
                   ->default('ALL');
+            $table->boolean('is_registration_required')->default(false);
             $table->dateTime('start_time');
             $table->dateTime('end_time');
             $table->string('location')->nullable();

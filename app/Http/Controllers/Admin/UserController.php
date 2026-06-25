@@ -39,6 +39,19 @@ class UserController extends Controller
             $query->where('status', $status);
         }
 
+        // Filtre de répertoire
+        if ($directory = $request->input('directory')) {
+            if ($directory === 'recenses') {
+                $query->whereHas('groups', function ($q) {
+                    $q->whereNull('group_members.left_at');
+                });
+            } elseif ($directory === 'hors_repertoire') {
+                $query->whereDoesntHave('groups', function ($q) {
+                    $q->whereNull('group_members.left_at');
+                });
+            }
+        }
+
         // Pagination
         $users = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
 
@@ -197,6 +210,21 @@ class UserController extends Controller
             $statusFilter = $status;
         }
 
+        $directoryFilter = null;
+        if ($directory = $request->input('directory')) {
+            if ($directory === 'recenses') {
+                $query->whereHas('groups', function ($q) {
+                    $q->whereNull('group_members.left_at');
+                });
+                $directoryFilter = 'Membres recensés';
+            } elseif ($directory === 'hors_repertoire') {
+                $query->whereDoesntHave('groups', function ($q) {
+                    $q->whereNull('group_members.left_at');
+                });
+                $directoryFilter = 'Hors répertoire';
+            }
+        }
+
         $searchQuery = null;
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
@@ -222,7 +250,7 @@ class UserController extends Controller
             $logoJeunesseBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoJeunessePath));
         }
 
-        $pdf = Pdf::loadView('admin.users.pdf', compact('users', 'statusFilter', 'searchQuery', 'logoUeebBase64', 'logoJeunesseBase64'));
+        $pdf = Pdf::loadView('admin.users.pdf', compact('users', 'statusFilter', 'searchQuery', 'directoryFilter', 'logoUeebBase64', 'logoJeunesseBase64'));
         return $pdf->download("Liste_Membres_" . now()->format('Ymd-His') . ".pdf");
     }
 }
