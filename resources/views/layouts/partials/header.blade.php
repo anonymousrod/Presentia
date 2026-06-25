@@ -36,93 +36,19 @@
                 <!-- App Search-->
                 <form class="app-search d-none d-md-block">
                     <div class="position-relative">
-                        <input type="text" class="form-control" placeholder="Search..." autocomplete="off"
+                        <input type="text" class="form-control" placeholder="Rechercher une activité, un membre..." autocomplete="off"
                             id="search-options" value="">
                         <span class="mdi mdi-magnify search-widget-icon"></span>
                         <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none"
                             id="search-close-options"></span>
                     </div>
                     <div class="dropdown-menu dropdown-menu-lg" id="search-dropdown">
-                        <div data-simplebar style="max-height: 320px;">
-                            <!-- item-->
-                            <div class="dropdown-header">
-                                <h6 class="text-overflow text-muted mb-0 text-uppercase">Recent Searches</h6>
+                        <div data-simplebar style="max-height: 320px;" id="search-results-container">
+                            <div class="text-center pt-3 pb-3">
+                                <div class="spinner-border text-primary spinner-border-sm" role="status">
+                                    <span class="visually-hidden">Chargement...</span>
+                                </div>
                             </div>
-
-                            <div class="dropdown-item bg-transparent text-wrap">
-                                <a href="index.html" class="btn btn-soft-secondary btn-sm rounded-pill">how to
-                                    setup <i class="mdi mdi-magnify ms-1"></i></a>
-                                <a href="index.html" class="btn btn-soft-secondary btn-sm rounded-pill">buttons
-                                    <i class="mdi mdi-magnify ms-1"></i></a>
-                            </div>
-                            <!-- item-->
-                            <div class="dropdown-header mt-2">
-                                <h6 class="text-overflow text-muted mb-1 text-uppercase">Pages</h6>
-                            </div>
-
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                <i class="ri-bubble-chart-line align-middle fs-18 text-muted me-2"></i>
-                                <span>Analytics Dashboard</span>
-                            </a>
-
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                <i class="ri-lifebuoy-line align-middle fs-18 text-muted me-2"></i>
-                                <span>Help Center</span>
-                            </a>
-
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                <i class="ri-user-settings-line align-middle fs-18 text-muted me-2"></i>
-                                <span>My account settings</span>
-                            </a>
-
-                            <!-- item-->
-                            <div class="dropdown-header mt-2">
-                                <h6 class="text-overflow text-muted mb-2 text-uppercase">Members</h6>
-                            </div>
-
-                            <div class="notification-list">
-                                <!-- item -->
-                                <a href="javascript:void(0);" class="dropdown-item notify-item py-2">
-                                    <div class="d-flex">
-                                        <img src="{{ asset('assets/images/users/avatar-2.jpg') }}"
-                                            class="me-3 rounded-circle avatar-xs" alt="user-pic">
-                                        <div class="flex-grow-1">
-                                            <h6 class="m-0">Angela Bernier</h6>
-                                            <span class="fs-11 mb-0 text-muted">Manager</span>
-                                        </div>
-                                    </div>
-                                </a>
-                                <!-- item -->
-                                <a href="javascript:void(0);" class="dropdown-item notify-item py-2">
-                                    <div class="d-flex">
-                                        <img src="{{ asset('assets/images/users/avatar-3.jpg') }}"
-                                            class="me-3 rounded-circle avatar-xs" alt="user-pic">
-                                        <div class="flex-grow-1">
-                                            <h6 class="m-0">David Grasso</h6>
-                                            <span class="fs-11 mb-0 text-muted">Web Designer</span>
-                                        </div>
-                                    </div>
-                                </a>
-                                <!-- item -->
-                                <a href="javascript:void(0);" class="dropdown-item notify-item py-2">
-                                    <div class="d-flex">
-                                        <img src="{{ asset('assets/images/users/avatar-5.jpg') }}"
-                                            class="me-3 rounded-circle avatar-xs" alt="user-pic">
-                                        <div class="flex-grow-1">
-                                            <h6 class="m-0">Mike Bunch</h6>
-                                            <span class="fs-11 mb-0 text-muted">React Developer</span>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="text-center pt-3 pb-1">
-                            <a href="pages-search-results.html" class="btn btn-primary btn-sm">View All Results
-                                <i class="ri-arrow-right-line ms-1"></i></a>
                         </div>
                     </div>
                 </form>
@@ -516,3 +442,118 @@
         </div>
     </div>
 </header>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-options');
+    const searchDropdown = document.getElementById('search-dropdown');
+    const searchResultsContainer = document.getElementById('search-results-container');
+    const closeOptionsBtn = document.getElementById('search-close-options');
+    
+    let searchTimeout = null;
+
+    if (searchInput && searchDropdown && searchResultsContainer) {
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.trim();
+            
+            if (query.length > 0) {
+                closeOptionsBtn?.classList.remove('d-none');
+            } else {
+                closeOptionsBtn?.classList.add('d-none');
+                searchDropdown.classList.remove('show');
+                return;
+            }
+
+            if (query.length >= 2) {
+                searchDropdown.classList.add('show');
+                searchResultsContainer.innerHTML = `
+                    <div class="text-center pt-3 pb-3">
+                        <div class="spinner-border text-primary spinner-border-sm" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                `;
+
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    // Use a safe approach in case route() macro isn't available in standard js
+                    const searchUrl = `{{ route('admin.global-search') }}?q=${encodeURIComponent(query)}`;
+                    
+                    fetch(searchUrl, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length === 0) {
+                            searchResultsContainer.innerHTML = `
+                                <div class="p-3 text-center">
+                                    <h6 class="text-muted mb-0">Aucun résultat trouvé</h6>
+                                </div>
+                            `;
+                            return;
+                        }
+
+                        // Group results by type
+                        const groupedData = data.reduce((acc, item) => {
+                            if (!acc[item.type]) {
+                                acc[item.type] = [];
+                            }
+                            acc[item.type].push(item);
+                            return acc;
+                        }, {});
+
+                        let html = '';
+                        for (const [type, items] of Object.entries(groupedData)) {
+                            html += `<div class="dropdown-header mt-2">
+                                        <h6 class="text-overflow text-muted mb-1 text-uppercase">${type}s</h6>
+                                     </div>`;
+                            items.forEach(item => {
+                                html += `
+                                    <a href="${item.url}" class="dropdown-item notify-item">
+                                        <i class="${item.icon} align-middle fs-18 text-muted me-2"></i>
+                                        <span>${item.title}</span>
+                                        ${item.subtitle ? `<span class="d-block text-muted fs-11 ms-4">${item.subtitle}</span>` : ''}
+                                    </a>
+                                `;
+                            });
+                        }
+
+                        searchResultsContainer.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        searchResultsContainer.innerHTML = `
+                            <div class="p-3 text-center text-danger">
+                                <h6 class="mb-0">Erreur lors de la recherche</h6>
+                            </div>
+                        `;
+                    });
+                }, 400); // 400ms debounce
+            } else {
+                searchDropdown.classList.remove('show');
+            }
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                searchDropdown.classList.remove('show');
+            }
+        });
+
+        // Close button click
+        if (closeOptionsBtn) {
+            closeOptionsBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                closeOptionsBtn.classList.add('d-none');
+                searchDropdown.classList.remove('show');
+            });
+        }
+    }
+});
+</script>
+@endpush

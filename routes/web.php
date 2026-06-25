@@ -55,6 +55,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    // Global Search
+    Route::get('global-search', [App\Http\Controllers\Admin\GlobalSearchController::class, 'search'])->name('global-search');
+
     // Routes requiring general user management permissions
     Route::middleware(['can:manage-users'])->group(function () {
         // Users
