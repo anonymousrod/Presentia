@@ -89,26 +89,26 @@
                             <td>{{ $activity->start_time->format('d/m/Y H:i') }}</td>
                             <td>{{ $activity->end_time->format('d/m/Y H:i') }}</td>
                             <td>
-                                <span class="badge bg-soft-dark text-dark">{{ $activity->visibility->label() }}</span>
+                                <span class="badge bg-soft-dark text-dark">{{ $activity->visibility?->label() ?? 'Tout le monde' }}</span>
                             </td>
                             <td>
-                                @if($activity->visibility === \App\Enums\ActivityVisibility::GROUP)
+                                @if($activity->visibility?->value === 'GROUP')
                                     {{ $activity->group?->name ?? 'N/A' }}
-                                @elseif($activity->visibility === \App\Enums\ActivityVisibility::ROLE)
+                                @elseif($activity->visibility?->value === 'ROLE')
                                     {{ $activity->role?->name ?? 'N/A' }}
                                 @else
                                     Tout le monde
                                 @endif
                             </td>
                             <td>
-                                <span class="badge bg-{{ match($activity->status->value) {
+                                <span class="badge bg-{{ match($activity->status?->value) {
                                     'PUBLISHED' => 'success',
                                     'DRAFT' => 'warning',
                                     'CANCELLED' => 'danger',
                                     'ARCHIVED' => 'secondary',
                                     default => 'primary'
                                 } }}">
-                                    {{ $activity->status->label() }}
+                                    {{ $activity->status?->label() ?? 'N/A' }}
                                 </span>
                             </td>
                             <td class="text-end">
@@ -147,14 +147,14 @@
                                     <h6 class="fw-bold mb-1">{{ $activity->title }}</h6>
                                     <span class="badge" style="background-color: {{ $activity->activityType?->color ?? '#17a2b8' }}; color: white;">{{ $activity->activityType?->name ?? 'N/A' }}</span>
                                 </div>
-                                <span class="badge bg-{{ match($activity->status->value) {
+                                <span class="badge bg-{{ match($activity->status?->value) {
                                     'PUBLISHED' => 'success',
                                     'DRAFT' => 'warning',
                                     'CANCELLED' => 'danger',
                                     'ARCHIVED' => 'secondary',
                                     default => 'primary'
                                 } }}">
-                                    {{ $activity->status->label() }}
+                                    {{ $activity->status?->label() ?? 'N/A' }}
                                 </span>
                             </div>
                             
@@ -172,9 +172,9 @@
                                 <div class="d-flex align-items-center">
                                     <i class="mdi mdi-eye-outline me-2 text-info"></i>
                                     <span>
-                                        @if($activity->visibility === \App\Enums\ActivityVisibility::GROUP)
+                                        @if($activity->visibility?->value === 'GROUP')
                                             Groupe: {{ $activity->group?->name ?? 'N/A' }}
-                                        @elseif($activity->visibility === \App\Enums\ActivityVisibility::ROLE)
+                                        @elseif($activity->visibility?->value === 'ROLE')
                                             Rôle: {{ $activity->role?->name ?? 'N/A' }}
                                         @else
                                             Tout le monde

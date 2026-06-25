@@ -32,11 +32,17 @@
                             value="{{ old('name', $group->name) }}" required>
                         @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label for="category" class="form-label">Catégorie</label>
                         <input type="text" id="category" name="category" class="form-control @error('category') is-invalid @enderror"
                             value="{{ old('category', $group->category) }}">
                         @error('category')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-2">
+                        <label for="color" class="form-label">Couleur</label>
+                        <input type="color" id="color" name="color" class="form-control form-control-color w-100 @error('color') is-invalid @enderror"
+                            value="{{ old('color', $group->color ?? '#3B7DD8') }}" title="Choisir la couleur du groupe">
+                        @error('color')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                 </div>
 

@@ -19,6 +19,7 @@ class Group extends Model
         'name',
         'description',
         'category',
+        'color',
         'leader_id',
     ];
 

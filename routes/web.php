@@ -100,4 +100,15 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::delete('groups/{group}/members/{user}', [App\Http\Controllers\Admin\GroupController::class, 'removeMember'])->name('groups.members.remove');
         Route::resource('groups', App\Http\Controllers\Admin\GroupController::class);
     });
+
+    // Statistics Dashboard
+    Route::middleware(['can:stats.view_global'])->prefix('statistics')->name('statistics.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\StatisticsController::class, 'index'])->name('index');
+        Route::get('/chart/members-per-group', [App\Http\Controllers\Admin\StatisticsController::class, 'chartMembersPerGroup'])->name('chart.members-per-group');
+        Route::get('/chart/presence-evolution', [App\Http\Controllers\Admin\StatisticsController::class, 'chartPresenceEvolution'])->name('chart.presence-evolution');
+        Route::get('/chart/presence-by-group', [App\Http\Controllers\Admin\StatisticsController::class, 'chartPresenceByGroup'])->name('chart.presence-by-group');
+        Route::get('/chart/individual-participation', [App\Http\Controllers\Admin\StatisticsController::class, 'chartIndividualParticipation'])->name('chart.individual-participation');
+        Route::get('/chart/affluence-by-activity', [App\Http\Controllers\Admin\StatisticsController::class, 'chartAffluenceByActivity'])->name('chart.affluence-by-activity');
+    });
 });
+

@@ -58,6 +58,7 @@ class GroupController extends Controller
             'name'        => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'category'    => ['nullable', 'string', 'max:255'],
+            'color'       => ['nullable', 'string', 'max:7'],
             'leader_id'   => ['nullable', 'exists:users,id'],
         ]);
 
@@ -114,6 +115,7 @@ class GroupController extends Controller
             'name'        => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'category'    => ['nullable', 'string', 'max:255'],
+            'color'       => ['nullable', 'string', 'max:7'],
             'leader_id'   => ['nullable', 'exists:users,id'],
         ]);
 

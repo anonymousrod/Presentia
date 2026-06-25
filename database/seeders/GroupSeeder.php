@@ -39,6 +39,7 @@ class GroupSeeder extends Seeder
             [
                 'description' => 'Groupe des garçons éclaireurs (Flambeaux)',
                 'category' => 'Flambeaux',
+                'color' => '#1B2A4A',
                 'leader_id' => $chef1->id,
             ]
         );
@@ -48,6 +49,7 @@ class GroupSeeder extends Seeder
             [
                 'description' => 'Groupe des filles éclaireuses',
                 'category' => 'Claires',
+                'color' => '#3B7DD8',
                 'leader_id' => $chef2->id,
             ]
         );
@@ -57,6 +59,7 @@ class GroupSeeder extends Seeder
             [
                 'description' => 'Groupe des jeunes aînés et aînées de la paroisse',
                 'category' => 'Aînés',
+                'color' => '#E8842C',
                 'leader_id' => $chef3->id,
             ]
         );
@@ -66,6 +69,7 @@ class GroupSeeder extends Seeder
             [
                 'description' => 'Groupe des jeunes cadets.',
                 'category' => 'Cadets',
+                'color' => '#4CAF50',
                 'leader_id' => $chef1->id,
             ]
         );
@@ -75,6 +79,7 @@ class GroupSeeder extends Seeder
             [
                 'description' => 'Groupe des enfants.',
                 'category' => 'Poussins',
+                'color' => '#FF5722',
                 'leader_id' => $chef2->id,
             ]
         );

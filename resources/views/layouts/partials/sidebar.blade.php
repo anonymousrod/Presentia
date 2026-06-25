@@ -211,7 +211,7 @@
                                 <ul class="nav nav-sm flex-column">
                                     @can('stats.view_global')
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link">Stats Globales</a>
+                                        <a href="{{ route('admin.statistics.index') }}" class="nav-link {{ request()->routeIs('admin.statistics.*') ? 'active' : '' }}">Stats Globales</a>
                                     </li>
                                     @endcan
                                     @can('stats.view_own_group')

@@ -19,45 +19,72 @@ class ChartDataSeeder extends Seeder
 
         $groupsData = [
             'Béthel' => [
-                'ADJAZO Dorcas', 'HOULO Ruth-Esther', 'BLECO Pontien', 'GAGNON Bienvenu',
-                'AGOSSOU Pierrette', 'KOUDOUKOUI Belvida', 'HOUNKPEVI Fresnel',
-                'HOUNDEKPONDJI Odyas', 'AIDEHOU Steve'
+                'color' => '#1B2A4A',
+                'members' => [
+                    'ADJAZO Dorcas', 'HOULO Ruth-Esther', 'BLECO Pontien', 'GAGNON Bienvenu',
+                    'AGOSSOU Pierrette', 'KOUDOUKOUI Belvida', 'HOUNKPEVI Fresnel',
+                    'HOUNDEKPONDJI Odyas', 'AIDEHOU Steve'
+                ]
             ],
             'Cana' => [
-                'YABI Béatrice', 'HOULO Mahounan Isabelle', 'AGBO Josaphat',
-                'HOUNDEKPONDJI Melyas', 'AHONKLOO Thierry', 'ADJOVI Doris',
-                'SOGBOSSI Marcellin', 'ADJAZO Raïssa', 'AZOMAN Acquilas', 'AMOUSSOU Françoise'
+                'color' => '#3B7DD8',
+                'members' => [
+                    'YABI Béatrice', 'HOULO Mahounan Isabelle', 'AGBO Josaphat',
+                    'HOUNDEKPONDJI Melyas', 'AHONKLOO Thierry', 'ADJOVI Doris',
+                    'SOGBOSSI Marcellin', 'ADJAZO Raïssa', 'AZOMAN Acquilas', 'AMOUSSOU Françoise'
+                ]
             ],
             'Éden' => [
-                'KODONON Kenneth', 'EZEBADA Charlotte', 'HINLIN Ghislain'
+                'color' => '#A8C8E8',
+                'members' => [
+                    'KODONON Kenneth', 'EZEBADA Charlotte', 'HINLIN Ghislain'
+                ]
             ],
             'Galilée' => [
-                'KOUMONDJI Guy Morel', 'ATCHOUKE Estelle', 'OKESESAN Victoria',
-                'HOUNKANRIN Salomon', 'AZOMAN Kyria', 'METO Ulrich', 'SENA Georgette',
-                'KOUDOUKOUI Joy\'s', 'DOUTETIEN Alexine', 'DAGBEDJI Romario', 'ADIGBE Mardochée'
+                'color' => '#8B8B8B',
+                'members' => [
+                    'KOUMONDJI Guy Morel', 'ATCHOUKE Estelle', 'OKESESAN Victoria',
+                    'HOUNKANRIN Salomon', 'AZOMAN Kyria', 'METO Ulrich', 'SENA Georgette',
+                    'KOUDOUKOUI Joy\'s', 'DOUTETIEN Alexine', 'DAGBEDJI Romario', 'ADIGBE Mardochée'
+                ]
             ],
             'Salem' => [
-                'Membre Salem 1', 'Membre Salem 2', 'Membre Salem 3', 'Membre Salem 4',
-                'Membre Salem 5', 'Membre Salem 6', 'Membre Salem 7'
+                'color' => '#BABABA',
+                'members' => [
+                    'Membre Salem 1', 'Membre Salem 2', 'Membre Salem 3', 'Membre Salem 4',
+                    'Membre Salem 5', 'Membre Salem 6', 'Membre Salem 7'
+                ]
             ],
             'Shalom' => [
-                'TETEGAN Exaucé', 'KIKI Emmanuel', 'DJOMATIN Béni-Christ', 'METOEVI Justin',
-                'HOUNGNINOU Merveille Élodie', 'AKALO Paulin', 'GNIMAGNON Espoir', 'DAGBELOU Joann'
+                'color' => '#D2691E',
+                'members' => [
+                    'TETEGAN Exaucé', 'KIKI Emmanuel', 'DJOMATIN Béni-Christ', 'METOEVI Justin',
+                    'HOUNGNINOU Merveille Élodie', 'AKALO Paulin', 'GNIMAGNON Espoir', 'DAGBELOU Joann'
+                ]
             ],
             'Siloé' => [
-                'CHABI Ashley', 'AYITCHEDEHOU Ezéchiel', 'AHOKPE Noëlie', 'ADJANOHOUN Esther',
-                'GNONLONFOUN Chantal', 'BLEKO Carine', 'AGOSSOU Pierre', 'KAHO Débora',
-                'AYITCHEDEHOU Obed', 'ASSAN Nelly', 'AHOKOU Anne'
+                'color' => '#E8842C',
+                'members' => [
+                    'CHABI Ashley', 'AYITCHEDEHOU Ezéchiel', 'AHOKPE Noëlie', 'ADJANOHOUN Esther',
+                    'GNONLONFOUN Chantal', 'BLEKO Carine', 'AGOSSOU Pierre', 'KAHO Débora',
+                    'AYITCHEDEHOU Obed', 'ASSAN Nelly', 'AHOKOU Anne'
+                ]
             ],
             'Sinaï' => [
-                'HESSOU Jules', 'IFATOUMA Abdias', 'ADJANOHOUN Néhémie', 'AYITCHEDEHOU Ezéchias',
-                'SOSSA Naomi', 'SEWLAN Lazare', 'DAVI Christian', 'BELMBAYE Frédéric'
+                'color' => '#B0D4F1',
+                'members' => [
+                    'HESSOU Jules', 'IFATOUMA Abdias', 'ADJANOHOUN Néhémie', 'AYITCHEDEHOU Ezéchias',
+                    'SOSSA Naomi', 'SEWLAN Lazare', 'DAVI Christian', 'BELMBAYE Frédéric'
+                ]
             ],
         ];
 
         $defaultPassword = Hash::make('Password@1234!');
 
-        foreach ($groupsData as $groupName => $members) {
+        foreach ($groupsData as $groupName => $data) {
+            $members = $data['members'];
+            $color = $data['color'];
+
             // Création du Chef de groupe
             $chefName = 'Chef ' . $groupName;
             $chef = User::firstOrCreate(
@@ -78,6 +105,7 @@ class ChartDataSeeder extends Seeder
                 [
                     'description' => 'Groupe ' . $groupName . ' créé pour les graphiques',
                     'category' => $groupName,
+                    'color' => $color,
                     'leader_id' => $chef->id,
                 ]
             );
@@ -118,7 +146,7 @@ class ChartDataSeeder extends Seeder
         $ecoleDimancheType = \App\Models\ActivityType::where('name', 'École de dimanche')->first();
         $reunionType = \App\Models\ActivityType::where('name', 'Réunion')->first();
 
-        $ecoleDimancheDates = ['2026-02-22', '2026-03-01', '2026-03-08', '2026-03-15', '2026-03-22', '2026-03-29', '2026-04-19', '2026-04-26', '2026-05-31'];
+        $ecoleDimancheDates = ['2025-11-15', '2025-12-20', '2026-02-22', '2026-03-01', '2026-03-08', '2026-03-15', '2026-03-22', '2026-03-29', '2026-04-19', '2026-04-26', '2026-05-31', '2027-01-10', '2027-02-14'];
         $ecoleDimancheActivities = [];
 
         foreach ($ecoleDimancheDates as $date) {
@@ -133,11 +161,13 @@ class ChartDataSeeder extends Seeder
         }
 
         $localesData = [
+            ['Retraite annuelle 2025', '2025-12-10'],
             ['Lancement', '2026-01-18'],
             ['Groupe de parole', '2026-02-05'],
             ['Séminaire', '2026-02-21'],
             ['Rencontre Anciens & Pasteurs', '2026-02-22'],
             ['Jeûne et prière', '2026-03-13'],
+            ['Planification 2027', '2027-01-05'],
         ];
         $localesActivities = [];
 
@@ -156,6 +186,23 @@ class ChartDataSeeder extends Seeder
         // 3. CRÉATION DES PRÉSENCES (Aléatoires pour les tests)
         // ---------------------------------------------------------
         $this->command->info('✍️ Assignation des présences aléatoires...');
+
+        // Créer quelques visiteurs hors répertoire (sans groupe)
+        $visiteursData = ['Visiteur Jean', 'Visiteur Marie', 'Visiteur Paul', 'Visiteur Sophie', 'Visiteur Lucas'];
+        foreach ($visiteursData as $visiteurName) {
+            $parts = explode(' ', $visiteurName);
+            $user = User::firstOrCreate(
+                ['email' => Str::slug($visiteurName) . '@eber.org'],
+                [
+                    'name' => $parts[1],
+                    'first_name' => $parts[0],
+                    'phone' => '+229' . rand(90000000, 99999999),
+                    'password' => $defaultPassword,
+                    'status' => 'ACTIVE',
+                ]
+            );
+            $user->syncRoles(['Jeune']);
+        }
 
         $allUsers = User::whereHas('roles', function ($q) {
             $q->where('name', 'Jeune');

@@ -22,13 +22,13 @@
             <div class="card mb-4">
                 <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
                     <h4 class="mb-0">{{ $activity->title }}</h4>
-                    <span class="badge bg-{{ match($activity->status->value) {
+                    <span class="badge bg-{{ match($activity->status?->value) {
                         'PUBLISHED' => 'success',
                         'DRAFT' => 'warning',
                         'CANCELLED' => 'danger',
                         'ARCHIVED' => 'secondary',
                         default => 'primary'
-                    } }}">{{ $activity->status->label() }}</span>
+                    } }}">{{ $activity->status?->label() ?? 'N/A' }}</span>
                 </div>
                 <div class="card-body">
                     <div class="mb-4">
@@ -36,7 +36,7 @@
                         <p class="text-muted">{!! nl2br(e($activity->description)) ?: '<em>Aucune description fournie</em>' !!}</p>
                     </div>
 
-                    @if($activity->status === \App\Enums\ActivityStatus::CANCELLED && $activity->cancellation_reason)
+                    @if($activity->status?->value === 'CANCELLED' && $activity->cancellation_reason)
                         <div class="alert alert-danger">
                             <h6><i class="mdi mdi-alert-circle"></i> Motif d'annulation :</h6>
                             <p class="mb-0">{{ $activity->cancellation_reason }}</p>
@@ -420,10 +420,10 @@
 
                     <div class="mb-3">
                         <strong>Visibilité :</strong>
-                        <p><span class="badge bg-soft-dark text-dark fs-12">{{ $activity->visibility->label() }}</span></p>
-                        @if($activity->visibility === \App\Enums\ActivityVisibility::GROUP)
+                        <p><span class="badge bg-soft-dark text-dark fs-12">{{ $activity->visibility?->label() ?? 'Tout le monde' }}</span></p>
+                        @if($activity->visibility?->value === 'GROUP')
                             <div class="text-muted"><i class="mdi mdi-account-group"></i> Groupe : {{ $activity->group?->name }}</div>
-                        @elseif($activity->visibility === \App\Enums\ActivityVisibility::ROLE)
+                        @elseif($activity->visibility?->value === 'ROLE')
                             <div class="text-muted"><i class="mdi mdi-shield-account"></i> Rôle : {{ $activity->role?->name }}</div>
                         @endif
                     </div>
