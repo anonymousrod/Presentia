@@ -18,21 +18,21 @@ class AttendanceController extends Controller
     {
         // Validation personnalisée de la signature pour supporter ngrok / localhost
         $isValid = $request->hasValidSignature();
-        
+
         if (!$isValid) {
             $signature = $request->query('signature');
             $query = $request->query();
             unset($query['signature']);
-            
+
             $queryString = http_build_query($query);
             $urlPath = $request->path();
-            
+
             $possibleHosts = [
                 'http://127.0.0.1:8000',
                 'http://localhost:8000',
                 config('app.url')
             ];
-            
+
             $matched = false;
             foreach ($possibleHosts as $host) {
                 $host = rtrim($host, '/');
@@ -42,7 +42,7 @@ class AttendanceController extends Controller
                     break;
                 }
             }
-            
+
             if (!$matched) {
                 if ($request->ajax()) {
                     return response()->json(['status' => 'error', 'message' => 'Lien expiré ou signature invalide (Problème de domaine ngrok/localhost).'], 403);
