@@ -364,7 +364,7 @@
                 </td>
                 <td style="width:25%;">
                     <span class="label">Généré par</span>
-                    Plateforme Presentia
+                    Plateforme Me voici
                 </td>
                 <td style="width:25%;">
                     <span class="label">Total membres</span>
@@ -441,11 +441,11 @@
         <table class="footer-inner">
             <tr>
                 <td class="footer-left">
-                    <span class="cert-text">Ce document officiel a été généré électroniquement et certifié conforme par la plateforme de gestion <strong>Presentia</strong>.</span>
+                    <span class="cert-text">Ce document officiel a été généré électroniquement et certifié conforme par la plateforme de gestion <strong>Me voici</strong>.</span>
                 </td>
                 <td class="footer-right">
                     Généré le {{ now()->format('d/m/Y à H:i') }}<br>
-                    Liste des Membres — Presentia
+                    Liste des Membres — Me voici
                 </td>
             </tr>
         </table>

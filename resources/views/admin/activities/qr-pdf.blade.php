@@ -318,7 +318,7 @@
         <table class="header-table">
             <tr>
                 <td class="header-logo-cell">
-                    <div class="org-name">&#9670; Presentia</div>
+                    <div class="org-name">&#9670; Me voici</div>
                     <div class="org-tagline">Système de Gestion des Présences</div>
                 </td>
                 <!-- <td class="header-badge-cell">
@@ -416,7 +416,7 @@
         <!-- INSTRUCTIONS -->
         <div class="instructions-box">
             <div class="instructions-title">&#128161; Instructions de scan</div>
-            <div class="instructions-line"><span class="bullet">&#9656;</span> Ouvrez l'application Presentia sur votre smartphone et connectez-vous.</div>
+            <div class="instructions-line"><span class="bullet">&#9656;</span> Ouvrez l'application Me voici sur votre smartphone et connectez-vous.</div>
             <div class="instructions-line"><span class="bullet">&#9656;</span> Pointez l'appareil photo vers ce QR Code pour enregistrer votre présence.</div>
             <div class="instructions-line"><span class="bullet">&#9656;</span> Un message de confirmation apparaîtra une fois votre présence validée.</div>
             <div class="instructions-line"><span class="bullet">&#9656;</span> Ce QR Code est personnel à cette session — toute copie ou modification est inutile.</div>
@@ -429,7 +429,7 @@
         <table class="footer-table">
             <tr>
                 <td class="footer-left">
-                    <div class="footer-security">&#128274; Document généré et sécurisé par Presentia</div>
+                    <div class="footer-security">&#128274; Document généré et sécurisé par Me voici</div>
                     <div class="footer-meta">Généré le {{ now()->format('d/m/Y à H:i') }} — Ne pas reproduire sans autorisation</div>
                 </td>
                 <td class="footer-right">

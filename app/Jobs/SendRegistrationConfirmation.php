@@ -83,7 +83,7 @@ class SendRegistrationConfirmation implements ShouldQueue
             }
         }
 
-        $message = "Confirmation Presentia 📅\n\n"
+        $message = "Confirmation Me voici 📅\n\n"
             . "Bonjour {$user->first_name},\n\n"
             . "Votre statut pour l'activité suivante a été mis à jour :\n\n"
             . "📌 *{$activity->title}*\n"

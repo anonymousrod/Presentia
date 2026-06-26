@@ -3,7 +3,7 @@
 namespace App\Enums;
 
 /**
- * Liste exhaustive de toutes les permissions de l'application Presentia.
+ * Liste exhaustive de toutes les permissions de l'application Me voici.
  *
  * Convention : format 'resource.action'
  * Usage obligatoire : PermissionEnum::MEMBER_VIEW->value (jamais une chaîne brute)

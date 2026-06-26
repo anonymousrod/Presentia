@@ -1,519 +1,387 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="fr">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Presentia | Plateforme EBER</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JEBER – Jeunesse de l'Église Baptiste de l'Étoile Rouge</title>
 
-    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;800;1,400&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome for Premium Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
 
-    <!-- Premium CSS Styles -->
-    <style>
-        :root {
-            --bg-primary: #0a0b10;
-            --text-primary: #f3f4f6;
-            --text-secondary: #9ca3af;
-            --accent-glow: rgba(99, 102, 241, 0.15);
-            --gradient-1: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-            --gradient-glow: linear-gradient(135deg, rgba(99, 102, 241, 0.5) 0%, rgba(168, 85, 247, 0.5) 50%, rgba(236, 72, 153, 0.5) 100%);
-            --card-bg: rgba(17, 18, 28, 0.65);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --font-display: 'Outfit', sans-serif;
-            --font-sans: 'Plus Jakarta Sans', sans-serif;
-        }
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    :root {
+      --bleu:   #1E3A8A;
+      --violet: #6D28D9;
+      --orange: #F97316;
+      --blanc:  #FFFFFF;
+      --texte2: #E2E8F0;
+    }
 
-        body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: var(--font-sans);
-            min-height: 100vh;
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+    html, body {
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
 
-        /* Ambient Glowing Background Orbs */
-        .glow-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(140px);
-            z-index: 1;
-            pointer-events: none;
-            opacity: 0.4;
-        }
+    /* ── FOND ── */
+    body { background: #0f172a; min-height: 100vh; }
 
-        .orb-1 {
-            width: 400px;
-            height: 400px;
-            background: #6366f1;
-            top: -10%;
-            left: -10%;
-            animation: float 20s infinite alternate;
-        }
+    /* ── SLIDESHOW ── */
+    #bg-slider { position: fixed; inset: 0; z-index: 0; }
 
-        .orb-2 {
-            width: 500px;
-            height: 500px;
-            background: #ec4899;
-            bottom: -10%;
-            right: -10%;
-            animation: float 25s infinite alternate-reverse;
-        }
+    .bg-slide {
+      position: absolute; inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1.8s ease-in-out;
+    }
+    .bg-slide.active { opacity: 1; }
+    .bg-slide::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(15,23,60,0.72) 0%,
+        rgba(55,15,120,0.55) 50%,
+        rgba(100,30,10,0.50) 100%
+      );
+    }
 
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(50px, 50px) scale(1.1); }
-        }
+    #slide-1 { background-image: url('{{ asset("assets/acceuil/Photo1.jpg") }}'); }
+    #slide-2 { background-image: url('{{ asset("assets/acceuil/Photo2.jpg") }}'); }
+    #slide-3 { background-image: url('{{ asset("assets/acceuil/Photo3.jpg") }}'); }
+    #slide-4 { background-image: url('{{ asset("assets/acceuil/Photo4.jpg") }}'); }
+    #slide-5 { background-image: url('{{ asset("assets/acceuil/Photo5.jpg") }}'); }
 
-        /* Header Navigation Styles */
-        header {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 2rem 4rem;
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-        }
+    /* ── INDICATEURS ── */
+    #slide-dots {
+      position: fixed; bottom: 1.4rem; left: 50%;
+      transform: translateX(-50%);
+      z-index: 20; display: flex; gap: 8px;
+    }
+    .dot-ind {
+      width: 28px; height: 3px; border-radius: 2px;
+      background: rgba(255,255,255,0.25);
+      transition: background 0.4s ease;
+      overflow: hidden; cursor: pointer;
+    }
+    .dot-ind.active { background: rgba(255,255,255,0.55); }
+    .dot-ind .dot-progress {
+      height: 100%; width: 0%;
+      background: var(--orange); border-radius: 2px;
+    }
+    .dot-ind.active .dot-progress { animation: dotFill 5s linear forwards; }
+    @keyframes dotFill { from { width: 0%; } to { width: 100%; } }
 
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-        }
+    /* ── HEADER ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100; padding: 0.8rem 2rem;
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
 
-        .logo-icon {
-            font-size: 2rem;
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: spin-slow 8s linear infinite;
-        }
+    /* ── LOGOS ── */
+    .logo-img {
+      height: 150px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+      transition: transform 0.3s ease;
+    }
 
-        .logo-text {
-            font-family: var(--font-display);
-            font-size: 1.75rem;
-            font-weight: 800;
-            letter-spacing: -0.05em;
-            color: #fff;
-        }
+    .logo-image {
+      height: 300px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+      transition: transform 0.3s ease;
+    }
+    .logo-img:hover { transform: scale(1.05); }
 
-        .logo-text span {
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 1.5rem 4rem;
+    }
 
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      margin-bottom: 1.4rem;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.2s;
+    }
+    .eyebrow span {
+      font-size: 11px; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--orange); font-weight: 600;
+    }
+    .eyebrow::before, .eyebrow::after {
+      content: ''; display: block;
+      width: 36px; height: 1px;
+      background: var(--orange); opacity: 0.6;
+    }
 
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 0.5rem 0.25rem;
-        }
+    h1.brand {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(4rem, 12vw, 7.5rem);
+      font-weight: 800; color: var(--bleu);
+      letter-spacing: -2px; line-height: 1;
+      margin-bottom: 0.5rem;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.4s;
+    }
 
-        .nav-link:hover {
-            color: #fff;
-        }
+    h2.fullname {
+      font-size: clamp(0.85rem, 2vw, 1.05rem);
+      font-weight: 400; color: var(--texte2);
+      letter-spacing: 1px; margin-bottom: 1.6rem;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.55s;
+    }
 
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gradient-1);
-            transition: width 0.3s ease;
-        }
+    .tagline {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 0.4rem 1rem;
+      margin-bottom: 2.4rem;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.7s;
+    }
+    .tagline span {
+      font-size: 0.78rem; letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55); font-weight: 600;
+    }
+    .tagline .dot { color: var(--orange); opacity: 0.7; font-size: 1rem; }
 
-        .nav-link:hover::after {
-            width: 100%;
-        }
+    blockquote {
+      max-width: 560px; margin: 0 auto 2.8rem;
+      border-left: 3px solid var(--orange);
+      padding: 0.8rem 1.2rem;
+      background: rgba(255,255,255,0.04);
+      border-radius: 0 8px 8px 0; text-align: left;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.85s;
+    }
+    blockquote p {
+      font-style: italic; font-size: 0.88rem;
+      color: var(--texte2); line-height: 1.65; margin-bottom: 0.4rem;
+    }
+    blockquote cite {
+      font-size: 0.75rem; color: var(--orange);
+      font-weight: 600; letter-spacing: 0.8px;
+      text-transform: uppercase; font-style: normal;
+    }
 
-        /* Main Hero Section */
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            z-index: 5;
-            padding: 4rem 2rem;
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            text-align: center;
-        }
+    /* ── BOUTON ── */
+    .btn-connexion {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 0.9rem 2.6rem;
+      background: var(--orange); color: var(--blanc);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600; font-size: 1rem;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      text-decoration: none; border-radius: 50px;
+      border: 2px solid transparent;
+      position: relative; overflow: hidden;
+      transition: all 0.35s ease;
+      box-shadow: 0 8px 32px rgba(249,115,22,0.35);
+      opacity: 0; animation: fadeUp 0.7s ease forwards 1s;
+    }
+    .btn-connexion::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--orange), var(--violet));
+      opacity: 0; transition: opacity 0.35s ease; border-radius: inherit;
+    }
+    .btn-connexion:hover::before { opacity: 1; }
+    .btn-connexion:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 40px rgba(109,40,217,0.4);
+      color: var(--blanc);
+    }
+    .btn-connexion:active { transform: translateY(0); }
+    .btn-connexion svg, .btn-connexion span { position: relative; z-index: 1; }
 
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 0.6rem 1.2rem;
-            border-radius: 9999px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            color: #a855f7;
-            margin-bottom: 2rem;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
+    .btn-wrapper { position: relative; display: inline-block; }
+    .btn-wrapper::after {
+      content: ''; position: absolute;
+      width: 120%; height: 120%; top: -10%; left: -10%;
+      background: radial-gradient(ellipse at center, rgba(249,115,22,0.2) 0%, transparent 70%);
+      border-radius: 50px; pointer-events: none;
+      animation: pulse 2.8s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.12); opacity: 0.4; }
+    }
 
-        .hero-badge:hover {
-            border-color: rgba(168, 85, 247, 0.4);
-            transform: translateY(-2px);
-        }
+    /* ── IDENTITÉ ── */
+    .identity {
+      position: relative; z-index: 10;
+      background: rgba(255,255,255,0.04);
+      border-top: 1px solid rgba(162, 32, 32, 0.07);
+      padding: 3.5rem 1.5rem; text-align: center;
+      opacity: 0; animation: fadeUp 0.8s ease forwards 1.2s;
+    }
+    .identity h3 {
+      font-family: 'Montserrat', sans-serif; font-weight: 800;
+      font-size: 0.72rem; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--orange); margin-bottom: 1rem;
+    }
+    .identity p {
+      max-width: 520px; margin: 0 auto;
+      font-size: 0.95rem; color: rgba(255,255,255,0.55); line-height: 1.8;
+    }
 
-        .hero-badge i {
-            font-size: 0.75rem;
-            color: #ec4899;
-        }
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 10;
+      padding: 1.2rem; text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    footer p { font-size: 0.72rem; color: rgba(255, 255, 255, 0.28); letter-spacing: 0.5px; }
 
-        h1.hero-title {
-            font-family: var(--font-display);
-            font-size: 4.5rem;
-            font-weight: 800;
-            line-height: 1.1;
-            letter-spacing: -0.03em;
-            color: #fff;
-            margin-bottom: 1.5rem;
-            max-width: 900px;
-        }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
-        h1.hero-title span {
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            position: relative;
-        }
-
-        .hero-desc {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            max-width: 650px;
-            line-height: 1.6;
-            margin-bottom: 3rem;
-        }
-
-        /* Action Buttons */
-        .cta-container {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 4rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .btn-premium {
-            text-decoration: none;
-            padding: 1.1rem 2.2rem;
-            font-size: 1.05rem;
-            font-weight: 700;
-            border-radius: 12px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            cursor: pointer;
-        }
-
-        .btn-primary-gradient {
-            background: var(--gradient-1);
-            color: #fff;
-            box-shadow: 0 4px 30px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-primary-gradient:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.6);
-        }
-
-        .btn-primary-gradient::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient-glow);
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .btn-primary-gradient:hover::before {
-            opacity: 1;
-        }
-
-        .btn-secondary-outline {
-            background: rgba(255, 255, 255, 0.02);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(10px);
-        }
-
-        .btn-secondary-outline:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-3px);
-        }
-
-        /* Glassmorphism Feature Grid */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            width: 100%;
-            margin-top: 2rem;
-        }
-
-        .feature-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 2.5rem;
-            text-align: left;
-            backdrop-filter: blur(20px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
-            pointer-events: none;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(99, 102, 241, 0.3);
-            box-shadow: 0 20px 45px rgba(99, 102, 241, 0.15);
-        }
-
-        .feature-icon-wrapper {
-            width: 60px;
-            height: 60px;
-            border-radius: 14px;
-            background: rgba(99, 102, 241, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 1.75rem;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .feature-card:hover .feature-icon-wrapper {
-            background: var(--gradient-1);
-            border-color: transparent;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-
-        .feature-icon-wrapper i {
-            font-size: 1.5rem;
-            color: #6366f1;
-            transition: all 0.3s ease;
-        }
-
-        .feature-card:hover .feature-icon-wrapper i {
-            color: #fff;
-        }
-
-        .feature-title {
-            font-family: var(--font-display);
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 0.75rem;
-        }
-
-        .feature-desc {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        /* Footer */
-        footer {
-            position: relative;
-            z-index: 10;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 2.5rem;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            width: 100%;
-        }
-
-        footer span {
-            color: #fff;
-            font-weight: 600;
-        }
-
-        footer i {
-            color: #ec4899;
-            margin: 0 0.25rem;
-        }
-
-        /* Animations */
-        @keyframes spin-slow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Responsive Design Rules */
-        @media (max-width: 1024px) {
-            .features-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            h1.hero-title {
-                font-size: 3.5rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            header {
-                padding: 1.5rem 2rem;
-                flex-direction: column;
-                gap: 1.5rem;
-            }
-            .features-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            h1.hero-title {
-                font-size: 2.75rem;
-            }
-            .cta-container {
-                flex-direction: column;
-                width: 100%;
-                max-width: 320px;
-            }
-            .btn-premium {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-    </style>
+    /* ── RESPONSIVE ── */
+    @media (max-width: 576px) {
+      header { padding: 0.6rem 1rem; }
+      .logo-img { height: 64px; }
+      h1.brand { letter-spacing: -1px; }
+      blockquote { text-align: center; border-left: none; border-top: 3px solid var(--orange); border-radius: 8px; }
+    }
+  </style>
 </head>
 <body>
-    <!-- Ambient Glowing Orbs -->
-    <div class="glow-orb orb-1"></div>
-    <div class="glow-orb orb-2"></div>
 
-    <!-- Header Navigation -->
-    <header>
-        <a href="{{ url('/') }}" class="logo-container">
-            <i class="fa-solid fa-cube logo-icon"></i>
-            <span class="logo-text">Pres<span>entia</span></span>
+  <!-- ══ FOND DIAPORAMA ══ -->
+  <div id="bg-slider" aria-hidden="true">
+    <div class="bg-slide active" id="slide-1"></div>
+    <div class="bg-slide" id="slide-2"></div>
+    <div class="bg-slide" id="slide-3"></div>
+    <div class="bg-slide" id="slide-4"></div>
+    <div class="bg-slide" id="slide-5"></div>
+  </div>
+
+  <!-- Indicateurs de progression -->
+  <div id="slide-dots">
+    <div class="dot-ind active"><div class="dot-progress"></div></div>
+    <div class="dot-ind"><div class="dot-progress"></div></div>
+    <div class="dot-ind"><div class="dot-progress"></div></div>
+    <div class="dot-ind"><div class="dot-progress"></div></div>
+    <div class="dot-ind"><div class="dot-progress"></div></div>
+  </div>
+
+  <!-- ══ EN-TÊTE ══ -->
+  <header>
+    <div class="d-flex align-items-center justify-content-between">
+
+      <!-- Logo EBER (gauche) -->
+      <div class="d-flex align-items-center gap-3">
+        <img src="{{ asset('assets/acceuil/Logo EBER.png') }}" alt="Logo EBER" class="logo-img" />
+      </div>
+
+      <!-- Logo JEBER (droite) -->
+      <div class="d-flex align-items-center gap-3">
+        <img src="{{ asset('assets/acceuil/Logo JEBER.png') }}" alt="Logo JEBER" class="logo-image" />
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ══ SECTION HÉRO ══ -->
+  <main>
+    <section class="hero">
+
+      <div class="eyebrow">
+        <span>Espace privé · Membres</span>
+      </div>
+
+      <h1 class="brand">JEBER</h1>
+      <h2 class="fullname">Jeunesse de l'Église Baptiste de l'Étoile Rouge</h2>
+
+      <div class="tagline">
+        <span>Grandir dans la foi</span>
+        <span class="dot">•</span>
+        <span>Servir avec excellence</span>
+        <span class="dot">•</span>
+        <span>Impacter notre génération</span>
+      </div>
+
+      <blockquote>
+        <p>« Que personne ne méprise ta jeunesse ; mais sois un modèle pour les fidèles, en parole, en conduite, en charité, en foi, en pureté. »</p>
+        <cite>1 Timothée 4&nbsp;: 12</cite>
+      </blockquote>
+
+      <div class="btn-wrapper">
+        <a href="{{ route('login') }}" class="btn-connexion">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"/>
+          </svg>
+          <span>Se connecter</span>
         </a>
-        <nav>
-            @auth
-                <a href="{{ route('dashboard') }}" class="nav-link">Tableau de bord</a>
-            @else
-                <a href="{{ route('login') }}" class="nav-link">Connexion</a>
-            @endauth
-        </nav>
-    </header>
+      </div>
 
-    <!-- Main Hero Content -->
-    <main>
-        <div class="hero-badge">
-            <i class="fa-solid fa-sparkles"></i> Nouveau : Gestion EBER Simplifiée
-        </div>
-        <h1 class="hero-title">Optimisez le suivi et l'<span>engagement</span> de vos équipes</h1>
-        <p class="hero-desc">La plateforme moderne et intuitive conçue pour la gestion des présences, la planification des activités et le suivi de l'engagement des jeunes pour le projet EBER.</p>
+    </section>
 
-        <div class="cta-container">
-            @auth
-                <a href="{{ route('dashboard') }}" class="btn-premium btn-primary-gradient">
-                    <i class="fa-solid fa-gauge-high"></i> Accéder au Tableau de Bord
-                </a>
-            @else
-                <a href="{{ route('login') }}" class="btn-premium btn-primary-gradient">
-                    <i class="fa-solid fa-right-to-bracket"></i> Se connecter
-                </a>
-            @endauth
-            <a href="#features" class="btn-premium btn-secondary-outline">
-                <i class="fa-solid fa-compass"></i> Découvrir les fonctionnalités
-            </a>
-        </div>
+    <!-- ══ NOTRE IDENTITÉ ══ -->
+    <section class="identity">
+      <h3>Notre identité</h3>
+      <p>
+        Nous sommes une génération appelée à refléter Christ, à grandir dans Sa Parole
+        et à servir avec passion au sein de l'Église Baptiste de l'Étoile Rouge.
+      </p>
+    </section>
+  </main>
 
-        <!-- Glassmorphism Features Grid -->
-        <div class="features-grid" id="features">
-            <!-- Feature 1 -->
-            <div class="feature-card">
-                <div class="feature-icon-wrapper">
-                    <i class="fa-solid fa-users"></i>
-                </div>
-                <h3 class="feature-title">Gestion de Groupes</h3>
-                <p class="feature-desc">Structurez vos membres par catégories et assignez des leaders de groupe pour une coordination fluide et décentralisée.</p>
-            </div>
+  <!-- ══ PIED DE PAGE ══ -->
+  <footer>
+    <p>JEBER – Jeunesse de l'Église Baptiste de l'Étoile Rouge &nbsp;·&nbsp; © 2026 – Tous droits réservés</p>
+  </footer>
 
-            <!-- Feature 2 -->
-            <div class="feature-card">
-                <div class="feature-icon-wrapper">
-                    <i class="fa-solid fa-calendar-check"></i>
-                </div>
-                <h3 class="feature-title">Suivi des Présences</h3>
-                <p class="feature-desc">Enregistrez et analysez la participation des jeunes aux différentes activités en temps réel avec des indicateurs clés d'assiduité.</p>
-            </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function() {
+      const DURATION = 5000;
+      const slides = document.querySelectorAll('.bg-slide');
+      const dots   = document.querySelectorAll('.dot-ind');
+      let current  = 0;
+      let timer    = null;
 
-            <!-- Feature 3 -->
-            <div class="feature-card">
-                <div class="feature-icon-wrapper">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </div>
-                <h3 class="feature-title">Sécurité & Rôles</h3>
-                <p class="feature-desc">Contrôle d'accès robuste basé sur des rôles et permissions personnalisés (Spatie), assurant la protection totale des données.</p>
-            </div>
-        </div>
-    </main>
+      function goTo(index) {
+        slides[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        const oldBar = dots[current].querySelector('.dot-progress');
+        oldBar.style.animation = 'none';
+        oldBar.offsetHeight;
+        oldBar.style.animation = '';
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; <script>document.write(new Date().getFullYear())</script> <span>Presentia</span>. Fait avec <i class="fa-solid fa-heart"></i> pour EBER.</p>
-    </footer>
+        current = index;
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+        const newBar = dots[current].querySelector('.dot-progress');
+        newBar.style.animation = 'none';
+        newBar.offsetHeight;
+        newBar.style.animation = 'dotFill 5s linear forwards';
+      }
+
+      function next() { goTo((current + 1) % slides.length); }
+
+      function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(next, DURATION);
+      }
+
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => { goTo(i); startTimer(); });
+      });
+
+      startTimer();
+    })();
+  </script>
 </body>
 </html>

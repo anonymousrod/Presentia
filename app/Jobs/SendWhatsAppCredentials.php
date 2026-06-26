@@ -47,7 +47,7 @@ class SendWhatsAppCredentials implements ShouldQueue
         }
 
         $message = "Bonjour {$this->user->first_name},\n\n"
-            . "Votre compte Presentia a été créé par l'administrateur.\n\n"
+            . "Votre compte Me voici a été créé par l'administrateur.\n\n"
             . "Voici vos identifiants temporaires :\n"
             . "- Identifiant (Téléphone) : {$this->user->phone}\n"
             . "- Mot de passe temporaire : {$this->plainPassword}\n\n"
