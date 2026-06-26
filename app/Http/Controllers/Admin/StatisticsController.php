@@ -339,12 +339,12 @@ class StatisticsController extends Controller
         foreach ($members as $member) {
             $memberAttendances = $allAttendances->get($member->id, collect())->keyBy('activity_id');
 
-            $member->total_presents = $memberAttendances->filter(function($a) {
+            $member->total_presents = $memberAttendances->filter(function ($a) {
                 return in_array($a->status->value ?? $a->status, ['PRESENT', 'LATE']);
             })->count();
-            
+
             $member->total_absents = $totalActivitiesCount - $member->total_presents;
-            
+
             // Calculer les absences consécutives récentes
             $consecutiveAbsences = 0;
             foreach ($activityIds as $actId) {
@@ -361,16 +361,21 @@ class StatisticsController extends Controller
             $totalPresentsAll += $member->total_presents;
         }
 
-        $averagePresence = ($totalActivitiesCount > 0 && $members->count() > 0) 
-            ? round(($totalPresentsAll / ($totalActivitiesCount * $members->count())) * 100) 
+        $averagePresence = ($totalActivitiesCount > 0 && $members->count() > 0)
+            ? round(($totalPresentsAll / ($totalActivitiesCount * $members->count())) * 100)
             : 0;
 
         // Trier par absences consécutives puis total absences
         $members = $members->sortByDesc('consecutive_absences')->values();
 
         return view('admin.statistics.group', compact(
-            'group', 'groups', 'isGlobal', 'activityTypes', 
-            'totalSessions', 'averagePresence', 'members'
+            'group',
+            'groups',
+            'isGlobal',
+            'activityTypes',
+            'totalSessions',
+            'averagePresence',
+            'members'
         ));
     }
 
@@ -385,18 +390,26 @@ class StatisticsController extends Controller
         $dateFrom = $request->input('date_from');
         $dateTo = $request->input('date_to');
 
-        if (!$groupId) return response()->json(['series' => []]);
+        if (!$groupId) {
+            return response()->json(['series' => []]);
+        }
 
         $query = Activity::select('activities.id', 'activities.title', 'activities.start_time')
             ->where('activities.status', 'PUBLISHED')
             ->orderBy('activities.start_time');
 
-        if ($typeId) $query->where('activities.activity_type_id', $typeId);
-        if ($dateFrom) $query->where('activities.start_time', '>=', $dateFrom);
-        if ($dateTo) $query->where('activities.start_time', '<=', $dateTo . ' 23:59:59');
+        if ($typeId) {
+            $query->where('activities.activity_type_id', $typeId);
+        }
+        if ($dateFrom) {
+            $query->where('activities.start_time', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $query->where('activities.start_time', '<=', $dateTo . ' 23:59:59');
+        }
 
         $activities = $query->get();
-        
+
         $memberIds = DB::table('group_members')
             ->where('group_id', $groupId)
             ->whereNull('left_at')
@@ -434,12 +447,20 @@ class StatisticsController extends Controller
         $dateFrom = $request->input('date_from');
         $dateTo = $request->input('date_to');
 
-        if (!$groupId) return response()->json(['data' => []]);
+        if (!$groupId) {
+            return response()->json(['data' => []]);
+        }
 
         $activityQuery = Activity::where('status', 'PUBLISHED');
-        if ($typeId) $activityQuery->where('activity_type_id', $typeId);
-        if ($dateFrom) $activityQuery->where('start_time', '>=', $dateFrom);
-        if ($dateTo) $activityQuery->where('start_time', '<=', $dateTo . ' 23:59:59');
+        if ($typeId) {
+            $activityQuery->where('activity_type_id', $typeId);
+        }
+        if ($dateFrom) {
+            $activityQuery->where('start_time', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $activityQuery->where('start_time', '<=', $dateTo . ' 23:59:59');
+        }
         $activityIds = $activityQuery->pluck('id');
 
         $totalSessions = $activityIds->count();

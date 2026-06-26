@@ -60,7 +60,7 @@ class GroupController extends Controller
             'category'    => ['nullable', 'string', 'max:255'],
             'color'       => ['nullable', 'string', 'max:7'],
             'leader_id'   => ['nullable', 'exists:users,id'],
-            'collector_id'=> ['nullable', 'exists:users,id'],
+            'collector_id' => ['nullable', 'exists:users,id'],
         ]);
 
         $group = Group::create($data);
@@ -123,7 +123,7 @@ class GroupController extends Controller
             'category'    => ['nullable', 'string', 'max:255'],
             'color'       => ['nullable', 'string', 'max:7'],
             'leader_id'   => ['nullable', 'exists:users,id'],
-            'collector_id'=> ['nullable', 'exists:users,id'],
+            'collector_id' => ['nullable', 'exists:users,id'],
         ]);
 
         $previousLeaderId = $group->leader_id;

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\Contribution;
 use App\Models\Group;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -14,7 +13,7 @@ class ContributionController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        
+
         // Si l'utilisateur peut tout voir (Trésorier/Admin), il peut choisir le groupe
         if ($user->can('finance.view_all')) {
             $groupId = $request->input('group_id');
@@ -37,8 +36,12 @@ class ContributionController extends Controller
         // Année et Mois
         $year = $request->input('year', Carbon::now()->format('Y'));
         $month = $request->input('month', Carbon::now()->format('m'));
-        if ($month < 2) $month = '02';
-        if ($month > 11) $month = '11';
+        if ($month < 2) {
+            $month = '02';
+        }
+        if ($month > 11) {
+            $month = '11';
+        }
         $month = str_pad($month, 2, '0', STR_PAD_LEFT);
 
         $startOfMonth = Carbon::parse("$year-$month-01")->startOfMonth();
@@ -90,8 +93,16 @@ class ContributionController extends Controller
             ->pluck('total_paid', 'user_id');
 
         return view('admin.finance.contributions.index', compact(
-            'group', 'allGroups', 'members', 'sundays', 'contributions', 
-            'year', 'month', 'pendingAmount', 'totalSundaysInYear', 'yearlyContributions'
+            'group',
+            'allGroups',
+            'members',
+            'sundays',
+            'contributions',
+            'year',
+            'month',
+            'pendingAmount',
+            'totalSundaysInYear',
+            'yearlyContributions'
         ));
     }
 
@@ -118,7 +129,9 @@ class ContributionController extends Controller
         $inputs = $request->input('contributions', []);
 
         foreach ($inputs as $userId => $dates) {
-            if (!in_array($userId, $memberIds)) continue;
+            if (!in_array($userId, $memberIds)) {
+                continue;
+            }
 
             foreach ($dates as $date => $amount) {
                 // Si montant vide, on supprime la contribution existante non versée

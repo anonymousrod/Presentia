@@ -125,7 +125,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         // Collecte des cotisations
         Route::get('contributions', [App\Http\Controllers\Admin\Finance\ContributionController::class, 'index'])->name('contributions.index')->middleware('can:finance.collect_own_group');
         Route::post('contributions', [App\Http\Controllers\Admin\Finance\ContributionController::class, 'store'])->name('contributions.store')->middleware('can:finance.collect_own_group');
-        
+
         // Versements à la trésorerie
         Route::post('remittances', [App\Http\Controllers\Admin\Finance\RemittanceController::class, 'store'])->name('remittances.store')->middleware('can:remittance.create');
         Route::get('treasury', [App\Http\Controllers\Admin\Finance\RemittanceController::class, 'index'])->name('treasury.index')->middleware('can:finance.view_all');
