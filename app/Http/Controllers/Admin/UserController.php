@@ -84,6 +84,9 @@ class UserController extends Controller
             'birth_date' => $request->birth_date,
             'status'     => UserStatus::PENDING,
             'password'   => $tempPassword,
+            'weekly_contribution' => $request->weekly_contribution,
+            'church_service'      => $request->church_service,
+            'additional_info'     => $request->additional_info,
         ]);
 
         $user->plain_password = $tempPassword;
@@ -99,7 +102,25 @@ class UserController extends Controller
     public function show(User $user)
     {
         $this->authorize('view', $user);
-        return view('admin.users.show', compact('user'));
+
+        // Calcul des cotisations annuelles (Février à Novembre)
+        $startOfYear = \Carbon\Carbon::parse(date('Y') . '-02-01')->startOfDay();
+        $endOfYear = \Carbon\Carbon::parse(date('Y') . '-11-30')->endOfDay();
+
+        $totalSundaysInYear = 0;
+        $dateIt = $startOfYear->copy()->next(\Carbon\Carbon::SUNDAY);
+        if ($startOfYear->isSunday()) {
+            $dateIt = $startOfYear->copy();
+        }
+        while ($dateIt->lte($endOfYear)) {
+            $totalSundaysInYear++;
+            $dateIt->addWeek();
+        }
+
+        $expectedContribution = $user->weekly_contribution ? $user->weekly_contribution * $totalSundaysInYear : 0;
+        $paidContribution = $user->contributions()->whereBetween('date', [$startOfYear, $endOfYear])->sum('amount');
+
+        return view('admin.users.show', compact('user', 'expectedContribution', 'paidContribution', 'totalSundaysInYear'));
     }
 
     /**

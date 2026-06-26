@@ -62,12 +62,18 @@ enum PermissionEnum: string
     case NOTIFICATION_SEND_INDIVIDUAL = 'notification.send_individual';
 
     // ----------------------------------------------------------------
+    // Finances (Cotisations & Trésorerie)
+    // ----------------------------------------------------------------
+    case FINANCE_VIEW_ALL         = 'finance.view_all';
+    case FINANCE_COLLECT_OWN_GROUP = 'finance.collect_own_group';
+    case REMITTANCE_CREATE        = 'remittance.create';
+    case REMITTANCE_VALIDATE      = 'remittance.validate';
+
+    // ----------------------------------------------------------------
     // Statistiques & Rapports
     // ----------------------------------------------------------------
     case STATS_VIEW_GLOBAL        = 'stats.view_global';
     case STATS_VIEW_OWN_GROUP     = 'stats.view_own_group';
-    case REPORT_EXPORT_GLOBAL     = 'report.export_global';
-    case REPORT_EXPORT_OWN_GROUP  = 'report.export_own_group';
 
     // ----------------------------------------------------------------
     // Rôles & Permissions
@@ -133,10 +139,12 @@ enum PermissionEnum: string
             self::NOTIFICATION_SEND_GROUP     => 'Envoyer une notification à un groupe',
             self::NOTIFICATION_SEND_ROLE      => 'Envoyer une notification à un rôle',
             self::NOTIFICATION_SEND_INDIVIDUAL => 'Envoyer une notification individuelle',
+            self::FINANCE_VIEW_ALL         => 'Voir toutes les finances',
+            self::FINANCE_COLLECT_OWN_GROUP => 'Collecter les fonds de son groupe',
+            self::REMITTANCE_CREATE        => 'Déclarer un versement à la trésorerie',
+            self::REMITTANCE_VALIDATE      => 'Valider un versement reçu',
             self::STATS_VIEW_GLOBAL        => 'Voir les statistiques globales',
             self::STATS_VIEW_OWN_GROUP     => 'Voir les statistiques de son groupe',
-            self::REPORT_EXPORT_GLOBAL     => 'Exporter le rapport global',
-            self::REPORT_EXPORT_OWN_GROUP  => 'Exporter le rapport de son groupe',
             self::ROLE_MANAGE              => 'Gérer les rôles',
             self::PERMISSION_MANAGE        => 'Gérer les permissions',
             self::AUDIT_VIEW               => 'Voir les journaux d\'audit',

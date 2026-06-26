@@ -205,12 +205,86 @@
                                 <div class="text-danger mt-1 fs-12">{{ $message }}</div>
                             @enderror
                         </div>
+
+                        <div class="mb-4">
+                            <label for="church_service" class="form-label fw-medium text-body">Service au sein de l'église</label>
+                            <div class="input-group">
+                                <span class="input-group-text premium-addon"><i class="mdi mdi-church"></i></span>
+                                <input type="text" class="form-control premium-input with-addon @error('church_service') is-invalid @enderror" 
+                                       id="church_service" name="church_service" value="{{ old('church_service', $user->church_service) }}" 
+                                       placeholder="Ex: Chorale, Intercession, etc.">
+                            </div>
+                            @error('church_service')
+                                <div class="text-danger mt-1 fs-12">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="section-header mt-5">
+                            <i class="mdi mdi-cash"></i> Finances
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="weekly_contribution" class="form-label fw-medium text-body">Cotisation Hebdomadaire (FCFA)</label>
+                            <div class="input-group">
+                                <span class="input-group-text premium-addon"><i class="mdi mdi-cash-multiple"></i></span>
+                                <input type="number" step="50" min="0" class="form-control premium-input with-addon @error('weekly_contribution') is-invalid @enderror" 
+                                       id="weekly_contribution" name="weekly_contribution" value="{{ old('weekly_contribution', $user->weekly_contribution) }}" 
+                                       placeholder="Ex : 250">
+                            </div>
+                            <div class="form-text text-muted">Montant fixe attendu chaque dimanche.</div>
+                            @error('weekly_contribution')
+                                <div class="text-danger mt-1 fs-12">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Right Column: Settings & Submit -->
             <div class="col-lg-4">
+                <div class="card border-0 shadow-sm mb-4" style="border-radius: 1rem;">
+                    <div class="card-body p-4">
+                        <div class="section-header">
+                            <i class="mdi mdi-information-outline"></i> Informations Complémentaires
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label fw-medium text-body d-flex justify-content-between align-items-center">
+                                Notes & Remarques
+                                <button type="button" class="btn btn-sm btn-soft-primary" onclick="addInfoField()">
+                                    <i class="mdi mdi-plus"></i> Ajouter
+                                </button>
+                            </label>
+                            
+                            <div id="additional-info-container" class="vstack gap-2 mt-2">
+                                @php
+                                    // Make sure it's an array
+                                    $additionalInfos = old('additional_info', is_string($user->additional_info) ? json_decode($user->additional_info, true) : $user->additional_info) ?? [];
+                                    if(!is_array($additionalInfos)) $additionalInfos = [];
+                                @endphp
+                                @foreach($additionalInfos as $index => $info)
+                                    @if(is_array($info))
+                                    <div class="info-item border rounded p-2 bg-light">
+                                        <div class="d-flex gap-2">
+                                            <div class="flex-grow-1">
+                                                <input type="text" name="additional_info[{{ $index }}][title]" class="form-control form-control-sm mb-2" placeholder="Titre (ex: Instrument)" value="{{ $info['title'] ?? '' }}" required>
+                                                <input type="text" name="additional_info[{{ $index }}][value]" class="form-control form-control-sm" placeholder="Valeur (ex: Piano)" value="{{ $info['value'] ?? '' }}" required>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-soft-danger flex-shrink-0 align-self-start" onclick="this.closest('.info-item').remove()">
+                                                <i class="mdi mdi-delete"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                            
+                            @error('additional_info')
+                                <div class="text-danger mt-1 fs-12">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card border-0 shadow-sm mb-4" style="border-radius: 1rem; position: sticky; top: 100px;">
                     <div class="card-body p-4">
                         <div class="section-header">
@@ -218,18 +292,30 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="status" class="form-label fw-medium text-body">Statut du compte <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text premium-addon"><i class="mdi mdi-account-cog-outline"></i></span>
-                                <select name="status" id="status" class="form-select premium-input with-addon @error('status') is-invalid @enderror" required>
-                                    <option value="PENDING" {{ old('status', $user->status->value) === 'PENDING' ? 'selected' : '' }}>En attente</option>
-                                    <option value="ACTIVE" {{ old('status', $user->status->value) === 'ACTIVE' ? 'selected' : '' }}>Actif</option>
-                                    <option value="INACTIVE" {{ old('status', $user->status->value) === 'INACTIVE' ? 'selected' : '' }}>Inactif</option>
-                                    <option value="SUSPENDED" {{ old('status', $user->status->value) === 'SUSPENDED' ? 'selected' : '' }}>Suspendu</option>
-                                </select>
+                            <label class="form-label fw-medium text-body d-block mb-2">Statut du compte <span class="text-danger">*</span></label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <input type="radio" class="btn-check" name="status" id="status-pending" value="PENDING" {{ old('status', $user->status->value) === 'PENDING' ? 'checked' : '' }}>
+                                <label class="btn btn-sm btn-outline-warning rounded-pill" for="status-pending">
+                                    <i class="mdi mdi-clock-outline align-middle me-1"></i>En attente
+                                </label>
+
+                                <input type="radio" class="btn-check" name="status" id="status-active" value="ACTIVE" {{ old('status', $user->status->value) === 'ACTIVE' ? 'checked' : '' }}>
+                                <label class="btn btn-sm btn-outline-success rounded-pill" for="status-active">
+                                    <i class="mdi mdi-check-circle-outline align-middle me-1"></i>Actif
+                                </label>
+
+                                <input type="radio" class="btn-check" name="status" id="status-inactive" value="INACTIVE" {{ old('status', $user->status->value) === 'INACTIVE' ? 'checked' : '' }}>
+                                <label class="btn btn-sm btn-outline-secondary rounded-pill" for="status-inactive">
+                                    <i class="mdi mdi-account-off-outline align-middle me-1"></i>Inactif
+                                </label>
+
+                                <input type="radio" class="btn-check" name="status" id="status-suspended" value="SUSPENDED" {{ old('status', $user->status->value) === 'SUSPENDED' ? 'checked' : '' }}>
+                                <label class="btn btn-sm btn-outline-danger rounded-pill" for="status-suspended">
+                                    <i class="mdi mdi-cancel align-middle me-1"></i>Suspendu
+                                </label>
                             </div>
                             @error('status')
-                                <div class="text-danger mt-1 fs-12">{{ $message }}</div>
+                                <div class="text-danger mt-2 fs-12">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -245,3 +331,27 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    let infoIndex = {{ count(is_array(old('additional_info')) ? old('additional_info') : (is_array($user->additional_info) ? $user->additional_info : (json_decode($user->additional_info, true) ?? []))) }};
+    function addInfoField() {
+        const container = document.getElementById('additional-info-container');
+        const item = document.createElement('div');
+        item.className = 'info-item border rounded p-2 bg-light mb-2';
+        item.innerHTML = `
+            <div class="d-flex gap-2">
+                <div class="flex-grow-1">
+                    <input type="text" name="additional_info[${infoIndex}][title]" class="form-control form-control-sm mb-2" placeholder="Titre (ex: Instrument)" required>
+                    <input type="text" name="additional_info[${infoIndex}][value]" class="form-control form-control-sm" placeholder="Valeur (ex: Piano)" required>
+                </div>
+                <button type="button" class="btn btn-sm btn-soft-danger flex-shrink-0 align-self-start" onclick="this.closest('.info-item').remove()">
+                    <i class="mdi mdi-delete"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(item);
+        infoIndex++;
+    }
+</script>
+@endpush

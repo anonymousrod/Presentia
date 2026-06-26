@@ -18,9 +18,29 @@ class ProfileController extends Controller
         $user = $request->user();
         $completionPercentage = $this->calculateCompletionPercentage($user);
 
+        // Calcul des cotisations annuelles (Février à Novembre)
+        $startOfYear = \Carbon\Carbon::parse(date('Y') . '-02-01')->startOfDay();
+        $endOfYear = \Carbon\Carbon::parse(date('Y') . '-11-30')->endOfDay();
+
+        $totalSundaysInYear = 0;
+        $dateIt = $startOfYear->copy()->next(\Carbon\Carbon::SUNDAY);
+        if ($startOfYear->isSunday()) {
+            $dateIt = $startOfYear->copy();
+        }
+        while ($dateIt->lte($endOfYear)) {
+            $totalSundaysInYear++;
+            $dateIt->addWeek();
+        }
+
+        $expectedContribution = $user->weekly_contribution ? $user->weekly_contribution * $totalSundaysInYear : 0;
+        $paidContribution = $user->contributions()->whereBetween('date', [$startOfYear, $endOfYear])->sum('amount');
+
         return view('profile.edit', [
             'user' => $user,
-            'completionPercentage' => $completionPercentage
+            'completionPercentage' => $completionPercentage,
+            'expectedContribution' => $expectedContribution,
+            'paidContribution' => $paidContribution,
+            'totalSundaysInYear' => $totalSundaysInYear
         ]);
     }
 
@@ -43,6 +63,7 @@ class ProfileController extends Controller
             'education_level'        => ['nullable', 'string', 'max:255'],
             'residence_municipality' => ['nullable', 'string', 'max:255'],
             'residence_neighborhood' => ['nullable', 'string', 'max:255'],
+            'church_service'         => ['nullable', 'string', 'max:255'],
         ]);
 
         $user->fill($validated);
@@ -134,6 +155,7 @@ class ProfileController extends Controller
             'education_level',
             'residence_municipality',
             'residence_neighborhood',
+            'church_service',
         ];
 
         $filled = 0;

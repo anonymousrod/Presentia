@@ -112,4 +112,23 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::get('/chart/individual-participation', [App\Http\Controllers\Admin\StatisticsController::class, 'chartIndividualParticipation'])->name('chart.individual-participation');
         Route::get('/chart/affluence-by-activity', [App\Http\Controllers\Admin\StatisticsController::class, 'chartAffluenceByActivity'])->name('chart.affluence-by-activity');
     });
+
+    // Group Statistics (Accessible by Admins and Group Leaders)
+    Route::prefix('statistics/group')->name('statistics.group.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\StatisticsController::class, 'group'])->name('index');
+        Route::get('/chart/evolution', [App\Http\Controllers\Admin\StatisticsController::class, 'chartGroupEvolution'])->name('chart.evolution');
+        Route::get('/chart/participation', [App\Http\Controllers\Admin\StatisticsController::class, 'chartGroupParticipation'])->name('chart.participation');
+    });
+
+    // Finances (Cotisations et Trésorerie)
+    Route::prefix('finance')->name('finance.')->group(function () {
+        // Collecte des cotisations
+        Route::get('contributions', [App\Http\Controllers\Admin\Finance\ContributionController::class, 'index'])->name('contributions.index')->middleware('can:finance.collect_own_group');
+        Route::post('contributions', [App\Http\Controllers\Admin\Finance\ContributionController::class, 'store'])->name('contributions.store')->middleware('can:finance.collect_own_group');
+        
+        // Versements à la trésorerie
+        Route::post('remittances', [App\Http\Controllers\Admin\Finance\RemittanceController::class, 'store'])->name('remittances.store')->middleware('can:remittance.create');
+        Route::get('treasury', [App\Http\Controllers\Admin\Finance\RemittanceController::class, 'index'])->name('treasury.index')->middleware('can:finance.view_all');
+        Route::post('remittances/{remittance}/validate', [App\Http\Controllers\Admin\Finance\RemittanceController::class, 'validateRemittance'])->name('remittances.validate')->middleware('can:remittance.validate');
+    });
 });

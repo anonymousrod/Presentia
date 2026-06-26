@@ -100,6 +100,70 @@
                             <!-- Left Column: Personal, Professional, Residence info -->
                             <div class="col-xxl-4 col-xl-5">
                                 
+                                <!-- Card: Finances & Rôles -->
+                                <div class="card ribbon-box border shadow-none mb-4">
+                                    <div class="card-body">
+                                        <div class="ribbon ribbon-warning round-shape">Finances & Rôles</div>
+                                        <div class="mt-4">
+                                            <ul class="list-unstyled vstack gap-3 mb-0">
+                                                <li>
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 avatar-xs">
+                                                            <div class="avatar-title rounded bg-warning-subtle text-warning">
+                                                                <i class="ri-money-dollar-circle-line"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1 ms-3">
+                                                            <h6 class="mb-1 fs-14">Cotisation hebdomadaire</h6>
+                                                            <p class="text-muted mb-0">{{ $user->weekly_contribution ? number_format($user->weekly_contribution, 0, ',', ' ') . ' FCFA' : 'Non renseignée' }}</p>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 avatar-xs">
+                                                            <div class="avatar-title rounded bg-success-subtle text-success">
+                                                                <i class="ri-wallet-3-line"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1 ms-3">
+                                                            <h6 class="mb-1 fs-14">Avancement des cotisations</h6>
+                                                            <p class="text-muted mb-1">
+                                                                <strong>{{ number_format($paidContribution, 0, ',', ' ') }} FCFA</strong> / {{ number_format($expectedContribution, 0, ',', ' ') }} FCFA
+                                                            </p>
+                                                            @php
+                                                                $percent = $expectedContribution > 0 ? min(100, round(($paidContribution / $expectedContribution) * 100)) : 0;
+                                                            @endphp
+                                                            <div class="progress animated-progress" style="height: 6px;">
+                                                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ $percent }}%" aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 avatar-xs">
+                                                            <div class="avatar-title rounded bg-info-subtle text-info">
+                                                                <i class="ri-shield-user-line"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1 ms-3">
+                                                            <h6 class="mb-1 fs-14">Rôles attribués</h6>
+                                                            <div class="d-flex flex-wrap gap-1 mt-1">
+                                                                @forelse($user->getRoleNames() as $role)
+                                                                    <span class="badge bg-info-subtle text-info">{{ $role }}</span>
+                                                                @empty
+                                                                    <span class="text-muted">Aucun rôle</span>
+                                                                @endforelse
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Card: Informations Personnelles -->
                                 <div class="card ribbon-box border shadow-none mb-4">
                                     <div class="card-body">
@@ -216,6 +280,19 @@
                                                         </div>
                                                     </div>
                                                 </li>
+                                                <li>
+                                                    <div class="d-flex">
+                                                        <div class="flex-shrink-0 avatar-xs">
+                                                            <div class="avatar-title rounded bg-primary-subtle text-primary">
+                                                                <i class="ri-church-line"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1 ms-3">
+                                                            <h6 class="mb-1 fs-14">Service à l'église</h6>
+                                                            <p class="text-muted mb-0">{{ $user->church_service ?? 'Non renseigné' }}</p>
+                                                        </div>
+                                                    </div>
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
@@ -257,6 +334,39 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                @php
+                                    $additionalInfos = is_string($user->additional_info) ? json_decode($user->additional_info, true) : $user->additional_info;
+                                @endphp
+                                @if(!empty($additionalInfos) && is_array($additionalInfos))
+                                <!-- Card: Informations Complémentaires -->
+                                <div class="card ribbon-box border shadow-none mb-4">
+                                    <div class="card-body">
+                                        <div class="ribbon ribbon-dark round-shape">Notes & Remarques</div>
+                                        <div class="mt-4">
+                                            <ul class="list-unstyled vstack gap-2 mb-0">
+                                                @foreach($additionalInfos as $info)
+                                                    @if(is_array($info))
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-light text-dark border">
+                                                                    <i class="ri-information-line"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">{{ $info['title'] ?? 'Info' }}</h6>
+                                                                <p class="text-muted mb-0">{{ $info['value'] ?? '' }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
 
                             </div>
                             <!--end left col-->

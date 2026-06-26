@@ -60,6 +60,7 @@ class GroupController extends Controller
             'category'    => ['nullable', 'string', 'max:255'],
             'color'       => ['nullable', 'string', 'max:7'],
             'leader_id'   => ['nullable', 'exists:users,id'],
+            'collector_id'=> ['nullable', 'exists:users,id'],
         ]);
 
         $group = Group::create($data);
@@ -67,6 +68,11 @@ class GroupController extends Controller
         // Dispatch event si un chef est défini dès la création
         if ($group->leader_id) {
             GroupLeaderAssigned::dispatch($group, $group->leader);
+            $group->leader->assignRole('Chef de groupe');
+        }
+
+        if ($group->collector_id) {
+            $group->collector->assignRole('Chargé de collecte');
         }
 
         return redirect()->route('admin.groups.show', $group)
@@ -117,15 +123,41 @@ class GroupController extends Controller
             'category'    => ['nullable', 'string', 'max:255'],
             'color'       => ['nullable', 'string', 'max:7'],
             'leader_id'   => ['nullable', 'exists:users,id'],
+            'collector_id'=> ['nullable', 'exists:users,id'],
         ]);
 
         $previousLeaderId = $group->leader_id;
+        $previousCollectorId = $group->collector_id;
         $group->update($data);
 
-        // Dispatcher l'événement seulement si le chef a changé
-        if ($data['leader_id'] && $data['leader_id'] != $previousLeaderId) {
-            $group->refresh();
-            GroupLeaderAssigned::dispatch($group, $group->leader);
+        // Gestion du Chef de groupe
+        if ($group->leader_id != $previousLeaderId) {
+            if ($previousLeaderId) {
+                $oldLeader = User::find($previousLeaderId);
+                // Si l'ancien chef n'est chef d'aucun autre groupe, on lui retire le rôle
+                if ($oldLeader && $oldLeader->ledGroups()->count() === 0) {
+                    $oldLeader->removeRole('Chef de groupe');
+                }
+            }
+            if ($group->leader_id) {
+                $group->refresh();
+                GroupLeaderAssigned::dispatch($group, $group->leader);
+                $group->leader->assignRole('Chef de groupe');
+            }
+        }
+
+        // Gestion du Chargé de collecte
+        if ($group->collector_id != $previousCollectorId) {
+            if ($previousCollectorId) {
+                $oldCollector = User::find($previousCollectorId);
+                // Si l'ancien chargé n'est chargé d'aucun autre groupe, on lui retire le rôle
+                if ($oldCollector && $oldCollector->collectedGroups()->count() === 0) {
+                    $oldCollector->removeRole('Chargé de collecte');
+                }
+            }
+            if ($group->collector_id) {
+                $group->collector->assignRole('Chargé de collecte');
+            }
         }
 
         return redirect()->route('admin.groups.show', $group)

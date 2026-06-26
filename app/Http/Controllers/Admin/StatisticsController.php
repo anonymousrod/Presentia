@@ -73,7 +73,8 @@ class StatisticsController extends Controller
     public function chartPresenceEvolution(Request $request): JsonResponse
     {
         $typeId = $request->input('activity_type_id');
-        $year = $request->input('year');
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
 
         $query = Activity::select('activities.id', 'activities.title', 'activities.start_time')
             ->where('activities.status', 'PUBLISHED')
@@ -82,8 +83,11 @@ class StatisticsController extends Controller
         if ($typeId) {
             $query->where('activities.activity_type_id', $typeId);
         }
-        if ($year) {
-            $query->whereYear('activities.start_time', $year);
+        if ($dateFrom) {
+            $query->where('activities.start_time', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $query->where('activities.start_time', '<=', $dateTo . ' 23:59:59');
         }
 
         $activities = $query->get();
@@ -177,15 +181,19 @@ class StatisticsController extends Controller
     public function chartIndividualParticipation(Request $request): JsonResponse
     {
         $typeId = $request->input('activity_type_id');
-        $year = $request->input('year');
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
 
         // IDs des activités du type sélectionné
         $activityQuery = Activity::where('status', 'PUBLISHED');
         if ($typeId) {
             $activityQuery->where('activity_type_id', $typeId);
         }
-        if ($year) {
-            $activityQuery->whereYear('start_time', $year);
+        if ($dateFrom) {
+            $activityQuery->where('start_time', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $activityQuery->where('start_time', '<=', $dateTo . ' 23:59:59');
         }
         $activityIds = $activityQuery->pluck('id');
 
@@ -226,7 +234,8 @@ class StatisticsController extends Controller
     public function chartAffluenceByActivity(Request $request): JsonResponse
     {
         $typeId = $request->input('activity_type_id');
-        $year = $request->input('year');
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
 
         $query = Activity::where('status', 'PUBLISHED')
             ->orderBy('start_time');
@@ -234,8 +243,11 @@ class StatisticsController extends Controller
         if ($typeId) {
             $query->where('activity_type_id', $typeId);
         }
-        if ($year) {
-            $query->whereYear('start_time', $year);
+        if ($dateFrom) {
+            $query->where('start_time', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $query->where('start_time', '<=', $dateTo . ' 23:59:59');
         }
 
         $activities = $query->get();
@@ -269,5 +281,191 @@ class StatisticsController extends Controller
         });
 
         return response()->json($data);
+    }
+
+    public function group(Request $request)
+    {
+        $user = auth()->user();
+        $isGlobal = $user->can('stats.view_global');
+
+        if (!$isGlobal && !$user->can('stats.view_own_group')) {
+            abort(403, 'Accès non autorisé.');
+        }
+
+        $groups = collect();
+        if ($isGlobal) {
+            $groups = Group::orderBy('name')->get();
+            $groupId = $request->input('group_id', $groups->first()?->id);
+        } else {
+            $groupId = $user->ledGroups()->first()?->id;
+        }
+
+        if (!$groupId) {
+            return redirect()->route('dashboard')->with('error', 'Aucun groupe trouvé.');
+        }
+
+        $group = Group::withCount(['members' => function ($q) {
+            $q->whereNull('group_members.left_at');
+        }])->findOrFail($groupId);
+
+        // Fetch activity types for filters
+        $activityTypes = ActivityType::orderBy('name')->get();
+
+        // Calculate KPI: Total sessions evaluated
+        $totalSessions = Activity::where('status', 'PUBLISHED')->count();
+
+        // Tableau de suivi des membres
+        $membersQuery = DB::table('group_members')
+            ->join('users', 'users.id', '=', 'group_members.user_id')
+            ->where('group_members.group_id', $groupId)
+            ->whereNull('group_members.left_at')
+            ->whereNull('users.deleted_at')
+            ->select('users.id', 'users.name', 'users.first_name', 'users.phone', 'users.photo');
+
+        $members = $membersQuery->get();
+
+        $activityIds = Activity::where('status', 'PUBLISHED')
+            ->orderBy('start_time', 'desc')
+            ->pluck('id');
+
+        $totalActivitiesCount = $activityIds->count();
+        $totalPresentsAll = 0;
+
+        $allAttendances = Attendance::whereIn('user_id', $members->pluck('id'))
+            ->whereIn('activity_id', $activityIds)
+            ->get()
+            ->groupBy('user_id');
+
+        foreach ($members as $member) {
+            $memberAttendances = $allAttendances->get($member->id, collect())->keyBy('activity_id');
+
+            $member->total_presents = $memberAttendances->filter(function($a) {
+                return in_array($a->status->value ?? $a->status, ['PRESENT', 'LATE']);
+            })->count();
+            
+            $member->total_absents = $totalActivitiesCount - $member->total_presents;
+            
+            // Calculer les absences consécutives récentes
+            $consecutiveAbsences = 0;
+            foreach ($activityIds as $actId) {
+                $att = $memberAttendances->get($actId);
+                $statusVal = $att ? ($att->status->value ?? $att->status) : null;
+                if (!in_array($statusVal, ['PRESENT', 'LATE'])) {
+                    $consecutiveAbsences++;
+                } else {
+                    break;
+                }
+            }
+            $member->consecutive_absences = $consecutiveAbsences;
+            $member->attendance_rate = $totalActivitiesCount > 0 ? round(($member->total_presents / $totalActivitiesCount) * 100) : 0;
+            $totalPresentsAll += $member->total_presents;
+        }
+
+        $averagePresence = ($totalActivitiesCount > 0 && $members->count() > 0) 
+            ? round(($totalPresentsAll / ($totalActivitiesCount * $members->count())) * 100) 
+            : 0;
+
+        // Trier par absences consécutives puis total absences
+        $members = $members->sortByDesc('consecutive_absences')->values();
+
+        return view('admin.statistics.group', compact(
+            'group', 'groups', 'isGlobal', 'activityTypes', 
+            'totalSessions', 'averagePresence', 'members'
+        ));
+    }
+
+    public function chartGroupEvolution(Request $request): JsonResponse
+    {
+        if (!auth()->user()->can('stats.view_global') && !auth()->user()->can('stats.view_own_group')) {
+            abort(403, 'Accès non autorisé.');
+        }
+
+        $groupId = $request->input('group_id');
+        $typeId = $request->input('activity_type_id');
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+
+        if (!$groupId) return response()->json(['series' => []]);
+
+        $query = Activity::select('activities.id', 'activities.title', 'activities.start_time')
+            ->where('activities.status', 'PUBLISHED')
+            ->orderBy('activities.start_time');
+
+        if ($typeId) $query->where('activities.activity_type_id', $typeId);
+        if ($dateFrom) $query->where('activities.start_time', '>=', $dateFrom);
+        if ($dateTo) $query->where('activities.start_time', '<=', $dateTo . ' 23:59:59');
+
+        $activities = $query->get();
+        
+        $memberIds = DB::table('group_members')
+            ->where('group_id', $groupId)
+            ->whereNull('left_at')
+            ->pluck('user_id');
+
+        $data = $activities->map(function ($activity) use ($memberIds) {
+            $presences = Attendance::where('activity_id', $activity->id)
+                ->whereIn('user_id', $memberIds)
+                ->whereIn('status', ['PRESENT', 'LATE'])
+                ->count();
+
+            return [
+                'date' => $activity->start_time->format('d/m'),
+                'title' => $activity->title,
+                'full_date' => $activity->start_time->format('d/m/Y'),
+                'count' => $presences,
+            ];
+        });
+
+        return response()->json([
+            'series' => $data->values(),
+            'average' => $data->count() > 0 ? round($data->avg('count'), 1) : 0,
+            'total_sessions' => $data->count(),
+        ]);
+    }
+
+    public function chartGroupParticipation(Request $request): JsonResponse
+    {
+        if (!auth()->user()->can('stats.view_global') && !auth()->user()->can('stats.view_own_group')) {
+            abort(403, 'Accès non autorisé.');
+        }
+
+        $groupId = $request->input('group_id');
+        $typeId = $request->input('activity_type_id');
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+
+        if (!$groupId) return response()->json(['data' => []]);
+
+        $activityQuery = Activity::where('status', 'PUBLISHED');
+        if ($typeId) $activityQuery->where('activity_type_id', $typeId);
+        if ($dateFrom) $activityQuery->where('start_time', '>=', $dateFrom);
+        if ($dateTo) $activityQuery->where('start_time', '<=', $dateTo . ' 23:59:59');
+        $activityIds = $activityQuery->pluck('id');
+
+        $totalSessions = $activityIds->count();
+
+        $data = DB::table('group_members')
+            ->join('users', 'users.id', '=', 'group_members.user_id')
+            ->leftJoin('attendances', function ($join) use ($activityIds) {
+                $join->on('attendances.user_id', '=', 'group_members.user_id')
+                    ->whereIn('attendances.activity_id', $activityIds)
+                    ->whereIn('attendances.status', ['PRESENT', 'LATE']);
+            })
+            ->where('group_members.group_id', $groupId)
+            ->whereNull('group_members.left_at')
+            ->whereNull('users.deleted_at')
+            ->select(
+                'users.id',
+                DB::raw("CONCAT(UPPER(users.name), ' ', users.first_name) as full_name"),
+                DB::raw('COUNT(DISTINCT attendances.id) as count')
+            )
+            ->groupBy('users.id', 'users.name', 'users.first_name')
+            ->orderByDesc('count')
+            ->get();
+
+        return response()->json([
+            'data' => $data,
+            'total_sessions' => $totalSessions,
+        ]);
     }
 }

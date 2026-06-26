@@ -72,6 +72,43 @@
     </div>
 </div>
 
+{{-- Filtres Globaux --}}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card mb-0 shadow-sm border-0">
+            <div class="card-body bg-light-subtle rounded py-3">
+                <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <h6 class="mb-0 fw-bold text-uppercase fs-12 text-muted me-md-3">
+                            <i class="mdi mdi-filter-variant text-primary me-1 fs-15 align-middle"></i> Filtres d'analyse
+                        </h6>
+                    </div>
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="form-label mb-0 fs-13 text-nowrap">Type :</label>
+                            <select id="global-filter-type" class="form-select form-select-sm" style="min-width: 150px;">
+                                <option value="">Tous les types</option>
+                                @foreach($activityTypes as $type)
+                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="form-label mb-0 fs-13 text-nowrap">Du :</label>
+                            <input type="date" id="global-filter-date-from" class="form-control form-control-sm">
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="form-label mb-0 fs-13 text-nowrap">Au :</label>
+                            <input type="date" id="global-filter-date-to" class="form-control form-control-sm">
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary" id="btn-apply-filters">Appliquer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Graphique 1 : Répartition des jeunes par groupe --}}
 <div class="row">
     <div class="col-12">
@@ -81,6 +118,9 @@
                     <i class="mdi mdi-chart-bar me-1 text-primary"></i>
                     Répartition des jeunes par groupe
                 </h5>
+                <button type="button" class="btn btn-sm btn-soft-secondary" id="btn-export-chart1" title="Télécharger l'image">
+                    <i class="mdi mdi-download fs-16"></i>
+                </button>
             </div>
             <div class="card-body" data-simplebar>
                 <div id="chart-members-per-group" style="min-height: 350px;"></div>
@@ -98,25 +138,10 @@
                     <i class="mdi mdi-chart-line me-1 text-info"></i>
                     Évolution des présences par séance
                 </h5>
-                <div class="d-flex flex-wrap gap-2 align-items-center">
-                    <div class="d-flex align-items-center gap-2">
-                        <label class="form-label mb-0 text-nowrap fs-13">Type :</label>
-                        <select id="filter-evolution-type" class="form-select form-select-sm w-auto">
-                            <option value="">Tous les types</option>
-                            @foreach($activityTypes as $type)
-                                <option value="{{ $type->id }}">{{ $type->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <label class="form-label mb-0 text-nowrap fs-13">Année :</label>
-                        <select id="filter-evolution-year" class="form-select form-select-sm w-auto">
-                            <option value="">Toutes</option>
-                            @foreach($years as $y)
-                                <option value="{{ $y }}">{{ $y }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                <div class="d-flex flex-wrap gap-2 align-items-center w-100 w-md-auto justify-content-between justify-content-md-end">
+                    <button type="button" class="btn btn-sm btn-soft-secondary flex-shrink-0" id="btn-export-chart2" title="Télécharger l'image">
+                        <i class="mdi mdi-download fs-16"></i>
+                    </button>
                 </div>
             </div>
             <div class="card-body" data-simplebar>
@@ -132,28 +157,14 @@
     <div class="col-xl-6">
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title mb-3">
-                    <i class="mdi mdi-chart-bar-stacked me-1 text-warning"></i>
-                    Présence par groupe <span class="fs-12 text-muted fw-normal d-block d-sm-inline mt-1 mt-sm-0">(membres présents / effectif)</span>
-                </h5>
-                <div class="row g-2">
-                    <div class="col-md-4">
-                        <label class="form-label fs-12 mb-1">Type d'activité</label>
-                        <select id="filter-group-type" class="form-select form-select-sm">
-                            <option value="">Toutes</option>
-                            @foreach($activityTypes as $type)
-                                <option value="{{ $type->id }}">{{ $type->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fs-12 mb-1">Date début</label>
-                        <input type="date" id="filter-group-date-from" class="form-control form-control-sm">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fs-12 mb-1">Date fin</label>
-                        <input type="date" id="filter-group-date-to" class="form-control form-control-sm">
-                    </div>
+                <div class="d-flex justify-content-between align-items-center mb-0">
+                    <h5 class="card-title mb-0">
+                        <i class="mdi mdi-chart-bar-stacked me-1 text-warning"></i>
+                        Présence par groupe <span class="fs-12 text-muted fw-normal d-none d-sm-inline mt-1 mt-sm-0">(membres présents / effectif)</span>
+                    </h5>
+                    <button type="button" class="btn btn-sm btn-soft-secondary" id="btn-export-chart3" title="Télécharger l'image">
+                        <i class="mdi mdi-download fs-16"></i>
+                    </button>
                 </div>
             </div>
             <div class="card-body" data-simplebar style="height: 450px;">
@@ -168,27 +179,12 @@
             <div class="card-header d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2">
                 <h5 class="card-title mb-0 flex-grow-1">
                     <i class="mdi mdi-account-details me-1 text-danger"></i>
-                    Participation individuelle <span id="chart4-subtitle" class="fs-12 text-muted fw-normal d-block d-sm-inline mt-1 mt-sm-0"></span>
+                    Participation <span id="chart4-subtitle" class="fs-12 text-muted fw-normal d-none d-sm-inline mt-1 mt-sm-0"></span>
                 </h5>
-                <div class="d-flex flex-wrap gap-2 align-items-center mt-2 mt-md-0">
-                    <div class="d-flex align-items-center gap-2">
-                        <label class="form-label mb-0 text-nowrap fs-12">Type :</label>
-                        <select id="filter-individual-type" class="form-select form-select-sm w-auto">
-                            <option value="">Tous</option>
-                            @foreach($activityTypes as $type)
-                                <option value="{{ $type->id }}">{{ $type->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <label class="form-label mb-0 text-nowrap fs-12">Année :</label>
-                        <select id="filter-individual-year" class="form-select form-select-sm w-auto">
-                            <option value="">Toutes</option>
-                            @foreach($years as $y)
-                                <option value="{{ $y }}">{{ $y }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                <div class="d-flex flex-wrap gap-2 align-items-center w-100 w-md-auto justify-content-between justify-content-md-end mt-2 mt-md-0">
+                    <button type="button" class="btn btn-sm btn-soft-secondary flex-shrink-0" id="btn-export-chart4" title="Télécharger l'image">
+                        <i class="mdi mdi-download fs-16"></i>
+                    </button>
                 </div>
             </div>
             <div class="card-body" data-simplebar style="height: 450px;">
@@ -207,25 +203,10 @@
                     <i class="mdi mdi-chart-areaspline me-1 text-success"></i>
                     Affluence par activité
                 </h5>
-                <div class="d-flex flex-wrap gap-2 align-items-center mt-2 mt-md-0">
-                    <div class="d-flex align-items-center gap-2">
-                        <label class="form-label mb-0 text-nowrap fs-13">Type :</label>
-                        <select id="filter-affluence-type" class="form-select form-select-sm w-auto">
-                            <option value="">Tous les types</option>
-                            @foreach($activityTypes as $type)
-                                <option value="{{ $type->id }}">{{ $type->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <label class="form-label mb-0 text-nowrap fs-13">Année :</label>
-                        <select id="filter-affluence-year" class="form-select form-select-sm w-auto">
-                            <option value="">Toutes</option>
-                            @foreach($years as $y)
-                                <option value="{{ $y }}">{{ $y }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                <div class="d-flex flex-wrap gap-2 align-items-center w-100 w-md-auto justify-content-between justify-content-md-end mt-2 mt-md-0">
+                    <button type="button" class="btn btn-sm btn-soft-secondary flex-shrink-0" id="btn-export-chart5" title="Télécharger l'image">
+                        <i class="mdi mdi-download fs-16"></i>
+                    </button>
                 </div>
             </div>
             <div class="card-body" data-simplebar>
@@ -280,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     chart: {
                         type: 'bar',
                         height: 350,
-                        toolbar: { show: true },
+                        toolbar: { show: false },
                     },
                     plotOptions: {
                         bar: {
@@ -332,11 +313,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================================
     let chart2;
     function loadChart2() {
-        const typeId = document.getElementById('filter-evolution-type').value;
-        const year = document.getElementById('filter-evolution-year').value;
-        const url = new URL('{{ route("admin.statistics.chart.presence-evolution") }}');
+        const typeId = document.getElementById('global-filter-type').value;
+        const dateFrom = document.getElementById('global-filter-date-from').value;
+        const dateTo = document.getElementById('global-filter-date-to').value;
+        const url = new URL('{{ route("admin.statistics.chart.presence-evolution", [], false) }}', window.location.origin);
         if (typeId) url.searchParams.set('activity_type_id', typeId);
-        if (year) url.searchParams.set('year', year);
+        if (dateFrom) url.searchParams.set('date_from', dateFrom);
+        if (dateTo) url.searchParams.set('date_to', dateTo);
 
         fetch(url)
             .then(r => r.json())
@@ -348,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     chart: {
                         type: 'line',
                         height: 380,
-                        toolbar: { show: true },
+                        toolbar: { show: false },
                         zoom: { enabled: false },
                     },
                     stroke: {
@@ -425,7 +408,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const container = document.querySelector('#chart-presence-evolution');
                 const parentWidth = container.parentElement.clientWidth || 800;
-                const itemWidth = parentWidth / 15;
+                const itemsToDisplay = window.innerWidth < 768 ? 5 : 15;
+                const itemWidth = parentWidth / itemsToDisplay;
                 container.style.minWidth = Math.max(parentWidth, series.length * itemWidth) + 'px';
 
                 if (chart2) chart2.destroy();
@@ -434,19 +418,18 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    document.getElementById('filter-evolution-type').addEventListener('change', loadChart2);
-    document.getElementById('filter-evolution-year').addEventListener('change', loadChart2);
+
 
     // ============================================================
     // Graphique 3 : Présence par groupe (barres horizontales, nombre)
     // ============================================================
     let chart3;
     function loadChart3() {
-        const typeId = document.getElementById('filter-group-type').value;
-        const dateFrom = document.getElementById('filter-group-date-from').value;
-        const dateTo = document.getElementById('filter-group-date-to').value;
+        const typeId = document.getElementById('global-filter-type').value;
+        const dateFrom = document.getElementById('global-filter-date-from').value;
+        const dateTo = document.getElementById('global-filter-date-to').value;
 
-        const url = new URL('{{ route("admin.statistics.chart.presence-by-group") }}');
+        const url = new URL('{{ route("admin.statistics.chart.presence-by-group", [], false) }}', window.location.origin);
         if (typeId) url.searchParams.set('activity_type_id', typeId);
         if (dateFrom) url.searchParams.set('date_from', dateFrom);
         if (dateTo) url.searchParams.set('date_to', dateTo);
@@ -458,16 +441,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     chart: {
                         type: 'bar',
                         height: Math.max(300, data.length * 50),
-                        toolbar: { show: true },
+                        toolbar: { show: false },
                     },
                     plotOptions: {
                         bar: {
                             horizontal: true,
-                            barHeight: '65%',
+                            barHeight: '40%',
                             distributed: true,
-                            borderRadius: 4,
+                            borderRadius: 0,
                             dataLabels: { position: 'top' },
                         }
+                    },
+                    stroke: {
+                        show: false,
+                        width: 0
                     },
                     colors: data.map((d, i) => getGroupColor(d.name, i, d.color)),
                     dataLabels: {
@@ -510,20 +497,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    document.getElementById('filter-group-type').addEventListener('change', loadChart3);
-    document.getElementById('filter-group-date-from').addEventListener('change', loadChart3);
-    document.getElementById('filter-group-date-to').addEventListener('change', loadChart3);
+
 
     // ============================================================
     // Graphique 4 : Participation individuelle (barres horizontales)
     // ============================================================
     let chart4;
     function loadChart4() {
-        const typeId = document.getElementById('filter-individual-type').value;
-        const year = document.getElementById('filter-individual-year').value;
-        const url = new URL('{{ route("admin.statistics.chart.individual-participation") }}');
+        const typeId = document.getElementById('global-filter-type').value;
+        const dateFrom = document.getElementById('global-filter-date-from').value;
+        const dateTo = document.getElementById('global-filter-date-to').value;
+        const url = new URL('{{ route("admin.statistics.chart.individual-participation", [], false) }}', window.location.origin);
         if (typeId) url.searchParams.set('activity_type_id', typeId);
-        if (year) url.searchParams.set('year', year);
+        if (dateFrom) url.searchParams.set('date_from', dateFrom);
+        if (dateTo) url.searchParams.set('date_to', dateTo);
 
         fetch(url)
             .then(r => r.json())
@@ -540,7 +527,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     chart: {
                         type: 'bar',
                         height: Math.max(400, displayData.length * 30),
-                        toolbar: { show: true },
+                        toolbar: { show: false },
                     },
                     plotOptions: {
                         bar: {
@@ -600,19 +587,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    document.getElementById('filter-individual-type').addEventListener('change', loadChart4);
-    document.getElementById('filter-individual-year').addEventListener('change', loadChart4);
 
     // ============================================================
-    // Graphique 5 : Affluence par activité (barres empilées)
+    // Graphique 5 : Affluence par activité (ligne de zone temporelle)
     // ============================================================
     let chart5;
     function loadChart5() {
-        const typeId = document.getElementById('filter-affluence-type').value;
-        const year = document.getElementById('filter-affluence-year').value;
-        const url = new URL('{{ route("admin.statistics.chart.affluence-by-activity") }}');
+        const typeId = document.getElementById('global-filter-type').value;
+        const dateFrom = document.getElementById('global-filter-date-from').value;
+        const dateTo = document.getElementById('global-filter-date-to').value;
+        const url = new URL('{{ route("admin.statistics.chart.affluence-by-activity", [], false) }}', window.location.origin);
         if (typeId) url.searchParams.set('activity_type_id', typeId);
-        if (year) url.searchParams.set('year', year);
+        if (dateFrom) url.searchParams.set('date_from', dateFrom);
+        if (dateTo) url.searchParams.set('date_to', dateTo);
 
         fetch(url)
             .then(r => r.json())
@@ -622,7 +609,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         type: 'bar',
                         height: 380,
                         stacked: true,
-                        toolbar: { show: true },
+                        toolbar: { show: false },
                     },
                     plotOptions: {
                         bar: {
@@ -690,7 +677,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const container = document.querySelector('#chart-affluence');
                 const parentWidth = container.parentElement.clientWidth || 800;
-                const itemWidth = parentWidth / 15;
+                const itemsToDisplay = window.innerWidth < 768 ? 5 : 15;
+                const itemWidth = parentWidth / itemsToDisplay;
                 container.style.minWidth = Math.max(parentWidth, data.length * itemWidth) + 'px';
 
                 if (chart5) chart5.destroy();
@@ -699,17 +687,42 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    document.getElementById('filter-affluence-type').addEventListener('change', loadChart5);
-    document.getElementById('filter-affluence-year').addEventListener('change', loadChart5);
+
 
     // ============================================================
-    // Charger tous les graphiques au démarrage
+    // Charger tous les graphiques au démarrage et sur filtre
     // ============================================================
+    function loadAllFilteredCharts() {
+        loadChart2();
+        loadChart3();
+        loadChart4();
+        loadChart5();
+    }
+    
+    document.getElementById('btn-apply-filters').addEventListener('click', loadAllFilteredCharts);
+
     loadChart1();
-    loadChart2();
-    loadChart3();
-    loadChart4();
-    loadChart5();
+    loadAllFilteredCharts();
+
+    // ============================================================
+    // Export des graphiques (Boutons personnalisés)
+    // ============================================================
+    function exportChart(chart, filename) {
+        if (chart) {
+            chart.dataURI().then(({ imgURI }) => {
+                let a = document.createElement('a');
+                a.href = imgURI;
+                a.download = filename + '.png';
+                a.click();
+            });
+        }
+    }
+
+    document.getElementById('btn-export-chart1')?.addEventListener('click', () => exportChart(chart1, 'repartition_jeunes_par_groupe'));
+    document.getElementById('btn-export-chart2')?.addEventListener('click', () => exportChart(chart2, 'evolution_presences'));
+    document.getElementById('btn-export-chart3')?.addEventListener('click', () => exportChart(chart3, 'presence_par_groupe'));
+    document.getElementById('btn-export-chart4')?.addEventListener('click', () => exportChart(chart4, 'participation_individuelle'));
+    document.getElementById('btn-export-chart5')?.addEventListener('click', () => exportChart(chart5, 'affluence_par_activite'));
 });
 </script>
 @endpush

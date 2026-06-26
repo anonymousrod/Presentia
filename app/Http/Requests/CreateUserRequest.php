@@ -25,6 +25,11 @@ class CreateUserRequest extends FormRequest
             'email'      => ['nullable', 'email', 'max:255', 'unique:users,email', 'required_without:phone'],
             'phone'      => ['nullable', 'string', 'max:255', 'unique:users,phone', 'required_without:email'],
             'birth_date' => ['nullable', 'date'],
+            'weekly_contribution' => ['nullable', 'integer', 'min:0'],
+            'church_service' => ['nullable', 'string', 'max:255'],
+            'additional_info' => ['nullable', 'array'],
+            'additional_info.*.title' => ['required_with:additional_info', 'string', 'max:255'],
+            'additional_info.*.value' => ['required_with:additional_info', 'string'],
         ];
     }
 
@@ -42,6 +47,8 @@ class CreateUserRequest extends FormRequest
             'phone.unique'              => 'Ce numéro de téléphone est déjà utilisé.',
             'phone.required_without'    => 'Le numéro de téléphone est obligatoire si l\'email n\'est pas renseigné.',
             'birth_date.date'           => 'La date de naissance doit être une date valide.',
+            'weekly_contribution.integer' => 'La cotisation doit être un nombre entier.',
+            'weekly_contribution.min'     => 'La cotisation ne peut pas être négative.',
         ];
     }
 }

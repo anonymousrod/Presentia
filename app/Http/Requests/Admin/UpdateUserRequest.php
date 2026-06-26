@@ -32,6 +32,11 @@ class UpdateUserRequest extends FormRequest
             'birth_date' => ['nullable', 'date'],
             'status'     => ['required', Rule::enum(UserStatus::class)],
             'photo'      => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:1024'], // 1MB max
+            'weekly_contribution' => ['nullable', 'integer', 'min:0'],
+            'church_service' => ['nullable', 'string', 'max:255'],
+            'additional_info' => ['nullable', 'array'],
+            'additional_info.*.title' => ['required_with:additional_info', 'string', 'max:255'],
+            'additional_info.*.value' => ['required_with:additional_info', 'string'],
         ];
     }
 
@@ -53,6 +58,8 @@ class UpdateUserRequest extends FormRequest
             'photo.image'               => 'Le fichier doit être une image.',
             'photo.mimes'               => 'L\'image doit être de type : jpeg, png, jpg.',
             'photo.max'                 => 'La taille de l\'image ne doit pas dépasser 1 Mo.',
+            'weekly_contribution.integer' => 'La cotisation doit être un nombre entier.',
+            'weekly_contribution.min'     => 'La cotisation ne peut pas être négative.',
         ];
     }
 }

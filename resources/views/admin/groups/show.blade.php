@@ -140,6 +140,12 @@
                                                     <i class="mdi mdi-crown me-1"></i>Chef de groupe
                                                 </span>
                                             @endif
+                                            @if($group->collector_id === $member->id)
+                                                <span class="badge rounded-pill px-2 py-1 mt-1"
+                                                      style="background: rgba(var(--vz-info-rgb), 0.2); color: var(--vz-info); font-size: 0.72rem;">
+                                                    <i class="mdi mdi-wallet me-1"></i>Chargé de collecte
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
                                 </td>
@@ -359,6 +365,78 @@
                         @can('update', $group)
                         <a href="{{ route('admin.groups.edit', $group) }}" class="btn btn-sm btn-outline-primary" style="border-radius: 0.5rem;">
                             <i class="mdi mdi-plus me-1"></i>Désigner un chef
+                        </a>
+                        @endcan
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- ---- Chargé de collecte ---- --}}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header border-0 py-3 px-4 d-flex align-items-center gap-3"
+                 style="border-bottom: 1px solid rgba(var(--vz-border-color-translucent), 1) !important;">
+                <div class="rounded p-2 flex-shrink-0"
+                     style="background: rgba(var(--vz-success-rgb), 0.15); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                    <i class="mdi mdi-cash-register fs-20" style="color: var(--vz-success);"></i>
+                </div>
+                <h5 class="mb-0 fw-bold">Chargé de collecte</h5>
+            </div>
+            <div class="card-body px-4 py-3">
+                @if($group->collector)
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        @if($group->collector->photo)
+                            <img src="{{ asset('storage/' . $group->collector->photo) }}"
+                                 alt="Photo" class="rounded-circle"
+                                 width="52" height="52" style="object-fit: cover; flex-shrink:0;">
+                        @else
+                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold flex-shrink-0"
+                                 style="width:52px; height:52px; font-size:1.1rem;
+                                        background: rgba(var(--vz-success-rgb), 0.15);
+                                        color: var(--vz-success);">
+                                {{ strtoupper(substr($group->collector->first_name, 0, 1) . substr($group->collector->name, 0, 1)) }}
+                            </div>
+                        @endif
+                        <div>
+                            <div class="fw-bold" style="font-size: 0.95rem;">
+                                {{ $group->collector->first_name }} {{ $group->collector->name }}
+                            </div>
+                            <span class="badge rounded-pill px-2 py-1 mt-1"
+                                  style="background: rgba(var(--vz-success-rgb), 0.15); color: var(--vz-success); font-size: 0.72rem;">
+                                <i class="mdi mdi-cash-register me-1"></i>Chargé de collecte
+                            </span>
+                        </div>
+                    </div>
+                    <hr style="border-color: rgba(var(--vz-border-color-translucent), 1);">
+                    <div class="d-flex flex-column gap-2">
+                        <div class="d-flex align-items-center gap-2" style="font-size: 0.88rem;">
+                            <i class="mdi mdi-email-outline text-muted fs-16"></i>
+                            <span>{{ $group->collector->email ?? '—' }}</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2" style="font-size: 0.88rem;">
+                            <i class="mdi mdi-phone-outline text-muted fs-16"></i>
+                            <span>{{ $group->collector->phone ?? '—' }}</span>
+                        </div>
+                    </div>
+                    @can('update', $group)
+                    <div class="mt-3">
+                        <a href="{{ route('admin.groups.edit', $group) }}"
+                           class="btn btn-sm btn-outline-success w-100"
+                           style="border-radius: 0.5rem; font-size: 0.82rem;">
+                            <i class="mdi mdi-account-switch me-1"></i>Changer de chargé
+                        </a>
+                    </div>
+                    @endcan
+                @else
+                    <div class="text-center py-3">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                             style="width:56px; height:56px; background: rgba(var(--vz-secondary-rgb), 0.1);">
+                            <i class="mdi mdi-cash-register fs-28 text-muted"></i>
+                        </div>
+                        <p class="text-muted mb-2" style="font-size: 0.88rem;">Aucun chargé de collecte désigné.</p>
+                        @can('update', $group)
+                        <a href="{{ route('admin.groups.edit', $group) }}" class="btn btn-sm btn-outline-primary" style="border-radius: 0.5rem;">
+                            <i class="mdi mdi-plus me-1"></i>Désigner un chargé
                         </a>
                         @endcan
                     </div>

@@ -62,8 +62,32 @@ class RolesAndPermissionsSeeder extends Seeder
             'attendance.validate_manual_own',
             'group.view_own',
             'stats.view_own_group',
-            'report.export_own_group',
             'notification.send_group',
+            'finance.collect_own_group',
+            'remittance.create',
+        ]);
+
+        // Chargé de collecte — gestion financière de son groupe
+        $collecteur = Role::firstOrCreate(['name' => 'Chargé de collecte', 'guard_name' => 'web']);
+        $collecteur->code = 'collector';
+        $collecteur->is_system = true;
+        $collecteur->save();
+        $collecteur->syncPermissions([
+            'finance.collect_own_group',
+            'remittance.create',
+        ]);
+
+        // Trésorier Général — Validation des versements
+        $tresorier = Role::firstOrCreate(['name' => 'Trésorier Général', 'guard_name' => 'web']);
+        $tresorier->code = 'treasurer';
+        $tresorier->is_system = false;
+        $tresorier->save();
+        $tresorier->syncPermissions([
+            'member.view',
+            'group.view',
+            'finance.view_all',
+            'remittance.validate',
+            'stats.view_global',
         ]);
 
         // Membre du bureau — vision globale, pas de gestion des comptes
@@ -84,11 +108,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'member.view',
             'member.export',
             'stats.view_global',
-            'report.export_global',
             'notification.send_all',
             'notification.send_group',
             'notification.send_role',
             'notification.send_individual',
+            'finance.view_all',
         ]);
 
         // Président — supervision globale + communication
@@ -110,11 +134,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'member.view',
             'member.export',
             'stats.view_global',
-            'report.export_global',
             'notification.send_all',
             'notification.send_group',
             'notification.send_role',
             'notification.send_individual',
+            'finance.view_all',
         ]);
 
         // Vice-président — permissions identiques au Président par défaut
@@ -135,17 +159,17 @@ class RolesAndPermissionsSeeder extends Seeder
             'group.view',
             'member.view',
             'stats.view_global',
-            'report.export_global',
             'notification.send_all',
             'notification.send_group',
             'notification.send_role',
             'notification.send_individual',
+            'finance.view_all',
         ]);
 
         // Reset du cache après toutes les modifications
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $this->command->info('✅ 6 rôles créés avec leurs permissions par défaut.');
+        $this->command->info('✅ 8 rôles créés avec leurs permissions par défaut.');
         $this->command->info('   Permissions créées : ' . Permission::count());
     }
 }

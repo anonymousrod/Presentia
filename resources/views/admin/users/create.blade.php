@@ -187,12 +187,85 @@
                                 <div class="text-danger mt-1 fs-12">{{ $message }}</div>
                             @enderror
                         </div>
+
+                        <div class="mb-4">
+                            <label for="church_service" class="form-label fw-medium text-body">Service au sein de l'église</label>
+                            <div class="input-group">
+                                <span class="input-group-text premium-addon"><i class="mdi mdi-church"></i></span>
+                                <input type="text" class="form-control premium-input with-addon @error('church_service') is-invalid @enderror" 
+                                       id="church_service" name="church_service" value="{{ old('church_service') }}" 
+                                       placeholder="Ex: Chorale, Intercession, etc.">
+                            </div>
+                            @error('church_service')
+                                <div class="text-danger mt-1 fs-12">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="section-header mt-5">
+                            <i class="mdi mdi-cash"></i> Finances
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="weekly_contribution" class="form-label fw-medium text-body">Cotisation Hebdomadaire (FCFA)</label>
+                            <div class="input-group">
+                                <span class="input-group-text premium-addon"><i class="mdi mdi-cash-multiple"></i></span>
+                                <input type="number" step="50" min="0" class="form-control premium-input with-addon @error('weekly_contribution') is-invalid @enderror" 
+                                       id="weekly_contribution" name="weekly_contribution" value="{{ old('weekly_contribution') }}" 
+                                       placeholder="Ex : 250">
+                            </div>
+                            <div class="form-text text-muted">Montant fixe attendu chaque dimanche.</div>
+                            @error('weekly_contribution')
+                                <div class="text-danger mt-1 fs-12">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Right Column: Settings & Submit -->
             <div class="col-lg-4">
+                <div class="card border-0 shadow-sm mb-4" style="border-radius: 1rem;">
+                    <div class="card-body p-4">
+                        <div class="section-header">
+                            <i class="mdi mdi-information-outline"></i> Informations Complémentaires
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label fw-medium text-body d-flex justify-content-between align-items-center">
+                                Notes & Remarques
+                                <button type="button" class="btn btn-sm btn-soft-primary" onclick="addInfoField()">
+                                    <i class="mdi mdi-plus"></i> Ajouter
+                                </button>
+                            </label>
+                            
+                            <div id="additional-info-container" class="vstack gap-2 mt-2">
+                                @php
+                                    $additionalInfos = old('additional_info') ?? [];
+                                    if(!is_array($additionalInfos)) $additionalInfos = [];
+                                @endphp
+                                @foreach($additionalInfos as $index => $info)
+                                    @if(is_array($info))
+                                    <div class="info-item border rounded p-2 bg-light">
+                                        <div class="d-flex gap-2">
+                                            <div class="flex-grow-1">
+                                                <input type="text" name="additional_info[{{ $index }}][title]" class="form-control form-control-sm mb-2" placeholder="Titre (ex: Instrument)" value="{{ $info['title'] ?? '' }}" required>
+                                                <input type="text" name="additional_info[{{ $index }}][value]" class="form-control form-control-sm" placeholder="Valeur (ex: Piano)" value="{{ $info['value'] ?? '' }}" required>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-soft-danger flex-shrink-0 align-self-start" onclick="this.closest('.info-item').remove()">
+                                                <i class="mdi mdi-delete"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                            
+                            @error('additional_info')
+                                <div class="text-danger mt-1 fs-12">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card border-0 shadow-sm mb-4" style="border-radius: 1rem; position: sticky; top: 100px;">
                     <div class="card-body p-4">
                         <div class="section-header">
@@ -223,3 +296,27 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    let infoIndex = {{ count(is_array(old('additional_info')) ? old('additional_info') : []) }};
+    function addInfoField() {
+        const container = document.getElementById('additional-info-container');
+        const item = document.createElement('div');
+        item.className = 'info-item border rounded p-2 bg-light mb-2';
+        item.innerHTML = `
+            <div class="d-flex gap-2">
+                <div class="flex-grow-1">
+                    <input type="text" name="additional_info[${infoIndex}][title]" class="form-control form-control-sm mb-2" placeholder="Titre (ex: Instrument)" required>
+                    <input type="text" name="additional_info[${infoIndex}][value]" class="form-control form-control-sm" placeholder="Valeur (ex: Piano)" required>
+                </div>
+                <button type="button" class="btn btn-sm btn-soft-danger flex-shrink-0 align-self-start" onclick="this.closest('.info-item').remove()">
+                    <i class="mdi mdi-delete"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(item);
+        infoIndex++;
+    }
+</script>
+@endpush

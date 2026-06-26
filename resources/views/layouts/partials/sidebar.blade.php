@@ -200,8 +200,32 @@
                         </li>
                         @endcanany
 
+                        {{-- Finances (Cotisations et Trésorerie) --}}
+                        @canany(['finance.collect_own_group', 'finance.view_all'])
+                        <li class="nav-item">
+                            <a class="nav-link menu-link {{ request()->routeIs('admin.finance.*') ? 'active' : '' }}" href="#sidebarFinance" data-bs-toggle="collapse"
+                                role="button" aria-expanded="{{ request()->routeIs('admin.finance.*') ? 'true' : 'false' }}" aria-controls="sidebarFinance">
+                                <i class="mdi mdi-cash-multiple"></i> <span>Finances</span>
+                            </a>
+                            <div class="collapse menu-dropdown {{ request()->routeIs('admin.finance.*') ? 'show' : '' }}" id="sidebarFinance">
+                                <ul class="nav nav-sm flex-column">
+                                    @can('finance.collect_own_group')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.finance.contributions.index') }}" class="nav-link {{ request()->routeIs('admin.finance.contributions.index') ? 'active' : '' }}">Suivi des contributions</a>
+                                    </li>
+                                    @endcan
+                                    @can('finance.view_all')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.finance.treasury.index') }}" class="nav-link {{ request()->routeIs('admin.finance.treasury.index') ? 'active' : '' }}">Trésorerie Générale</a>
+                                    </li>
+                                    @endcan
+                                </ul>
+                            </div>
+                        </li>
+                        @endcanany
+
                         {{-- Statistiques & Rapports --}}
-                        @canany(['stats.view_global', 'stats.view_own_group', 'report.export_global', 'report.export_own_group'])
+                        @canany(['stats.view_global', 'stats.view_own_group'])
                         <li class="nav-item">
                             <a class="nav-link menu-link {{ request()->routeIs('admin.statistics.*') ? 'active' : '' }}" href="#sidebarStats" data-bs-toggle="collapse"
                                 role="button" aria-expanded="{{ request()->routeIs('admin.statistics.*') ? 'true' : 'false' }}" aria-controls="sidebarStats">
@@ -211,19 +235,14 @@
                                 <ul class="nav nav-sm flex-column">
                                     @can('stats.view_global')
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.statistics.index') }}" class="nav-link {{ request()->routeIs('admin.statistics.*') ? 'active' : '' }}">Stats Globales</a>
+                                        <a href="{{ route('admin.statistics.index') }}" class="nav-link {{ request()->routeIs('admin.statistics.index') ? 'active' : '' }}">Stats Globales</a>
                                     </li>
                                     @endcan
                                     @can('stats.view_own_group')
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link">Stats de mon Groupe</a>
+                                        <a href="{{ route('admin.statistics.group.index') }}" class="nav-link {{ request()->routeIs('admin.statistics.group.*') ? 'active' : '' }}">Stats de mon Groupe</a>
                                     </li>
                                     @endcan
-                                    @canany(['report.export_global', 'report.export_own_group'])
-                                    <li class="nav-item">
-                                        <a href="#" class="nav-link">Exporter Rapports</a>
-                                    </li>
-                                    @endcanany
                                 </ul>
                             </div>
                         </li>

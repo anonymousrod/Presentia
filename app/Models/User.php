@@ -45,6 +45,9 @@ class User extends Authenticatable
         'education_level',
         'residence_municipality',
         'residence_neighborhood',
+        'weekly_contribution',
+        'church_service',
+        'additional_info',
     ];
 
     protected $hidden = [
@@ -58,6 +61,7 @@ class User extends Authenticatable
             'password'   => 'hashed',
             'birth_date' => 'date',
             'status'     => UserStatus::class,
+            'additional_info' => 'array',
         ];
     }
 
@@ -113,6 +117,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Les groupes dont l'utilisateur est le chargé de collecte.
+     */
+    public function collectedGroups(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Group::class, 'collector_id');
+    }
+
+    /**
      * Les inscriptions de l'utilisateur aux activités.
      */
     public function registrations(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -126,6 +138,30 @@ class User extends Authenticatable
     public function attendances(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    /**
+     * Les paiements de cotisations de l'utilisateur.
+     */
+    public function contributions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Contribution::class);
+    }
+
+    /**
+     * Les versements déclarés en tant que chargé de collecte.
+     */
+    public function remittancesAsCollector(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Remittance::class, 'collector_id');
+    }
+
+    /**
+     * Les versements validés en tant que trésorier.
+     */
+    public function remittancesAsTreasurer(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Remittance::class, 'treasurer_id');
     }
 
     /**

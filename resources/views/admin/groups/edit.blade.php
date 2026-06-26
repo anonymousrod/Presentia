@@ -174,6 +174,23 @@
                             </div>
                             @error('leader_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
+                        <div class="mb-4">
+                            <label for="collector_id" class="form-label fw-medium text-body">Chargé de collecte</label>
+                            <select id="collector_id" name="collector_id" class="form-select @error('collector_id') is-invalid @enderror">
+                                <option value="">— Aucun chargé désigné —</option>
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}" {{ old('collector_id', $group->collector_id) == $user->id ? 'selected' : '' }}>
+                                        {{ $user->first_name }} {{ $user->name }}
+                                        @if($user->phone) ({{ $user->phone }}) @endif
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="form-text text-info mt-2" style="font-size: 0.8rem;">
+                                <i class="mdi mdi-information"></i>
+                                Attribue automatiquement le rôle "Chargé de collecte".
+                            </div>
+                            @error('collector_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
 
                         <div class="d-grid mt-4 pt-2">
                             <button type="submit" class="btn btn-primary btn-save">
@@ -195,6 +212,11 @@
         new TomSelect('#leader_id', {
             create: false,
             placeholder: '— Aucun chef désigné —',
+            allowEmptyOption: true
+        });
+        new TomSelect('#collector_id', {
+            create: false,
+            placeholder: '— Aucun chargé désigné —',
             allowEmptyOption: true
         });
     });

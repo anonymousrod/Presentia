@@ -21,6 +21,7 @@ class Group extends Model
         'category',
         'color',
         'leader_id',
+        'collector_id',
     ];
 
     /**
@@ -29,6 +30,14 @@ class Group extends Model
     public function leader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'leader_id');
+    }
+
+    /**
+     * Le chargé de collecte du groupe.
+     */
+    public function collector(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'collector_id');
     }
 
     /**

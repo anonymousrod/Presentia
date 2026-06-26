@@ -120,8 +120,7 @@
                                                 <div class="d-flex align-items-center p-3 rounded border h-100 shadow-none">
                                                     <i class="ri-checkbox-circle-fill text-success fs-16 me-2"></i>
                                                     <div class="overflow-hidden">
-                                                        <div class="fw-semibold fs-13 text-truncate">{{ PermissionEnum::tryFrom($permission->name)?->label() ?? $permission->name }}</div>
-                                                        <div class="text-muted fs-11 text-truncate mt-1">{{ $permission->name }}</div>
+                                                        <div class="fw-semibold fs-13 text-wrap">{{ PermissionEnum::tryFrom($permission->name)?->label() ?? $permission->name }}</div>
                                                     </div>
                                                 </div>
                                             </div>
