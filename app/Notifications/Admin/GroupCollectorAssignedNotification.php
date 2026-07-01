@@ -10,7 +10,9 @@ class GroupCollectorAssignedNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public readonly Group $group) {}
+    public function __construct(public readonly Group $group)
+    {
+    }
 
     public function via($notifiable): array
     {

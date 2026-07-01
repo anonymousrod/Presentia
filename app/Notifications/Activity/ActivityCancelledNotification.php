@@ -12,7 +12,8 @@ class ActivityCancelledNotification extends Notification
     public function __construct(
         public readonly string $activityTitle,
         public readonly ?string $reason = null
-    ) {}
+    ) {
+    }
 
     public function via($notifiable): array
     {

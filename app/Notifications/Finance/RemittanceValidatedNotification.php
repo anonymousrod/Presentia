@@ -9,7 +9,9 @@ class RemittanceValidatedNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public readonly int $amount) {}
+    public function __construct(public readonly int $amount)
+    {
+    }
 
     public function via($notifiable): array
     {

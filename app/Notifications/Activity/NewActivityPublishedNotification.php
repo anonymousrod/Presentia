@@ -10,7 +10,9 @@ class NewActivityPublishedNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public readonly Activity $activity) {}
+    public function __construct(public readonly Activity $activity)
+    {
+    }
 
     public function via($notifiable): array
     {

@@ -25,4 +25,3 @@ class AccountCreatedNotification extends Notification
         ];
     }
 }
- 

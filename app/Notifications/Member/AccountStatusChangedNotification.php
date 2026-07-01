@@ -9,7 +9,9 @@ class AccountStatusChangedNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public readonly string $newStatus) {}
+    public function __construct(public readonly string $newStatus)
+    {
+    }
 
     public function via($notifiable): array
     {

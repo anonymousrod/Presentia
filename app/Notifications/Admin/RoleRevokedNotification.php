@@ -12,7 +12,8 @@ class RoleRevokedNotification extends Notification
     public function __construct(
         public readonly string $roleName,
         public readonly string $groupName
-    ) {}
+    ) {
+    }
 
     public function via($notifiable): array
     {

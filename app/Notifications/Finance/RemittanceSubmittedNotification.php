@@ -15,7 +15,8 @@ class RemittanceSubmittedNotification extends Notification
         public readonly User $collector,
         public readonly Group $group,
         public readonly int $amount
-    ) {}
+    ) {
+    }
 
     public function via($notifiable): array
     {

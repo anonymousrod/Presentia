@@ -10,7 +10,9 @@ class PasswordResetRequestedNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public readonly User $member) {}
+    public function __construct(public readonly User $member)
+    {
+    }
 
     public function via($notifiable): array
     {

@@ -78,7 +78,7 @@ class RemittanceController extends Controller
         // Notifier les trésoriers généraux
         $collector = auth()->user();
         if (\Spatie\Permission\Models\Role::where('name', 'Trésorier Général')->exists()) {
-            User::role('Trésorier Général')->each(fn($treasurer) => $treasurer->notify(new RemittanceSubmittedNotification($collector, $group, (int) $totalAmount)));
+            User::role('Trésorier Général')->each(fn ($treasurer) => $treasurer->notify(new RemittanceSubmittedNotification($collector, $group, (int) $totalAmount)));
         }
 
         return redirect()->back()->with('success', 'Versement de ' . $totalAmount . ' FCFA déclaré à la trésorerie. En attente de validation.');

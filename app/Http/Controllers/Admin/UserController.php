@@ -100,7 +100,7 @@ class UserController extends Controller
 
         // Notifier les admins
         if (\Spatie\Permission\Models\Role::where('name', 'Administrateur')->exists()) {
-            User::role('Administrateur')->each(fn($admin) => $admin->notify(new NewMemberCreatedNotification($user)));
+            User::role('Administrateur')->each(fn ($admin) => $admin->notify(new NewMemberCreatedNotification($user)));
         }
 
         return redirect()->route('admin.users.index')

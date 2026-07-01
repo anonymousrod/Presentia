@@ -9,7 +9,9 @@ class RemovedFromGroupNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public readonly string $groupName) {}
+    public function __construct(public readonly string $groupName)
+    {
+    }
 
     public function via($notifiable): array
     {

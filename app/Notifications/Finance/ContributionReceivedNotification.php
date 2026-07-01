@@ -12,7 +12,8 @@ class ContributionReceivedNotification extends Notification
     public function __construct(
         public readonly int $amount,
         public readonly string $date
-    ) {}
+    ) {
+    }
 
     public function via($notifiable): array
     {

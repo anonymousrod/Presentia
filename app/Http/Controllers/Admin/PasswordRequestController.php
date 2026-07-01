@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PasswordResetRequest;
-use App\Models\User;
 use App\Enums\UserStatus;
 use App\Jobs\SendPasswordResetWhatsApp;
 use App\Notifications\Admin\PasswordResetDoneNotification;

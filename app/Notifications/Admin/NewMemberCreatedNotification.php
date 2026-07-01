@@ -10,7 +10,9 @@ class NewMemberCreatedNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public readonly User $newMember) {}
+    public function __construct(public readonly User $newMember)
+    {
+    }
 
     public function via($notifiable): array
     {
