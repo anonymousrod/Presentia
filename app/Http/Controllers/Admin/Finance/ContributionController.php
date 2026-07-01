@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\Contribution;
 use App\Models\Group;
+use App\Models\User;
+use App\Notifications\Finance\ContributionReceivedNotification;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -58,8 +60,8 @@ class ContributionController extends Controller
             $date->addWeek();
         }
 
-        // Récupérer les membres du groupe
-        $members = $group->members()->get();
+        // Récupérer les membres actifs du groupe (non retirés)
+        $members = $group->members()->wherePivotNull('left_at')->get();
 
         // Récupérer les contributions de ce mois
         $contributions = Contribution::whereIn('user_id', $members->pluck('id'))
@@ -125,7 +127,7 @@ class ContributionController extends Controller
             abort(403);
         }
 
-        $memberIds = $group->members()->pluck('users.id')->toArray();
+        $memberIds = $group->members()->wherePivotNull('left_at')->pluck('users.id')->toArray();
         $inputs = $request->input('contributions', []);
 
         foreach ($inputs as $userId => $dates) {
@@ -153,9 +155,18 @@ class ContributionController extends Controller
                     continue;
                 }
 
+                $isNew = !$contribution->exists;
                 $contribution->collected_by = auth()->id();
                 $contribution->amount = $amount;
                 $contribution->save();
+
+                // Notifier le membre si c'est une nouvelle cotisation
+                if ($isNew) {
+                    $member = User::find($userId);
+                    if ($member) {
+                        $member->notify(new ContributionReceivedNotification((int) $amount, Carbon::parse($date)->format('d/m/Y')));
+                    }
+                }
             }
         }
 

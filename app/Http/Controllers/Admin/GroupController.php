@@ -6,6 +6,11 @@ use App\Events\GroupLeaderAssigned;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use App\Models\User;
+use App\Notifications\Member\AddedToGroupNotification;
+use App\Notifications\Member\RemovedFromGroupNotification;
+use App\Notifications\Admin\GroupLeaderAssignedNotification;
+use App\Notifications\Admin\GroupCollectorAssignedNotification;
+use App\Notifications\Admin\RoleRevokedNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -69,10 +74,12 @@ class GroupController extends Controller
         if ($group->leader_id) {
             GroupLeaderAssigned::dispatch($group, $group->leader);
             $group->leader->assignRole('Chef de groupe');
+            $group->leader->notify(new GroupLeaderAssignedNotification($group));
         }
 
         if ($group->collector_id) {
             $group->collector->assignRole('Chargé de collecte');
+            $group->collector->notify(new GroupCollectorAssignedNotification($group));
         }
 
         return redirect()->route('admin.groups.show', $group)
@@ -134,15 +141,16 @@ class GroupController extends Controller
         if ($group->leader_id != $previousLeaderId) {
             if ($previousLeaderId) {
                 $oldLeader = User::find($previousLeaderId);
-                // Si l'ancien chef n'est chef d'aucun autre groupe, on lui retire le rôle
                 if ($oldLeader && $oldLeader->ledGroups()->count() === 0) {
                     $oldLeader->removeRole('Chef de groupe');
+                    $oldLeader->notify(new RoleRevokedNotification('Chef de groupe', $group->name));
                 }
             }
             if ($group->leader_id) {
                 $group->refresh();
                 GroupLeaderAssigned::dispatch($group, $group->leader);
                 $group->leader->assignRole('Chef de groupe');
+                $group->leader->notify(new GroupLeaderAssignedNotification($group));
             }
         }
 
@@ -150,13 +158,14 @@ class GroupController extends Controller
         if ($group->collector_id != $previousCollectorId) {
             if ($previousCollectorId) {
                 $oldCollector = User::find($previousCollectorId);
-                // Si l'ancien chargé n'est chargé d'aucun autre groupe, on lui retire le rôle
                 if ($oldCollector && $oldCollector->collectedGroups()->count() === 0) {
                     $oldCollector->removeRole('Chargé de collecte');
+                    $oldCollector->notify(new RoleRevokedNotification('Chargé de collecte', $group->name));
                 }
             }
             if ($group->collector_id) {
                 $group->collector->assignRole('Chargé de collecte');
+                $group->collector->notify(new GroupCollectorAssignedNotification($group));
             }
         }
 
@@ -203,6 +212,11 @@ class GroupController extends Controller
             'left_at'   => null,
         ]);
 
+        $member = User::find($userId);
+        if ($member) {
+            $member->notify(new AddedToGroupNotification($group));
+        }
+
         return back()->with('success', 'Membre ajouté au groupe avec succès.');
     }
 
@@ -227,6 +241,8 @@ class GroupController extends Controller
         $group->members()->updateExistingPivot($user->id, [
             'left_at' => Carbon::now(),
         ]);
+
+        $user->notify(new RemovedFromGroupNotification($group->name));
 
         return back()->with('success', "{$user->first_name} {$user->name} a été retiré du groupe.");
     }

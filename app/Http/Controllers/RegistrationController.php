@@ -8,6 +8,8 @@ use App\Enums\RegistrationStatus;
 use App\Enums\ActivityStatus;
 use App\Http\Requests\StoreRegistrationRequest;
 use App\Jobs\SendRegistrationConfirmation;
+use App\Notifications\Activity\RegistrationConfirmedNotification;
+use App\Notifications\Activity\RegistrationWaitlistedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -78,8 +80,15 @@ class RegistrationController extends Controller
                 ]);
             }
 
-            // Dispatch confirmation notification
+            // Dispatch confirmation notification (WhatsApp)
             dispatch(new SendRegistrationConfirmation($registration));
+
+            // Notification système
+            if ($isWaitlisted) {
+                $user->notify(new RegistrationWaitlistedNotification($activity));
+            } else {
+                $user->notify(new RegistrationConfirmedNotification($activity));
+            }
 
             $msg = $isWaitlisted
                 ? "Vous avez été inscrit sur la liste d'attente de cette activité."

@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Contribution;
 use App\Models\Remittance;
 use App\Models\Group;
+use App\Models\User;
+use App\Notifications\Finance\RemittanceSubmittedNotification;
+use App\Notifications\Finance\RemittanceValidatedNotification;
 use Illuminate\Http\Request;
 
 class RemittanceController extends Controller
@@ -72,6 +75,12 @@ class RemittanceController extends Controller
             $contribution->save();
         }
 
+        // Notifier les trésoriers généraux
+        $collector = auth()->user();
+        if (\Spatie\Permission\Models\Role::where('name', 'Trésorier Général')->exists()) {
+            User::role('Trésorier Général')->each(fn($treasurer) => $treasurer->notify(new RemittanceSubmittedNotification($collector, $group, (int) $totalAmount)));
+        }
+
         return redirect()->back()->with('success', 'Versement de ' . $totalAmount . ' FCFA déclaré à la trésorerie. En attente de validation.');
     }
 
@@ -81,6 +90,11 @@ class RemittanceController extends Controller
         $remittance->treasurer_id = auth()->id();
         $remittance->validated_at = now();
         $remittance->save();
+
+        // Notifier le collecteur
+        if ($remittance->collector) {
+            $remittance->collector->notify(new RemittanceValidatedNotification((int) $remittance->amount));
+        }
 
         return redirect()->back()->with('success', 'Versement validé avec succès.');
     }

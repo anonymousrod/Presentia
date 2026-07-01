@@ -7,6 +7,9 @@ use App\Models\User;
 use App\Enums\UserStatus;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
+use App\Notifications\Member\AccountCreatedNotification;
+use App\Notifications\Member\AccountStatusChangedNotification;
+use App\Notifications\Admin\NewMemberCreatedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -92,6 +95,14 @@ class UserController extends Controller
         $user->plain_password = $tempPassword;
         $user->save();
 
+        // Notifier le nouveau membre
+        $user->notify(new AccountCreatedNotification());
+
+        // Notifier les admins
+        if (\Spatie\Permission\Models\Role::where('name', 'Administrateur')->exists()) {
+            User::role('Administrateur')->each(fn($admin) => $admin->notify(new NewMemberCreatedNotification($user)));
+        }
+
         return redirect()->route('admin.users.index')
             ->with('success', "L'utilisateur {$user->first_name} {$user->name} a été créé avec succès. Mot de passe temporaire : {$tempPassword}");
     }
@@ -159,7 +170,13 @@ class UserController extends Controller
             $data['photo'] = $filename;
         }
 
+        $oldStatus = $user->status->value;
         $user->update($data);
+
+        // Notifier si le statut a changé
+        if (isset($data['status']) && $data['status'] !== $oldStatus) {
+            $user->notify(new AccountStatusChangedNotification($data['status']));
+        }
 
         return redirect()->route('admin.users.index')
             ->with('success', 'Utilisateur mis à jour avec succès.');

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PasswordResetRequest;
+use App\Models\User;
 use App\Enums\UserStatus;
 use App\Jobs\SendPasswordResetWhatsApp;
+use App\Notifications\Admin\PasswordResetDoneNotification;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +47,7 @@ class PasswordRequestController extends Controller
             // Mettre à jour le mot de passe de l'utilisateur
             $user->update([
                 'password' => Hash::make($tempPassword),
-                'status' => UserStatus::PENDING, // Doit changer son mdp à la première connexion
+                'status' => UserStatus::PENDING,
             ]);
 
             // Marquer la demande comme traitée
@@ -53,6 +55,9 @@ class PasswordRequestController extends Controller
 
             // Envoyer le mdp via WhatsApp
             dispatch(new SendPasswordResetWhatsApp($user, $tempPassword));
+
+            // Notifier l'utilisateur via le système
+            $user->notify(new PasswordResetDoneNotification());
         });
 
         return back()->with('success', "Le mot de passe de {$user->name} a été réinitialisé et envoyé par WhatsApp.");
