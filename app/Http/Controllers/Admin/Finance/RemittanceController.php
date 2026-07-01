@@ -58,7 +58,7 @@ class RemittanceController extends Controller
             ->get();
 
         if ($contributions->isEmpty()) {
-            return redirect()->back()->with('error', 'Aucune cotisation en attente de versement.');
+            return redirect()->back()->with('error', 'Aucune cotisation en attente de validation.');
         }
 
         $totalAmount = $contributions->sum('amount');

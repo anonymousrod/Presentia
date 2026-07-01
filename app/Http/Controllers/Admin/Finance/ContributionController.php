@@ -69,7 +69,7 @@ class ContributionController extends Controller
             ->get()
             ->groupBy('user_id');
 
-        // Calcul du total en attente de versement
+        // Calcul du total en attente de validation
         $pendingAmount = Contribution::whereIn('user_id', $members->pluck('id'))
             ->whereNull('remittance_id')
             ->sum('amount');

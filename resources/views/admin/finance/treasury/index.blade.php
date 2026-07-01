@@ -27,7 +27,6 @@
                 <div class="d-flex align-items-end justify-content-between mt-4">
                     <div>
                         <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="{{ $totalCollected }}">{{ number_format($totalCollected, 0, ',', ' ') }}</span> FCFA</h4>
-                        <a href="#" class="text-decoration-underline">Voir les détails</a>
                     </div>
                     <div class="avatar-sm flex-shrink-0">
                         <span class="avatar-title bg-primary-subtle rounded fs-3">
@@ -50,7 +49,6 @@
                 <div class="d-flex align-items-end justify-content-between mt-4">
                     <div>
                         <h4 class="fs-22 fw-semibold ff-secondary mb-4 text-success"><span class="counter-value" data-target="{{ $totalValidated }}">{{ number_format($totalValidated, 0, ',', ' ') }}</span> FCFA</h4>
-                        <a href="#" class="text-decoration-underline">Voir l'historique</a>
                     </div>
                     <div class="avatar-sm flex-shrink-0">
                         <span class="avatar-title bg-success-subtle rounded fs-3">
@@ -67,13 +65,12 @@
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1 overflow-hidden">
-                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">En attente de versement</p>
+                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">En attente de validation</p>
                     </div>
                 </div>
                 <div class="d-flex align-items-end justify-content-between mt-4">
                     <div>
                         <h4 class="fs-22 fw-semibold ff-secondary mb-4 text-warning"><span class="counter-value" data-target="{{ $totalPending }}">{{ number_format($totalPending, 0, ',', ' ') }}</span> FCFA</h4>
-                        <a href="#" class="text-decoration-underline text-warning">Voir les versements en attente</a>
                     </div>
                     <div class="avatar-sm flex-shrink-0">
                         <span class="avatar-title bg-warning-subtle rounded fs-3">
@@ -152,34 +149,6 @@
                                             <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#validateModal{{ $rem->id }}">
                                                 Valider la réception
                                             </button>
-
-                                            <!-- Modal de validation -->
-                                            <div class="modal fade" id="validateModal{{ $rem->id }}" tabindex="-1" aria-labelledby="validateModalLabel{{ $rem->id }}" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="validateModalLabel{{ $rem->id }}">Validation de fonds</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-center p-4">
-                                                            <div class="mt-2">
-                                                                <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:130px;height:130px"></lord-icon>
-                                                                <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                                                                    <h4>Êtes-vous sûr ?</h4>
-                                                                    <p class="text-muted mx-4 mb-0">Confirmez-vous avoir physiquement reçu la somme de <strong>{{ number_format($rem->amount, 0, ',', ' ') }} FCFA</strong> du chargé de collecte <strong>{{ $rem->collector->first_name }} {{ $rem->collector->name }}</strong> ?</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer justify-content-center">
-                                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
-                                                            <form action="{{ route('admin.finance.remittances.validate', $rem->id) }}" method="POST" class="d-inline-block">
-                                                                @csrf
-                                                                <button type="submit" class="btn btn-success">Oui, confirmer la réception</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
                                             @else
                                             <span class="text-muted">Aucune action possible</span>
                                             @endcan
@@ -187,7 +156,34 @@
                                             <span class="text-muted"><i class="mdi mdi-check-circle text-success"></i> Terminé</span>
                                         @endif
                                     </td>
-                                </tr>
+                                 </tr>
+                                <!-- Modal de validation -->
+                                <div class="modal fade" id="validateModal{{ $rem->id }}" tabindex="-1" aria-labelledby="validateModalLabel{{ $rem->id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="validateModalLabel{{ $rem->id }}">Validation de fonds</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body text-center">
+                                                <div class="mt-2">
+                                                    <i class="bx bx-check-shield fs-1 text-success"></i>
+                                                    <div class="mt-3 fs-15">
+                                                        <h4>Êtes-vous sûr ?</h4>
+                                                        <p class="text-muted mb-0">Confirmez-vous avoir reçu <strong>{{ number_format($rem->amount, 0, ',', ' ') }} FCFA</strong> de <strong>{{ $rem->collector->first_name }} {{ $rem->collector->name }}</strong> ?</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer justify-content-center">
+                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                                                <form action="{{ route('admin.finance.remittances.validate', $rem->id) }}" method="POST" class="d-inline-block">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-success">Confirmer la réception</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center text-muted">Aucun versement déclaré pour le moment.</td>
