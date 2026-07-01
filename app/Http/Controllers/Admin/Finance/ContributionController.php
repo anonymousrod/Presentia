@@ -94,6 +94,50 @@ class ContributionController extends Controller
             ->groupBy('user_id')
             ->pluck('total_paid', 'user_id');
 
+        // Total attendu pour le mois sélectionné
+        $membersWeeklySum = $members->sum(function ($m) {
+            return $m->weekly_contribution ?? 0;
+        });
+        $monthlyExpectedTotal = $membersWeeklySum * count($sundays);
+
+        // Données pour le graphique d'évolution mensuelle (Février à Novembre)
+        $monthlyChartData = [];
+        $yearlyExpectedTotal = 0;
+        $yearlyCollectedTotal = 0;
+        for ($m = 2; $m <= 11; $m++) {
+            $mStr = str_pad($m, 2, '0', STR_PAD_LEFT);
+            $monthStart = Carbon::parse("$year-$mStr-01")->startOfMonth();
+            $monthEnd = Carbon::parse("$year-$mStr-01")->endOfMonth();
+
+            $sundaysCount = 0;
+            $d = $monthStart->copy()->next(Carbon::SUNDAY);
+            if ($monthStart->isSunday()) {
+                $d = $monthStart->copy();
+            }
+            while ($d->lte($monthEnd)) {
+                $sundaysCount++;
+                $d->addWeek();
+            }
+
+            $expected = $membersWeeklySum * $sundaysCount;
+            $collected = Contribution::whereIn('user_id', $members->pluck('id'))
+                ->whereBetween('date', [$monthStart, $monthEnd])
+                ->sum('amount');
+
+            $monthlyChartData[] = [
+                'month' => Carbon::create()->month($m)->translatedFormat('F'),
+                'expected' => $expected,
+                'collected' => $collected,
+            ];
+
+            $yearlyExpectedTotal += $expected;
+            $yearlyCollectedTotal += $collected;
+        }
+
+        $yearlyProgressPercent = $yearlyExpectedTotal > 0
+            ? min(100, round(($yearlyCollectedTotal / $yearlyExpectedTotal) * 100))
+            : 0;
+
         return view('admin.finance.contributions.index', compact(
             'group',
             'allGroups',
@@ -104,7 +148,12 @@ class ContributionController extends Controller
             'month',
             'pendingAmount',
             'totalSundaysInYear',
-            'yearlyContributions'
+            'yearlyContributions',
+            'monthlyExpectedTotal',
+            'monthlyChartData',
+            'yearlyExpectedTotal',
+            'yearlyCollectedTotal',
+            'yearlyProgressPercent'
         ));
     }
 
