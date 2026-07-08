@@ -59,7 +59,10 @@
             "dev-master": "11.x-dev"
         },
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "codezero/browser-locale",
+                "laravel-lang/common"
+            ]
         }
     },
     "config": {

@@ -18,7 +18,7 @@ class ExecutiveSeeder extends Seeder
             [
                 'name' => 'Koffi',
                 'first_name' => 'Emmanuel',
-                'phone' => '+22990000010',
+                'phone' => '69129089',
                 'password' => Hash::make('Password@1234!'),
                 'status' => UserStatus::ACTIVE,
             ]
@@ -30,7 +30,7 @@ class ExecutiveSeeder extends Seeder
             [
                 'name' => 'Dossou',
                 'first_name' => 'Claire',
-                'phone' => '+22990000011',
+                'phone' => '69129089',
                 'password' => Hash::make('Password@1234!'),
                 'status' => UserStatus::ACTIVE,
             ]
@@ -42,7 +42,7 @@ class ExecutiveSeeder extends Seeder
             [
                 'name' => 'Agbessi',
                 'first_name' => 'Luc',
-                'phone' => '+22990000012',
+                'phone' => '69129089',
                 'password' => Hash::make('Password@1234!'),
                 'status' => UserStatus::ACTIVE,
             ]

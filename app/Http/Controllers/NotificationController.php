@@ -18,6 +18,36 @@ class NotificationController extends Controller
     }
 
     /**
+     * Afficher toutes les notifications.
+     */
+    public function index()
+    {
+        $notifications = auth()->user()->notifications()->paginate(20);
+        return view('notifications.index', compact('notifications'));
+    }
+
+    /**
+     * Supprimer une notification.
+     */
+    public function destroy(string $id)
+    {
+        $notification = auth()->user()->notifications()->findOrFail($id);
+        $notification->delete();
+
+        return back()->with('success', 'Notification supprimée avec succès.');
+    }
+
+    /**
+     * Supprimer toutes les notifications.
+     */
+    public function destroyAll()
+    {
+        auth()->user()->notifications()->delete();
+
+        return back()->with('success', 'Toutes les notifications ont été supprimées.');
+    }
+
+    /**
      * Marquer toutes les notifications comme lues.
      */
     public function markAllAsRead()

@@ -163,6 +163,9 @@
                                 <label class="form-label fw-medium text-body">Statut <span class="text-danger">*</span></label>
                                 <div class="status-radio-container">
                                     @foreach(\App\Enums\ActivityStatus::cases() as $status)
+                                        @if($status->value === 'ARCHIVED')
+                                            @continue
+                                        @endif
                                         <input type="radio" class="btn-check" name="status" id="status_{{ $status->value }}" value="{{ $status->value }}" {{ old('status', \App\Enums\ActivityStatus::PUBLISHED->value) === $status->value ? 'checked' : '' }}>
                                         <label class="btn" for="status_{{ $status->value }}">{{ $status->label() }}</label>
                                     @endforeach

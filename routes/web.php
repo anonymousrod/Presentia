@@ -54,6 +54,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/cover', [App\Http\Controllers\ProfileController::class, 'updateCover'])->name('profile.cover');
 
     // Notifications
+    Route::get('notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::delete('notifications/destroy-all', [App\Http\Controllers\NotificationController::class, 'destroyAll'])->name('notifications.destroy-all');
+    Route::delete('notifications/{id}', [App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::get('notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('notifications/read-all', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
 });
@@ -122,6 +125,18 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::get('/', [App\Http\Controllers\Admin\StatisticsController::class, 'group'])->name('index');
         Route::get('/chart/evolution', [App\Http\Controllers\Admin\StatisticsController::class, 'chartGroupEvolution'])->name('chart.evolution');
         Route::get('/chart/participation', [App\Http\Controllers\Admin\StatisticsController::class, 'chartGroupParticipation'])->name('chart.participation');
+    });
+
+    // Notifications — Envoi
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('send-all', [App\Http\Controllers\Admin\NotificationController::class, 'showSendAllForm'])->name('send-all')->middleware('can:notification.send_all');
+        Route::post('send-all', [App\Http\Controllers\Admin\NotificationController::class, 'sendAll'])->middleware('can:notification.send_all');
+        Route::get('send-group', [App\Http\Controllers\Admin\NotificationController::class, 'showSendGroupForm'])->name('send-group')->middleware('can:notification.send_group');
+        Route::post('send-group', [App\Http\Controllers\Admin\NotificationController::class, 'sendGroup'])->middleware('can:notification.send_group');
+        Route::get('send-role', [App\Http\Controllers\Admin\NotificationController::class, 'showSendRoleForm'])->name('send-role')->middleware('can:notification.send_role');
+        Route::post('send-role', [App\Http\Controllers\Admin\NotificationController::class, 'sendRole'])->middleware('can:notification.send_role');
+        Route::get('send-individual', [App\Http\Controllers\Admin\NotificationController::class, 'showSendIndividualForm'])->name('send-individual')->middleware('can:notification.send_individual');
+        Route::post('send-individual', [App\Http\Controllers\Admin\NotificationController::class, 'sendIndividual'])->middleware('can:notification.send_individual');
     });
 
     // Finances (Cotisations et Trésorerie)

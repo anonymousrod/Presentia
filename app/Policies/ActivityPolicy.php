@@ -12,8 +12,18 @@ class ActivityPolicy
     /**
      * Bypass global : l'Administrateur passe toutes les vérifications.
      */
-    public function before(User $user, string $ability): ?bool
+    public function before(User $user, string $ability, ...$args): ?bool
     {
+        // On empêche tout le monde de modifier une activité annulée
+        if ($ability === 'update' && isset($args[0]) && $args[0] instanceof Activity && $args[0]->status === \App\Enums\ActivityStatus::CANCELLED) {
+            return false;
+        }
+
+        // On empêche tout le monde de supprimer une activité publiée
+        if ($ability === 'delete' && isset($args[0]) && $args[0] instanceof Activity && $args[0]->status === \App\Enums\ActivityStatus::PUBLISHED) {
+            return false;
+        }
+
         if ($user->hasRole('Administrateur')) {
             return true;
         }
@@ -68,6 +78,10 @@ class ActivityPolicy
      */
     public function delete(User $user, Activity $activity): Response
     {
+        if ($activity->status === \App\Enums\ActivityStatus::PUBLISHED) {
+            return Response::deny("Une activité publiée ne peut pas être supprimée.");
+        }
+
         // Seul l'Administrateur peut supprimer définitivement une activité via le bypass before()
         return Response::deny("Seul un Administrateur peut supprimer définitivement une activité.");
     }

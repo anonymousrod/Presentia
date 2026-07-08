@@ -16,7 +16,18 @@ class AddedToGroupNotification extends Notification
 
     public function via($notifiable): array
     {
-        return ['database'];
+        $channels = ['database'];
+
+        if (method_exists($notifiable, 'hasPhone') && $notifiable->hasPhone()) {
+            $channels[] = \App\Channels\WhatsAppChannel::class;
+        }
+
+        return $channels;
+    }
+
+    public function toWhatsApp($notifiable): string
+    {
+        return "👋 Bonjour,\n\nVous avez été ajouté au groupe « {$this->group->name} » sur Presentia.\nConnectez-vous pour voir les détails.";
     }
 
     public function toArray($notifiable): array

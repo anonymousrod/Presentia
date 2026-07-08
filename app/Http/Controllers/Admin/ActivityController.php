@@ -204,9 +204,40 @@ class ActivityController extends Controller
 
         $activity->update($request->validated());
 
-        // Si le statut passe de DRAFT à PUBLISHED, on dispatch l'event
+        // Si le statut passe de DRAFT à PUBLISHED, on dispatch l'event pour tout le monde ou groupe
         if ($oldStatus === ActivityStatus::DRAFT && $activity->status === ActivityStatus::PUBLISHED) {
             event(new ActivityCreated($activity));
+        } 
+        // Helper function for getting users by visibility
+        $getUsersByVisibility = function($activity) {
+            if ($activity->visibility === \App\Enums\ActivityVisibility::ALL) {
+                return User::all();
+            } elseif ($activity->visibility === \App\Enums\ActivityVisibility::GROUP && $activity->visibility_group_id) {
+                $group = \App\Models\Group::find($activity->visibility_group_id);
+                return $group ? $group->members()->wherePivotNull('left_at')->get() : collect();
+            } elseif ($activity->visibility === \App\Enums\ActivityVisibility::ROLE && $activity->visibility_role_id) {
+                $role = \Spatie\Permission\Models\Role::find($activity->visibility_role_id);
+                return $role ? User::role($role->name)->get() : collect();
+            }
+            return collect();
+        };
+
+        // Si le statut passe à CANCELLED (et qu'il n'y était pas déjà)
+        if ($oldStatus !== ActivityStatus::CANCELLED && $activity->status === ActivityStatus::CANCELLED) {
+            $users = $getUsersByVisibility($activity);
+            if ($users->isNotEmpty()) {
+                \Illuminate\Support\Facades\Notification::send($users, new \App\Notifications\Activity\ActivityCancelledNotification($activity->title, $activity->cancellation_reason));
+            }
+        }
+        // Sinon, si l'activité était déjà publiée et qu'elle est modifiée
+        elseif ($oldStatus === ActivityStatus::PUBLISHED && $activity->status === ActivityStatus::PUBLISHED) {
+            // Envoyer la notification uniquement si des champs essentiels ont changé
+            if ($activity->wasChanged(['title', 'start_time', 'end_time', 'location'])) {
+                $users = $getUsersByVisibility($activity);
+                if ($users->isNotEmpty()) {
+                    \Illuminate\Support\Facades\Notification::send($users, new \App\Notifications\Activity\ActivityUpdatedNotification($activity));
+                }
+            }
         }
 
         return redirect()->route('admin.activities.index')

@@ -15,7 +15,22 @@ class RemittanceValidatedNotification extends Notification
 
     public function via($notifiable): array
     {
-        return ['database'];
+        $channels = ['database'];
+        if (method_exists($notifiable, 'hasPhone') && $notifiable->hasPhone()) {
+            $channels[] = \App\Channels\WhatsAppChannel::class;
+        }
+        return $channels;
+    }
+
+    public function toWhatsApp($notifiable): string
+    {
+        $data = $this->toArray($notifiable);
+        $title = $data['title'] ?? 'Notification Presentia';
+        $message = $data['message'] ?? '';
+        return "👋 Bonjour,
+
+*{$title}*
+{$message}";
     }
 
     public function toArray($notifiable): array

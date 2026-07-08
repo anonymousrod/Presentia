@@ -16,7 +16,7 @@ class AdminSeeder extends Seeder
                 'name'       => 'Administrateur',
                 'first_name' => 'ÉBER',
                 'email'      => 'admin@eber.org',
-                'phone'      => null,
+                'phone'      => '69129089',
                 'password'   => Hash::make('Admin@1234!'), // À changer impérativement en production
                 'status'     => 'ACTIVE',                  // L'admin est actif dès le départ
                 'birth_date' => null,

@@ -93,7 +93,7 @@
 
                 <div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
                     @php
-                        $headerNotifications = auth()->user()->notifications()->latest()->take(15)->get();
+                        $headerNotifications = auth()->user()->unreadNotifications()->latest()->take(15)->get();
                         $unreadCount = auth()->user()->unreadNotifications()->count();
                     @endphp
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle shadow-none"
@@ -170,13 +170,22 @@
                                     @endforelse
 
                                     @if($headerNotifications->count() > 0)
-                                    <div class="my-3 text-center">
+                                    <div class="my-3 text-center d-flex justify-content-center gap-2">
                                         <form method="POST" action="{{ route('notifications.read-all') }}" class="d-inline">
                                             @csrf
                                             <button type="submit" class="btn btn-soft-success btn-sm waves-effect waves-light">
-                                                Tout marquer comme lu <i class="ri-check-double-line align-middle"></i>
+                                                Tout marquer lu <i class="ri-check-double-line align-middle"></i>
                                             </button>
                                         </form>
+                                        <a href="{{ route('notifications.index') }}" class="btn btn-soft-primary btn-sm waves-effect waves-light">
+                                            Voir tout <i class="ri-arrow-right-line align-middle"></i>
+                                        </a>
+                                    </div>
+                                    @else
+                                    <div class="my-3 text-center">
+                                        <a href="{{ route('notifications.index') }}" class="btn btn-soft-primary btn-sm waves-effect waves-light">
+                                            Historique <i class="ri-history-line align-middle"></i>
+                                        </a>
                                     </div>
                                     @endif
                                 </div>

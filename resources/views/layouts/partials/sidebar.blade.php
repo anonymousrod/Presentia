@@ -169,30 +169,30 @@
                         {{-- Notifications --}}
                         @canany(['notification.send_all', 'notification.send_group', 'notification.send_role', 'notification.send_individual'])
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarNotifications" data-bs-toggle="collapse"
-                                role="button" aria-expanded="false" aria-controls="sidebarNotifications">
+                            <a class="nav-link menu-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}" href="#sidebarNotifications" data-bs-toggle="collapse"
+                                role="button" aria-expanded="{{ request()->routeIs('admin.notifications.*') ? 'true' : 'false' }}" aria-controls="sidebarNotifications">
                                 <i class="mdi mdi-bell-outline"></i> <span>Notifications</span>
                             </a>
-                            <div class="collapse menu-dropdown" id="sidebarNotifications">
+                            <div class="collapse menu-dropdown {{ request()->routeIs('admin.notifications.*') ? 'show' : '' }}" id="sidebarNotifications">
                                 <ul class="nav nav-sm flex-column">
                                     @can('notification.send_all')
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link">Envoyer Globale</a>
+                                        <a href="{{ route('admin.notifications.send-all') }}" class="nav-link {{ request()->routeIs('admin.notifications.send-all') ? 'active' : '' }}">Envoyer Globale</a>
                                     </li>
                                     @endcan
                                     @can('notification.send_group')
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link">Envoyer par Groupe</a>
+                                        <a href="{{ route('admin.notifications.send-group') }}" class="nav-link {{ request()->routeIs('admin.notifications.send-group') ? 'active' : '' }}">Envoyer par Groupe</a>
                                     </li>
                                     @endcan
                                     @can('notification.send_role')
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link">Envoyer par Rôle</a>
+                                        <a href="{{ route('admin.notifications.send-role') }}" class="nav-link {{ request()->routeIs('admin.notifications.send-role') ? 'active' : '' }}">Envoyer par Rôle</a>
                                     </li>
                                     @endcan
                                     @can('notification.send_individual')
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link">Envoyer Individuelle</a>
+                                        <a href="{{ route('admin.notifications.send-individual') }}" class="nav-link {{ request()->routeIs('admin.notifications.send-individual') ? 'active' : '' }}">Envoyer Individuelle</a>
                                     </li>
                                     @endcan
                                 </ul>

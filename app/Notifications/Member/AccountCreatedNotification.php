@@ -14,6 +14,17 @@ class AccountCreatedNotification extends Notification
         return ['database'];
     }
 
+    public function toWhatsApp($notifiable): string
+    {
+        $data = $this->toArray($notifiable);
+        $title = $data['title'] ?? 'Notification Presentia';
+        $message = $data['message'] ?? '';
+        return "👋 Bonjour,
+
+*{$title}*
+{$message}";
+    }
+
     public function toArray($notifiable): array
     {
         return [

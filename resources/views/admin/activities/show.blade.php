@@ -446,14 +446,18 @@
 
                     <div class="d-grid gap-2 mt-4">
                         @can('activity.edit')
+                        @if($activity->status !== \App\Enums\ActivityStatus::CANCELLED)
                         <a href="{{ route('admin.activities.edit', $activity) }}" class="btn btn-primary">
                             <i class="mdi mdi-pencil"></i> Modifier l'activité
                         </a>
+                        @endif
                         @endcan
                         @can('activity.delete')
+                        @if($activity->status !== \App\Enums\ActivityStatus::PUBLISHED)
                         <button type="button" class="btn btn-outline-danger" onclick="confirmDelete()">
                             <i class="mdi mdi-trash-can"></i> Supprimer
                         </button>
+                        @endif
                         @endcan
                     </div>
                 </div>

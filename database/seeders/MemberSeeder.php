@@ -19,7 +19,7 @@ class MemberSeeder extends Seeder
             [
                 'name' => 'Martin',
                 'first_name' => 'Paul',
-                'phone' => '+22990000001',
+                'phone' => '69129089',
                 'password' => Hash::make('Password@1234!'),
                 'status' => UserStatus::ACTIVE,
             ]
@@ -31,7 +31,7 @@ class MemberSeeder extends Seeder
             [
                 'name' => 'Bernard',
                 'first_name' => 'Sarah',
-                'phone' => '+22990000002',
+                'phone' => '69129089',
                 'password' => Hash::make('Password@1234!'),
                 'status' => UserStatus::ACTIVE,
             ]
@@ -43,7 +43,7 @@ class MemberSeeder extends Seeder
             [
                 'name' => 'Laine',
                 'first_name' => 'Marc',
-                'phone' => '+22990000003',
+                'phone' => '69129089',
                 'password' => Hash::make('Password@1234!'),
                 'status' => UserStatus::ACTIVE,
             ]
@@ -52,8 +52,8 @@ class MemberSeeder extends Seeder
 
         // 2. Création des membres (Jeunes)
         $jeunesData = [
-            ['email' => 'jeune1@eber.org', 'first_name' => 'Jean', 'name' => 'Dupont', 'phone' => '+22990000004'],
-            ['email' => 'jeune2@eber.org', 'first_name' => 'Alice', 'name' => 'Smith', 'phone' => '+22990000005'],
+            ['email' => 'jeune1@eber.org', 'first_name' => 'Jean', 'name' => 'Dupont', 'phone' => '69129089'],
+            ['email' => 'jeune2@eber.org', 'first_name' => 'Alice', 'name' => 'Smith', 'phone' => '69129089'],
         ];
 
         foreach ($jeunesData as $data) {

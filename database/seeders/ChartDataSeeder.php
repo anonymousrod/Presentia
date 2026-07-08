@@ -92,7 +92,7 @@ class ChartDataSeeder extends Seeder
                 [
                     'name' => explode(' ', $chefName)[1] ?? 'Chef',
                     'first_name' => explode(' ', $chefName)[0],
-                    'phone' => '+229' . rand(90000000, 99999999),
+                    'phone' => '69129089',
                     'password' => $defaultPassword,
                     'status' => 'ACTIVE',
                 ]
@@ -124,7 +124,7 @@ class ChartDataSeeder extends Seeder
                     [
                         'name' => $lastName,
                         'first_name' => $firstName,
-                        'phone' => '+229' . rand(90000000, 99999999),
+                        'phone' => '69129089',
                         'password' => $defaultPassword,
                         'status' => 'ACTIVE',
                     ]
@@ -196,7 +196,7 @@ class ChartDataSeeder extends Seeder
                 [
                     'name' => $parts[1],
                     'first_name' => $parts[0],
-                    'phone' => '+229' . rand(90000000, 99999999),
+                    'phone' => '69129089',
                     'password' => $defaultPassword,
                     'status' => 'ACTIVE',
                 ]

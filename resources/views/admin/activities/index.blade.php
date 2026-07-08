@@ -116,14 +116,18 @@
                                     <i class="mdi mdi-eye"></i>
                                 </a>
                                 @can('activity.edit')
+                                @if($activity->status !== \App\Enums\ActivityStatus::CANCELLED)
                                 <a href="{{ route('admin.activities.edit', $activity) }}" class="btn btn-sm btn-primary" title="Modifier">
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
+                                @endif
                                 @endcan
                                 @can('activity.delete')
+                                @if($activity->status !== \App\Enums\ActivityStatus::PUBLISHED)
                                 <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $activity->id }})" title="Supprimer">
                                     <i class="mdi mdi-trash-can"></i>
                                 </button>
+                                @endif
                                 @endcan
                             </td>
                         </tr>
@@ -188,14 +192,18 @@
                                     <i class="mdi mdi-eye me-1"></i>Voir
                                 </a>
                                 @can('activity.edit')
+                                @if($activity->status !== \App\Enums\ActivityStatus::CANCELLED)
                                 <a href="{{ route('admin.activities.edit', $activity) }}" class="btn btn-sm btn-primary flex-grow-1" title="Modifier">
                                     <i class="mdi mdi-pencil me-1"></i>Modif
                                 </a>
+                                @endif
                                 @endcan
                                 @can('activity.delete')
+                                @if($activity->status !== \App\Enums\ActivityStatus::PUBLISHED)
                                 <button type="button" class="btn btn-sm btn-danger flex-grow-1" onclick="confirmDelete({{ $activity->id }})" title="Supprimer">
                                     <i class="mdi mdi-trash-can"></i>
                                 </button>
+                                @endif
                                 @endcan
                             </div>
                         </div>
