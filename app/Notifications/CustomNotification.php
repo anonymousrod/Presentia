@@ -10,7 +10,8 @@ class CustomNotification extends Notification
     public function __construct(
         public string $title,
         public string $message,
-    ) {}
+    ) {
+    }
 
     public function via($notifiable): array
     {

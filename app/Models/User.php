@@ -171,7 +171,7 @@ class User extends Authenticatable
     {
         // Enlève tous les caractères non numériques (ex: espaces, +, -)
         $cleanPhone = preg_replace('/[^0-9]/', '', $this->phone);
-        
+
         // Si le numéro a exactement 8 chiffres (numéro local Bénin), on ajoute l'indicatif 229
         if (strlen($cleanPhone) === 8) {
             $cleanPhone = '229' . $cleanPhone;

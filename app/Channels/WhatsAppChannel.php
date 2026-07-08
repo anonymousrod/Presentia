@@ -33,7 +33,7 @@ class WhatsAppChannel
         }
 
         $phone = $notifiable->routeNotificationForWhatsApp();
-        
+
         if (empty($phone)) {
             return;
         }

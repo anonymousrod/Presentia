@@ -207,9 +207,9 @@ class ActivityController extends Controller
         // Si le statut passe de DRAFT à PUBLISHED, on dispatch l'event pour tout le monde ou groupe
         if ($oldStatus === ActivityStatus::DRAFT && $activity->status === ActivityStatus::PUBLISHED) {
             event(new ActivityCreated($activity));
-        } 
+        }
         // Helper function for getting users by visibility
-        $getUsersByVisibility = function($activity) {
+        $getUsersByVisibility = function ($activity) {
             if ($activity->visibility === \App\Enums\ActivityVisibility::ALL) {
                 return User::all();
             } elseif ($activity->visibility === \App\Enums\ActivityVisibility::GROUP && $activity->visibility_group_id) {

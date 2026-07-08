@@ -26,8 +26,8 @@ class UserObserver
         if ($plainPassword) {
             if ($user->hasEmail()) {
                 SendEmailCredentials::dispatch($user, $plainPassword);
-            } 
-            
+            }
+
             if ($user->hasPhone()) {
                 SendWhatsAppCredentials::dispatch($user, $plainPassword);
             }

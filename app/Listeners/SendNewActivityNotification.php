@@ -20,7 +20,7 @@ class SendNewActivityNotification implements ShouldQueue
     public function handle(ActivityCreated $event): void
     {
         $activity = $event->activity;
-        
+
         if ($activity->visibility === ActivityVisibility::ALL) {
             // Envoyer à tous les utilisateurs
             $users = User::all();
