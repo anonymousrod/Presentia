@@ -31,6 +31,7 @@ class AppSettingController extends Controller
             'sidebar_bg_2',
             'sidebar_bg_3',
             'sidebar_bg_4',
+            'auth_bg',
         ];
 
         $data = [];

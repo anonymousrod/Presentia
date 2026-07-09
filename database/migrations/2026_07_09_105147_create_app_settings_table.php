@@ -49,6 +49,9 @@ return new class () extends Migration {
             $table->string('sidebar_bg_4')->nullable()
                 ->comment("Image d'arrière-plan 4 proposée pour la sidebar dans la personnalisation du thème.");
 
+            $table->string('auth_bg')->nullable()
+                ->comment("Image d'arrière-plan de la page de connexion, mot de passe oublié et réinitialisation.");
+
             $table->timestamps();
         });
     }

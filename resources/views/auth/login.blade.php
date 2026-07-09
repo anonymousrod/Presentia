@@ -21,6 +21,16 @@
     <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
     <link href="{{ asset('assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
+
+    @php
+        $authSettings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
+        $authBgUrl = $authSettings->auth_bg
+            ? asset('storage/' . $authSettings->auth_bg)
+            : asset('assets/images/auth-one-bg.jpg');
+    @endphp
+    <style>
+        .auth-one-bg { background-image: url('{{ $authBgUrl }}') !important; }
+    </style>
 </head>
 
 <body>

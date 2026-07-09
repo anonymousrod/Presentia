@@ -22,5 +22,6 @@ class AppSetting extends Model
         'sidebar_bg_2',
         'sidebar_bg_3',
         'sidebar_bg_4',
+        'auth_bg',
     ];
 }

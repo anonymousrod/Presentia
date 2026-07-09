@@ -151,6 +151,16 @@
                                     <small class="text-muted d-block">Image de profil par défaut pour un nouvel utilisateur (au lieu de avatar-1.jpg).</small>
                                 </div>
 
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">Image de fond (Connexion / Mot de passe oublié)</label>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="me-3 bg-dark p-2 rounded text-center" style="min-width: 120px;">
+                                            <img src="{{ $appSettings->auth_bg_url }}" alt="Auth BG" class="img-fluid rounded" style="max-height: 60px;">
+                                        </div>
+                                        <input type="file" name="auth_bg" class="form-control" accept="image/*">
+                                    </div>
+                                    <small class="text-muted d-block">Image d'arrière-plan affichée sur les pages de connexion, mot de passe oublié et réinitialisation.</small>
+                                </div>
 
                             </div>
                         </div>
