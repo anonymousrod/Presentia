@@ -68,8 +68,8 @@ class DashboardController extends Controller
         $stats = [
             'group_members_count' => $group ? $group->members()->count() : 0,
             'group_upcoming_activities' => \App\Models\Activity::where('start_time', '>=', now())->count(), // Adjust if activities are group-specific
-            'total_group_contributions' => $group ? \App\Models\Contribution::whereHas('user', function($q) use ($group) {
-                $q->whereHas('groups', function($q2) use ($group) {
+            'total_group_contributions' => $group ? \App\Models\Contribution::whereHas('user', function ($q) use ($group) {
+                $q->whereHas('groups', function ($q2) use ($group) {
                     $q2->where('groups.id', $group->id);
                 });
             })->sum('amount') : 0,
