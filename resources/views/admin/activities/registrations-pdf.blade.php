@@ -14,6 +14,7 @@
         @page {
             size: A4 portrait;
             margin: 0;
+            margin-bottom: 22mm;
         }
 
         body {
@@ -256,7 +257,7 @@
         ═══════════════════════════════════════ */
         .footer {
             position: fixed;
-            bottom: 0;
+            bottom: -22mm;
             left: 0;
             right: 0;
             height: 14mm;
@@ -411,7 +412,7 @@
         <table class="footer-inner">
             <tr>
                 <td class="footer-left">
-                    <span class="cert-text">Ce document officiel a été généré électroniquement et certifié conforme par la plateforme de gestion <strong>Presentia</strong>.</span>
+                    <span class="cert-text">Ce document officiel a été généré électroniquement et certifié conforme par la plateforme de gestion <strong>{{ config('app.name') }}</strong>.</span>
                 </td>
                 <td class="footer-right">
                     Généré le {{ now()->format('d/m/Y à H:i') }}<br>

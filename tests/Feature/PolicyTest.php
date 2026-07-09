@@ -33,7 +33,7 @@ class PolicyTest extends TestCase
         // Admin
         $this->admin = User::create([
             'name' => 'Admin', 'first_name' => 'System',
-            'email' => 'admin@presentia.org', 'password' => bcrypt('Admin@1234!'),
+            'email' => 'admin@' . config('app.name') . '.org', 'password' => bcrypt('Admin@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
         $this->admin->assignRole('Administrateur');
@@ -41,7 +41,7 @@ class PolicyTest extends TestCase
         // Jeune
         $this->jeune = User::create([
             'name' => 'Dupont', 'first_name' => 'Jean',
-            'email' => 'jeune@presentia.org', 'password' => bcrypt('Jeune@1234!'),
+            'email' => 'jeune@' . config('app.name') . '.org', 'password' => bcrypt('Jeune@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
         $this->jeune->assignRole('Jeune');
@@ -49,7 +49,7 @@ class PolicyTest extends TestCase
         // Chef de groupe
         $this->chef = User::create([
             'name' => 'Martin', 'first_name' => 'Paul',
-            'email' => 'chef@presentia.org', 'password' => bcrypt('Chef@1234!'),
+            'email' => 'chef@' . config('app.name') . '.org', 'password' => bcrypt('Chef@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
         $this->chef->assignRole('Chef de groupe');
@@ -57,7 +57,7 @@ class PolicyTest extends TestCase
         // Membre du bureau
         $this->bureau = User::create([
             'name' => 'Bureau', 'first_name' => 'Marie',
-            'email' => 'bureau@presentia.org', 'password' => bcrypt('Bureau@1234!'),
+            'email' => 'bureau@' . config('app.name') . '.org', 'password' => bcrypt('Bureau@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
         $this->bureau->assignRole('Membre du bureau');
@@ -299,7 +299,7 @@ class PolicyTest extends TestCase
         // Créer un membre du groupeB (bureau est leader, et le bureau est aussi un user)
         $outsideMember = User::create([
             'name' => 'Étranger', 'first_name' => 'User',
-            'email' => 'outside@presentia.org', 'password' => bcrypt('Outside@1234!'),
+            'email' => 'outside@' . config('app.name') . '.org', 'password' => bcrypt('Outside@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
         $this->groupB->members()->attach($outsideMember->id, ['joined_at' => now()]);

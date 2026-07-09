@@ -12,13 +12,7 @@
         <div class="row g-4">
             <div class="col-auto">
                 <div class="avatar-lg">
-                    @if($user->photo)
-                        <img src="{{ asset('storage/' . $user->photo) }}" alt="user-img" class="img-thumbnail rounded-circle" style="width: 100%; height: 100%; object-fit: cover;" />
-                    @else
-                        <div class="img-thumbnail rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white" style="width: 100%; height: 100%; font-size: 32px;">
-                            {{ strtoupper(substr($user->first_name, 0, 1) . substr($user->name, 0, 1)) }}
-                        </div>
-                    @endif
+                    <img src="{{ $user->avatar_url }}" alt="user-img" class="img-thumbnail rounded-circle" style="width: 100%; height: 100%; object-fit: cover;" />
                 </div>
             </div>
             <!--end col-->

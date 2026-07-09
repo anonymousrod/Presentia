@@ -29,7 +29,7 @@ class GroupManagementTest extends TestCase
         $this->admin = User::create([
             'name'       => 'Admin',
             'first_name' => 'System',
-            'email'      => 'admin@presentia.org',
+            'email'      => 'admin@' . config('app.name') . '.org',
             'password'   => bcrypt('Admin@1234!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -39,7 +39,7 @@ class GroupManagementTest extends TestCase
         $this->user1 = User::create([
             'name'       => 'UserOne',
             'first_name' => 'John',
-            'email'      => 'user1@presentia.org',
+            'email'      => 'user1@' . config('app.name') . '.org',
             'password'   => bcrypt('Password123!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -48,7 +48,7 @@ class GroupManagementTest extends TestCase
         $this->user2 = User::create([
             'name'       => 'UserTwo',
             'first_name' => 'Jane',
-            'email'      => 'user2@presentia.org',
+            'email'      => 'user2@' . config('app.name') . '.org',
             'password'   => bcrypt('Password123!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -262,7 +262,7 @@ class GroupManagementTest extends TestCase
         $chef = User::create([
             'name'       => 'ChefOne',
             'first_name' => 'Paul',
-            'email'      => 'chef@presentia.org',
+            'email'      => 'chef@' . config('app.name') . '.org',
             'password'   => bcrypt('Password123!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -286,7 +286,7 @@ class GroupManagementTest extends TestCase
         $chef = User::create([
             'name'       => 'ChefOne',
             'first_name' => 'Paul',
-            'email'      => 'chef@presentia.org',
+            'email'      => 'chef@' . config('app.name') . '.org',
             'password'   => bcrypt('Password123!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -314,7 +314,7 @@ class GroupManagementTest extends TestCase
         $chef = User::create([
             'name'       => 'ChefOne',
             'first_name' => 'Paul',
-            'email'      => 'chef@presentia.org',
+            'email'      => 'chef@' . config('app.name') . '.org',
             'password'   => bcrypt('Password123!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -343,7 +343,7 @@ class GroupManagementTest extends TestCase
         $chef = User::create([
             'name'       => 'ChefOne',
             'first_name' => 'Paul',
-            'email'      => 'chef@presentia.org',
+            'email'      => 'chef@' . config('app.name') . '.org',
             'password'   => bcrypt('Password123!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -370,7 +370,7 @@ class GroupManagementTest extends TestCase
         $chef = User::create([
             'name'       => 'ChefOne',
             'first_name' => 'Paul',
-            'email'      => 'chef@presentia.org',
+            'email'      => 'chef@' . config('app.name') . '.org',
             'password'   => bcrypt('Password123!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -401,7 +401,7 @@ class GroupManagementTest extends TestCase
         $chef = User::create([
             'name'       => 'ChefOne',
             'first_name' => 'Paul',
-            'email'      => 'chef@presentia.org',
+            'email'      => 'chef@' . config('app.name') . '.org',
             'password'   => bcrypt('Password123!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -432,7 +432,7 @@ class GroupManagementTest extends TestCase
         $chef = User::create([
             'name'       => 'ChefOne',
             'first_name' => 'Paul',
-            'email'      => 'chef@presentia.org',
+            'email'      => 'chef@' . config('app.name') . '.org',
             'password'   => bcrypt('Password123!'),
             'status'     => UserStatus::ACTIVE,
         ]);

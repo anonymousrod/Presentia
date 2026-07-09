@@ -5,19 +5,19 @@
                 <!-- Dark Logo-->
                 <a href="{{ route('dashboard') }}" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
+                        <img src="{{ $appSettings->logo_sm_url ?? asset('assets/images/logo-sm.png') }}" alt="" height="22">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ asset('assets/images/logo-dark.png') }}" alt="" height="17">
+                        <img src="{{ $appSettings->logo_dark_url ?? asset('assets/images/logo-dark.png') }}" alt="" height="17">
                     </span>
                 </a>
                 <!-- Light Logo-->
                 <a href="{{ route('dashboard') }}" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
+                        <img src="{{ $appSettings->logo_sm_url ?? asset('assets/images/logo-sm.png') }}" alt="" height="22">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ asset('assets/images/logo-light.png') }}" alt="" height="17">
+                        <img src="{{ $appSettings->logo_light_url ?? asset('assets/images/logo-light.png') }}" alt="" height="17">
                     </span>
                 </a>
                 <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover"
@@ -62,6 +62,13 @@
                                 </a>
                                 <div class="collapse menu-dropdown {{ request()->routeIs('activities.*', 'admin.activities.*', 'admin.activity-types.*') ? 'show' : '' }}" id="sidebarActivities">
                                     <ul class="nav nav-sm flex-column">
+                                        @can('activity.create')
+                                        <li class="nav-item">
+                                            <a href="{{ route('admin.activities.create') }}" class="nav-link {{ request()->routeIs('admin.activities.create') ? 'active' : '' }}">
+                                                Créer une activité
+                                            </a>
+                                        </li>
+                                        @endcan
                                         <li class="nav-item">
                                             <a href="{{ route('activities.index') }}" class="nav-link {{ request()->routeIs('activities.index') && !request()->has('manageable') ? 'active' : '' }}">
                                                 Activités publiées
@@ -76,13 +83,6 @@
                                         <li class="nav-item">
                                             <a href="{{ route('admin.activity-types.index') }}" class="nav-link {{ request()->routeIs('admin.activity-types.*') ? 'active' : '' }}">
                                                 Types d'activités
-                                            </a>
-                                        </li>
-                                        @endcan
-                                        @can('activity.create')
-                                        <li class="nav-item">
-                                            <a href="{{ route('admin.activities.create') }}" class="nav-link {{ request()->routeIs('admin.activities.create') ? 'active' : '' }}">
-                                                Créer une activité
                                             </a>
                                         </li>
                                         @endcan
@@ -114,11 +114,6 @@
                             </a>
                             <div class="collapse menu-dropdown {{ request()->routeIs('admin.groups.*') ? 'show' : '' }}" id="sidebarGroups">
                                 <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.groups.index') }}" class="nav-link {{ request()->routeIs('admin.groups.index') ? 'active' : '' }}">
-                                            Liste des groupes
-                                        </a>
-                                    </li>
                                     @can('group.create')
                                     <li class="nav-item">
                                         <a href="{{ route('admin.groups.create') }}" class="nav-link {{ request()->routeIs('admin.groups.create') ? 'active' : '' }}">
@@ -126,6 +121,11 @@
                                         </a>
                                     </li>
                                     @endcan
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.groups.index') }}" class="nav-link {{ request()->routeIs('admin.groups.index') ? 'active' : '' }}">
+                                            Liste des groupes
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
@@ -149,11 +149,6 @@
                             </a>
                             <div class="collapse menu-dropdown {{ request()->routeIs('admin.users.*') ? 'show' : '' }}" id="sidebarMembers">
                                 <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
-                                            Liste des membres
-                                        </a>
-                                    </li>
                                     @can('member.create')
                                     <li class="nav-item">
                                         <a href="{{ route('admin.users.create') }}" class="nav-link {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
@@ -161,6 +156,11 @@
                                         </a>
                                     </li>
                                     @endcan
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
+                                            Liste des membres
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </li>

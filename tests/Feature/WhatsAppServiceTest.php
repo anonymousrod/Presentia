@@ -52,7 +52,7 @@ class WhatsAppServiceTest extends TestCase
         $this->userWithoutPhone = User::create([
             'name'       => 'Dupont',
             'first_name' => 'Jean',
-            'email'      => 'jean.dupont@presentia.org',
+            'email'      => 'jean.dupont@' . config('app.name') . '.org',
             'password'   => bcrypt('Secret123'),
             'status'     => UserStatus::ACTIVE,
         ]);

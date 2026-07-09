@@ -153,7 +153,7 @@
                                     <span class="input-group-text premium-addon"><i class="mdi mdi-email-outline"></i></span>
                                     <input type="email" class="form-control premium-input with-addon @error('email') is-invalid @enderror" 
                                            id="email" name="email" value="{{ old('email') }}" 
-                                           placeholder="Ex : contact@presentia.org">
+                                           placeholder="Ex : contact@{{ config('app.name') }}.org">
                                 </div>
                                 <div class="form-text text-muted">Obligatoire si le téléphone n'est pas renseigné.</div>
                                 @error('email')

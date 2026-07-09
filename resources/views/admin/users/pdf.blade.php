@@ -14,6 +14,7 @@
         @page {
             size: A4 portrait;
             margin: 0;
+            margin-bottom: 22mm;
         }
 
         body {
@@ -273,7 +274,7 @@
          ═══════════════════════════════════════ */
         .footer {
             position: fixed;
-            bottom: 0;
+            bottom: -22mm;
             left: 0;
             right: 0;
             height: 14mm;
@@ -364,7 +365,7 @@
                 </td>
                 <td style="width:25%;">
                     <span class="label">Généré par</span>
-                    Plateforme Presentia
+                    Plateforme {{ config('app.name') }}
                 </td>
                 <td style="width:25%;">
                     <span class="label">Total membres</span>
@@ -441,11 +442,11 @@
         <table class="footer-inner">
             <tr>
                 <td class="footer-left">
-                    <span class="cert-text">Ce document officiel a été généré électroniquement et certifié conforme par la plateforme de gestion <strong>Presentia</strong>.</span>
+                    <span class="cert-text">Ce document officiel a été généré électroniquement et certifié conforme par la plateforme de gestion <strong>{{ config('app.name') }}</strong>.</span>
                 </td>
                 <td class="footer-right">
                     Généré le {{ now()->format('d/m/Y à H:i') }}<br>
-                    Liste des Membres — Presentia
+                    Liste des Membres — {{ config('app.name') }}
                 </td>
             </tr>
         </table>

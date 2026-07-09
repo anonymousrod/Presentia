@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Vos identifiants de connexion Presentia</title>
+    <title>Vos identifiants de connexion {{ config('app.name') }}</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -89,12 +89,12 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Bienvenue sur Presentia</h1>
+            <h1>Bienvenue sur {{ config('app.name') }}</h1>
         </div>
         <div class="content">
             <p>Bonjour {{ $user->first_name }},</p>
             
-            <p>Votre compte utilisateur sur la plateforme <strong>Presentia</strong> a été créé avec succès par l'administrateur.</p>
+            <p>Votre compte utilisateur sur la plateforme <strong>{{ config('app.name') }}</strong> a été créé avec succès par l'administrateur.</p>
             
             <p>Voici vos identifiants temporaires pour vous connecter :</p>
             
@@ -116,7 +116,7 @@
             </div>
         </div>
         <div class="footer">
-            &copy; {{ date('Y') }} Presentia - Plateforme EBER. Tous droits réservés.
+            &copy; {{ date('Y') }} {{ config('app.name') }} - Plateforme EBER. Tous droits réservés.
         </div>
     </div>
 </body>

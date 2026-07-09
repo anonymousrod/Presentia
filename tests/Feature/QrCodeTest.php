@@ -30,7 +30,7 @@ class QrCodeTest extends TestCase
         $this->admin = User::create([
             'name'       => 'Admin',
             'first_name' => 'System',
-            'email'      => 'admin@presentia.org',
+            'email'      => 'admin@' . config('app.name') . '.org',
             'password'   => bcrypt('Admin@1234!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -40,7 +40,7 @@ class QrCodeTest extends TestCase
         $this->member = User::create([
             'name'       => 'Jeune',
             'first_name' => 'Simple',
-            'email'      => 'jeune@presentia.org',
+            'email'      => 'jeune@' . config('app.name') . '.org',
             'password'   => bcrypt('Jeune@1234!'),
             'status'     => UserStatus::ACTIVE,
         ]);

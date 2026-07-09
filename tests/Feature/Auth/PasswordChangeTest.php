@@ -26,7 +26,7 @@ class PasswordChangeTest extends TestCase
         $this->pendingUser = User::create([
             'name'       => 'Dupont',
             'first_name' => 'Jean',
-            'email'      => 'pending@presentia.org',
+            'email'      => 'pending@' . config('app.name') . '.org',
             'password'   => bcrypt('Temporary123!'),
             'status'     => UserStatus::PENDING,
         ]);
@@ -34,7 +34,7 @@ class PasswordChangeTest extends TestCase
         $this->activeUser = User::create([
             'name'       => 'Martin',
             'first_name' => 'Paul',
-            'email'      => 'active@presentia.org',
+            'email'      => 'active@' . config('app.name') . '.org',
             'password'   => bcrypt('Active123!'),
             'status'     => UserStatus::ACTIVE,
         ]);

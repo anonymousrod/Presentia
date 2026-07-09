@@ -29,7 +29,7 @@ class RBACTest extends TestCase
         $this->userWithoutRole = User::create([
             'name'       => 'Inconnu',
             'first_name' => 'Utilisateur',
-            'email'      => 'norole@presentia.org',
+            'email'      => 'norole@' . config('app.name') . '.org',
             'password'   => bcrypt('Password123!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -38,7 +38,7 @@ class RBACTest extends TestCase
         $this->jeune = User::create([
             'name'       => 'Dupont',
             'first_name' => 'Jeune',
-            'email'      => 'jeune@presentia.org',
+            'email'      => 'jeune@' . config('app.name') . '.org',
             'password'   => bcrypt('Password123!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -48,7 +48,7 @@ class RBACTest extends TestCase
         $this->admin = User::create([
             'name'       => 'Admin',
             'first_name' => 'System',
-            'email'      => 'admin@presentia.org',
+            'email'      => 'admin@' . config('app.name') . '.org',
             'password'   => bcrypt('Admin@1234!'),
             'status'     => UserStatus::ACTIVE,
         ]);

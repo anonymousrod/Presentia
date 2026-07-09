@@ -27,7 +27,7 @@ class AddedToGroupNotification extends Notification
 
     public function toWhatsApp($notifiable): string
     {
-        return "👋 Bonjour,\n\nVous avez été ajouté au groupe « {$this->group->name} » sur Presentia.\nConnectez-vous pour voir les détails.";
+        return "👋 Bonjour,\n\nVous avez été ajouté au groupe « {$this->group->name} » sur " . config('app.name') . ".\nConnectez-vous pour voir les détails.";
     }
 
     public function toArray($notifiable): array

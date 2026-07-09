@@ -46,6 +46,50 @@ class AppServiceProvider extends ServiceProvider
         // Use Bootstrap 5 pagination styles globally
         \Illuminate\Pagination\Paginator::useBootstrapFive();
 
+        // Share app settings globally
+        view()->composer('*', function ($view) {
+            $settings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
+            
+            // Generate URLs for all image fields so views don't have to check storage vs assets
+            $imageFields = [
+                'favicon', 'logo_sm', 'logo_dark', 'logo_light', 
+                'pdf_logo_1', 'pdf_logo_2', 'default_avatar', 'default_cover',
+                'sidebar_bg_1', 'sidebar_bg_2', 'sidebar_bg_3', 'sidebar_bg_4'
+            ];
+
+            $defaults = [
+                'favicon' => 'favicon.ico',
+                'logo_sm' => 'logo-sm.png',
+                'logo_dark' => 'logo-dark.png',
+                'logo_light' => 'logo-light.png',
+                'pdf_logo_1' => 'Icone J-EBER.png',
+                'pdf_logo_2' => 'Icone J-EBER.png',
+                'default_avatar' => 'users/avatar-1.jpg',
+                'default_cover' => 'profile-bg.jpg',
+                'sidebar_bg_1' => 'sidebar/img-1.jpg',
+                'sidebar_bg_2' => 'sidebar/img-2.jpg',
+                'sidebar_bg_3' => 'sidebar/img-3.jpg',
+                'sidebar_bg_4' => 'sidebar/img-4.jpg',
+            ];
+
+            foreach ($imageFields as $field) {
+                $urlField = $field . '_url';
+                $value = $settings->$field;
+                if ($value) {
+                    if (str_starts_with($value, 'assets/') || $value === 'Icone J-EBER.png') {
+                        $settings->$urlField = asset('assets/images/' . str_replace('assets/images/', '', $value));
+                    } else {
+                        $settings->$urlField = asset('storage/' . $value);
+                    }
+                } else {
+                    // Fallback par défaut si la BDD est vide (ex: après migrate:fresh)
+                    $settings->$urlField = asset('assets/images/' . $defaults[$field]);
+                }
+            }
+
+            $view->with('appSettings', $settings);
+        });
+
         // Bypass implicit pour l'administrateur
         \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
             return $user->hasRole('Administrateur') ? true : null;

@@ -80,6 +80,7 @@ class ChartDataSeeder extends Seeder
         ];
 
         $defaultPassword = Hash::make('Password@1234!');
+        $phoneCounter = 69000001;
 
         foreach ($groupsData as $groupName => $data) {
             $members = $data['members'];
@@ -92,7 +93,7 @@ class ChartDataSeeder extends Seeder
                 [
                     'name' => explode(' ', $chefName)[1] ?? 'Chef',
                     'first_name' => explode(' ', $chefName)[0],
-                    'phone' => '69129089',
+                    'phone' => strval($phoneCounter++),
                     'password' => $defaultPassword,
                     'status' => 'ACTIVE',
                 ]
@@ -124,7 +125,7 @@ class ChartDataSeeder extends Seeder
                     [
                         'name' => $lastName,
                         'first_name' => $firstName,
-                        'phone' => '69129089',
+                        'phone' => strval($phoneCounter++),
                         'password' => $defaultPassword,
                         'status' => 'ACTIVE',
                     ]
@@ -196,7 +197,7 @@ class ChartDataSeeder extends Seeder
                 [
                     'name' => $parts[1],
                     'first_name' => $parts[0],
-                    'phone' => '69129089',
+                    'phone' => strval($phoneCounter++),
                     'password' => $defaultPassword,
                     'status' => 'ACTIVE',
                 ]

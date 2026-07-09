@@ -30,7 +30,7 @@ class AdminUserCreationTest extends TestCase
         $this->admin = User::create([
             'name'       => 'Admin',
             'first_name' => 'System',
-            'email'      => 'admin@presentia.org',
+            'email'      => 'admin@' . config('app.name') . '.org',
             'password'   => bcrypt('Admin@1234!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -40,7 +40,7 @@ class AdminUserCreationTest extends TestCase
         $this->member = User::create([
             'name'       => 'Jeune',
             'first_name' => 'Simple',
-            'email'      => 'jeune@presentia.org',
+            'email'      => 'jeune@' . config('app.name') . '.org',
             'password'   => bcrypt('Jeune@1234!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -63,7 +63,7 @@ class AdminUserCreationTest extends TestCase
         $response = $this->actingAs($this->member)->post(route('admin.users.store'), [
             'name'       => 'Test',
             'first_name' => 'User',
-            'email'      => 'test@presentia.org',
+            'email'      => 'test@' . config('app.name') . '.org',
         ]);
         $response->assertStatus(403);
     }
@@ -105,7 +105,7 @@ class AdminUserCreationTest extends TestCase
         $response = $this->actingAs($this->admin)->post(route('admin.users.store'), [
             'name'       => 'Dupont',
             'first_name' => 'Jean',
-            'email'      => 'jean.dupont@presentia.org',
+            'email'      => 'jean.dupont@' . config('app.name') . '.org',
             'birth_date' => '2000-01-01',
         ]);
 
@@ -113,7 +113,7 @@ class AdminUserCreationTest extends TestCase
         $response->assertSessionHasNoErrors();
 
         // Vérifier l'utilisateur en DB
-        $user = User::where('email', 'jean.dupont@presentia.org')->first();
+        $user = User::where('email', 'jean.dupont@' . config('app.name') . '.org')->first();
         $this->assertNotNull($user);
         $this->assertEquals(UserStatus::PENDING, $user->status);
         $this->assertEquals('Dupont', $user->name);
@@ -181,14 +181,14 @@ class AdminUserCreationTest extends TestCase
         $response = $this->actingAs($this->admin)->post(route('admin.users.store'), [
             'name'       => 'Durand',
             'first_name' => 'Sophie',
-            'email'      => 'sophie.durand@presentia.org',
+            'email'      => 'sophie.durand@' . config('app.name') . '.org',
             'phone'      => '+22991111111',
         ]);
 
         $response->assertRedirect(route('admin.users.index'));
         $response->assertSessionHasNoErrors();
 
-        $user = User::where('email', 'sophie.durand@presentia.org')->first();
+        $user = User::where('email', 'sophie.durand@' . config('app.name') . '.org')->first();
         $this->assertNotNull($user);
 
         // Email est prioritaire
@@ -207,7 +207,7 @@ class AdminUserCreationTest extends TestCase
         User::create([
             'name'       => 'Existant',
             'first_name' => 'User',
-            'email'      => 'existant@presentia.org',
+            'email'      => 'existant@' . config('app.name') . '.org',
             'password'   => bcrypt('Secret123'),
         ]);
 
@@ -217,7 +217,7 @@ class AdminUserCreationTest extends TestCase
             ->post(route('admin.users.store'), [
                 'name'       => 'Nouveau',
                 'first_name' => 'User',
-                'email'      => 'existant@presentia.org',
+                'email'      => 'existant@' . config('app.name') . '.org',
             ]);
 
         $response->assertRedirect(route('admin.users.create'));
@@ -232,11 +232,11 @@ class AdminUserCreationTest extends TestCase
         $response = $this->actingAs($this->admin)->post(route('admin.users.store'), [
             'name'       => 'Dupont',
             'first_name' => 'Jean',
-            'email'      => 'jean.dupont@presentia.org',
+            'email'      => 'jean.dupont@' . config('app.name') . '.org',
             'birth_date' => '2000-01-01',
         ]);
 
-        $user = User::where('email', 'jean.dupont@presentia.org')->first();
+        $user = User::where('email', 'jean.dupont@' . config('app.name') . '.org')->first();
         $this->assertNotNull($user);
         $this->assertTrue($user->hasRole('Jeune'));
     }

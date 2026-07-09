@@ -115,7 +115,7 @@
                                 </div>
                                 <h1 class="text-white fw-bold display-4 mb-3" style="letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">Bonjour, <span style="color: var(--vz-primary); filter: brightness(1.3);">{{ auth()->user()->first_name }} !</span></h1>
                                 <p class="fs-16 mb-0" style="max-width: 550px; line-height: 1.6; color: rgba(255,255,255,0.7);">
-                                    Voici un résumé complet de l'activité sur Presentia aujourd'hui.
+                                    Voici un résumé complet de l'activité sur {{ config('app.name') }} aujourd'hui.
                                 </p>
                             </div>
                             <div class="col-lg-4 d-none d-lg-flex justify-content-end align-items-center">

@@ -23,7 +23,7 @@ class PolymorphicAuditingTest extends TestCase
         $this->admin = User::create([
             'name'       => 'Admin',
             'first_name' => 'System',
-            'email'      => 'admin.audit@presentia.org',
+            'email'      => 'admin.audit@' . config('app.name') . '.org',
             'password'   => bcrypt('Secret123!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -39,7 +39,7 @@ class PolymorphicAuditingTest extends TestCase
         $user = User::create([
             'name'       => 'Dupont',
             'first_name' => 'Jean',
-            'email'      => 'jean.dupont.audit@presentia.org',
+            'email'      => 'jean.dupont.audit@' . config('app.name') . '.org',
             'password'   => 'MonMotDePasseSecret123',
             'status'     => UserStatus::PENDING,
         ]);
@@ -60,7 +60,7 @@ class PolymorphicAuditingTest extends TestCase
 
         // Les informations non sensibles doivent figurer dans new_values
         $this->assertEquals('Dupont', $log->new_values['name']);
-        $this->assertEquals('jean.dupont.audit@presentia.org', $log->new_values['email']);
+        $this->assertEquals('jean.dupont.audit@' . config('app.name') . '.org', $log->new_values['email']);
     }
 
     /**
@@ -73,7 +73,7 @@ class PolymorphicAuditingTest extends TestCase
         $user = User::create([
             'name'       => 'Dupont',
             'first_name' => 'Jean',
-            'email'      => 'jean.dupont.audit@presentia.org',
+            'email'      => 'jean.dupont.audit@' . config('app.name') . '.org',
             'password'   => 'MonMotDePasseSecret123',
             'status'     => UserStatus::PENDING,
         ]);
@@ -121,7 +121,7 @@ class PolymorphicAuditingTest extends TestCase
         $user = User::create([
             'name'       => 'A Supprimer',
             'first_name' => 'Jean',
-            'email'      => 'supprimer@presentia.org',
+            'email'      => 'supprimer@' . config('app.name') . '.org',
             'password'   => 'Secret123',
         ]);
 

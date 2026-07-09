@@ -65,6 +65,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Global Search
     Route::get('global-search', [App\Http\Controllers\Admin\GlobalSearchController::class, 'search'])->name('global-search');
 
+    // System Settings
+    Route::middleware(['can:manage-users'])->group(function () {
+        Route::get('settings', [App\Http\Controllers\AppSettingController::class, 'edit'])->name('settings.edit');
+        Route::post('settings', [App\Http\Controllers\AppSettingController::class, 'update'])->name('settings.update');
+    });
+
     // Routes requiring general user management permissions
     Route::middleware(['can:manage-users'])->group(function () {
         // Users

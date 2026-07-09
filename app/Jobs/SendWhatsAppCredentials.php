@@ -49,7 +49,7 @@ class SendWhatsAppCredentials implements ShouldQueue
         $loginUrl = route('login');
 
         $message = "👋 Bonjour {$this->user->first_name},\n\n"
-            . "Bienvenue sur Presentia ! Votre compte a été créé avec succès par l'administrateur.\n\n"
+            . "Bienvenue sur " . config('app.name') . " ! Votre compte a été créé avec succès par l'administrateur.\n\n"
             . "Voici vos identifiants temporaires :\n"
             . "📞 *Identifiant (Téléphone)* : {$this->user->phone}\n"
             . "🔑 *Mot de passe temporaire* : {$this->plainPassword}\n\n"

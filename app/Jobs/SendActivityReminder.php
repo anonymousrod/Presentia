@@ -53,7 +53,7 @@ class SendActivityReminder implements ShouldQueue
 
         $location = $this->activity->location ?? 'lieu à confirmer';
 
-        $message = "Rappel Presentia 📅\n\n"
+        $message = "Rappel " . config('app.name') . " 📅\n\n"
             . "Bonjour {$this->user->first_name},\n\n"
             . "Nous vous rappelons que l'activité suivante approche :\n\n"
             . "📌 *{$this->activity->title}*\n"

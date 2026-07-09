@@ -187,4 +187,26 @@ class User extends Authenticatable
     {
         return trim("{$this->first_name} {$this->name}");
     }
+
+    /**
+     * URL de l'avatar (utilise l'image de profil ou l'image par défaut).
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->photo) {
+            return asset('storage/' . $this->photo);
+        }
+        
+        $settings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
+        
+        if (empty($settings->default_avatar)) {
+            return asset('assets/images/users/avatar-1.jpg');
+        }
+
+        if (str_starts_with($settings->default_avatar, 'assets/')) {
+            return asset($settings->default_avatar);
+        }
+        return asset('storage/' . $settings->default_avatar);
+    }
+
 }

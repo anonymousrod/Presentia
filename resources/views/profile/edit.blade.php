@@ -16,11 +16,7 @@
 <div class="pt-4 mb-4 mb-lg-3 pb-lg-4 profile-wrapper">
     <div class="row g-4 align-items-center">
         <div class="col-auto">
-            @if($user->photo)
-                <img src="{{ asset('storage/' . $user->photo) }}" alt="user-img" class="img-thumbnail rounded-circle avatar-lg" style="object-fit: cover;" />
-            @else
-                <img src="{{ asset('assets/images/users/avatar-1.jpg') }}" alt="user-img" class="img-thumbnail rounded-circle avatar-lg" style="object-fit: cover;" />
-            @endif
+            <img src="{{ $user->avatar_url }}" alt="user-img" class="img-thumbnail rounded-circle avatar-lg" style="object-fit: cover;" />
         </div>
         <div class="col">
             <div class="p-2">
@@ -102,11 +98,7 @@
                     <form id="avatar-form" action="{{ route('profile.avatar') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="profile-user position-relative d-inline-block mx-auto mb-4">
-                            @if($user->photo)
-                                <img src="{{ asset('storage/' . $user->photo) }}" class="rounded-circle avatar-xl img-thumbnail user-profile-image shadow" alt="user-profile-image" style="object-fit: cover;">
-                            @else
-                                <img src="{{ asset('assets/images/users/avatar-1.jpg') }}" class="rounded-circle avatar-xl img-thumbnail user-profile-image shadow" alt="user-profile-image" style="object-fit: cover;">
-                            @endif
+                            <img src="{{ $user->avatar_url }}" class="rounded-circle avatar-xl img-thumbnail user-profile-image shadow" alt="user-profile-image" style="object-fit: cover;">
                             <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
                                 <input id="profile-img-file-input" name="photo" type="file" class="profile-img-file-input d-none" onchange="document.getElementById('avatar-form').submit();">
                                 <label for="profile-img-file-input" class="profile-photo-edit avatar-xs">

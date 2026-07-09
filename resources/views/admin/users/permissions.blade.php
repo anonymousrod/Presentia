@@ -104,7 +104,7 @@
                 <!-- Profil utilisateur -->
                 <div class="card mb-3">
                     <div class="card-body p-3 d-flex align-items-center gap-3">
-                        <img src="{{ auth()->user()->photo ? asset('storage/' . auth()->user()->photo) : asset('assets/images/users/avatar-1.jpg') }}"
+                        <img src="{{ $user->avatar_url }}"
                              alt="{{ $user->full_name }}"
                              class="rounded-circle avatar-sm flex-shrink-0">
                         <div class="overflow-hidden">

@@ -17,7 +17,7 @@ class AccountCreatedNotification extends Notification
     public function toWhatsApp($notifiable): string
     {
         $data = $this->toArray($notifiable);
-        $title = $data['title'] ?? 'Notification Presentia';
+        $title = $data['title'] ?? 'Notification ' . config('app.name');
         $message = $data['message'] ?? '';
         return "👋 Bonjour,
 
@@ -30,7 +30,7 @@ class AccountCreatedNotification extends Notification
         return [
             'icon'    => 'mdi mdi-account-check-outline',
             'color'   => 'success',
-            'title'   => 'Bienvenue sur Presentia !',
+            'title'   => 'Bienvenue sur ' . config('app.name') . ' !',
             'message' => 'Votre compte a été créé avec succès.',
             'url'     => route('profile.edit'),
         ];

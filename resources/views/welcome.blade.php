@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Presentia | Plateforme EBER</title>
+    <title>{{ config('app.name') }} | Plateforme EBER</title>
 
     <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -446,7 +446,7 @@
     <header>
         <a href="{{ url('/') }}" class="logo-container">
             <i class="fa-solid fa-cube logo-icon"></i>
-            <span class="logo-text">Pres<span>entia</span></span>
+            <span class="logo-text">{{ config('app.name') }}</span>
         </a>
         <nav>
             @auth
@@ -513,7 +513,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; <script>document.write(new Date().getFullYear())</script> <span>Presentia</span>. Fait avec <i class="fa-solid fa-heart"></i> pour EBER.</p>
+        <p>&copy; <script>document.write(new Date().getFullYear())</script> <span>{{ config('app.name') }}</span>. Fait avec <i class="fa-solid fa-heart"></i> pour EBER.</p>
     </footer>
 </body>
 </html>

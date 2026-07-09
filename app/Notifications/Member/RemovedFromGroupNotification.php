@@ -25,7 +25,7 @@ class RemovedFromGroupNotification extends Notification
     public function toWhatsApp($notifiable): string
     {
         $data = $this->toArray($notifiable);
-        $title = $data['title'] ?? 'Notification Presentia';
+        $title = $data['title'] ?? 'Notification ' . config('app.name');
         $message = $data['message'] ?? '';
         return "👋 Bonjour,
 

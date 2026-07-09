@@ -22,7 +22,7 @@ class LoginTest extends TestCase
         $this->user = User::create([
             'name'       => 'Dupont',
             'first_name' => 'Jean',
-            'email'      => 'jean.dupont@presentia.org',
+            'email'      => 'jean.dupont@' . config('app.name') . '.org',
             'phone'      => '+22990000000',
             'password'   => bcrypt($this->password),
             'status'     => UserStatus::ACTIVE,
@@ -75,7 +75,7 @@ class LoginTest extends TestCase
     public function test_user_cannot_login_with_invalid_credentials(): void
     {
         $response = $this->post(route('login'), [
-            'identifiant' => 'inconnu@presentia.org',
+            'identifiant' => 'inconnu@' . config('app.name') . '.org',
             'password'    => 'MauvaisPassword',
         ]);
 

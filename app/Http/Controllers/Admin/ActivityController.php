@@ -126,16 +126,18 @@ class ActivityController extends Controller
             ->select('registrations.*')
             ->get();
 
-        $logoUeebPath = "D:/TFG_Projet/front_back_ecomerce/Projet_Presentia/LOGO UEEB.png";
-        $logoJeunessePath = "D:/TFG_Projet/front_back_ecomerce/Projet_Presentia/LOGO Jeunesse Etoile Rouge/LOGO/Logo Jeunesse/PNG/Fichier 10 1.png";
+        $settings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
+        
+        $logoUeebPath = str_starts_with($settings->pdf_logo_1, 'assets/') ? public_path($settings->pdf_logo_1) : storage_path('app/public/' . $settings->pdf_logo_1);
+        $logoJeunessePath = str_starts_with($settings->pdf_logo_2, 'assets/') ? public_path($settings->pdf_logo_2) : storage_path('app/public/' . $settings->pdf_logo_2);
 
         $logoUeebBase64 = '';
-        if (file_exists($logoUeebPath)) {
+        if ($settings->pdf_logo_1 && file_exists($logoUeebPath)) {
             $logoUeebBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoUeebPath));
         }
 
         $logoJeunesseBase64 = '';
-        if (file_exists($logoJeunessePath)) {
+        if ($settings->pdf_logo_2 && file_exists($logoJeunessePath)) {
             $logoJeunesseBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoJeunessePath));
         }
 
@@ -160,16 +162,18 @@ class ActivityController extends Controller
             ->select('attendances.*')
             ->get();
 
-        $logoUeebPath = "D:/TFG_Projet/front_back_ecomerce/Projet_Presentia/LOGO UEEB.png";
-        $logoJeunessePath = "D:/TFG_Projet/front_back_ecomerce/Projet_Presentia/LOGO Jeunesse Etoile Rouge/LOGO/Logo Jeunesse/PNG/Fichier 10 1.png";
+        $settings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
+        
+        $logoUeebPath = str_starts_with($settings->pdf_logo_1, 'assets/') ? public_path($settings->pdf_logo_1) : storage_path('app/public/' . $settings->pdf_logo_1);
+        $logoJeunessePath = str_starts_with($settings->pdf_logo_2, 'assets/') ? public_path($settings->pdf_logo_2) : storage_path('app/public/' . $settings->pdf_logo_2);
 
         $logoUeebBase64 = '';
-        if (file_exists($logoUeebPath)) {
+        if ($settings->pdf_logo_1 && file_exists($logoUeebPath)) {
             $logoUeebBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoUeebPath));
         }
 
         $logoJeunesseBase64 = '';
-        if (file_exists($logoJeunessePath)) {
+        if ($settings->pdf_logo_2 && file_exists($logoJeunessePath)) {
             $logoJeunesseBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoJeunessePath));
         }
 

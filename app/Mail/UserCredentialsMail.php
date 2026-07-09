@@ -32,7 +32,7 @@ class UserCredentialsMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Vos identifiants de connexion Presentia',
+            subject: 'Vos identifiants de connexion ' . config('app.name'),
         );
     }
 

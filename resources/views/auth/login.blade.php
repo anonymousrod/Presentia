@@ -3,9 +3,9 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Connexion | Presentia</title>
+    <title>Connexion | {{ config('app.name') }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Presentia - Plateforme EBER" name="description" />
+    <meta content="{{ config('app.name') }} - Plateforme EBER" name="description" />
     <meta content="Themesbrand" name="author" />
     
     <!-- App favicon -->
@@ -45,7 +45,7 @@
                         <div class="text-center mt-sm-5 mb-4 text-white-50">
                             <div>
                                 <a href="{{ url('/') }}" class="d-inline-block auth-logo">
-                                    <h1 class="text-white fw-bold">Presentia</h1>
+                                    <h1 class="text-white fw-bold">{{ config('app.name') }}</h1>
                                 </a>
                             </div>
                             <p class="mt-3 fs-15 fw-medium text-white-50">Plateforme EBER (Engagement et Responsabilité)</p>
@@ -61,7 +61,7 @@
                             <div class="card-body p-4">
                                 <div class="text-center mt-2">
                                     <h5 class="text-primary">Ravi de vous revoir !</h5>
-                                    <p class="text-muted">Connectez-vous pour continuer sur Presentia.</p>
+                                    <p class="text-muted">Connectez-vous pour continuer sur {{ config('app.name') }}.</p>
                                 </div>
                                 
                                 @if ($errors->any())
@@ -140,7 +140,7 @@
                     <div class="col-lg-12">
                         <div class="text-center">
                             <p class="mb-0 text-muted">&copy;
-                                <script>document.write(new Date().getFullYear())</script> Presentia. Développé avec <i class="mdi mdi-heart text-danger"></i> pour EBER.
+                                <script>document.write(new Date().getFullYear())</script> {{ config('app.name') }}. Développé avec <i class="mdi mdi-heart text-danger"></i> pour EBER.
                             </p>
                         </div>
                     </div>

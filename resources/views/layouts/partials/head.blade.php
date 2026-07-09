@@ -7,7 +7,7 @@
     <title>@yield('title', 'Dashboard | Velzon')</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ $appSettings->favicon_url ?? asset('assets/images/favicon.ico') }}">
 
     <!-- jsvectormap -->
     <link href="{{ asset('assets/libs/jsvectormap/jsvectormap.min.css') }}" rel="stylesheet" type="text/css" />
@@ -27,4 +27,12 @@
     <link href="{{ asset('assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
 
     @stack('css')
+
+    <!-- Paramètres d'Images Dynamiques -->
+    <style>
+        [data-sidebar-image="img-1"] .sidebar-background { background-image: url('{{ $appSettings->sidebar_bg_1_url ?? asset("assets/images/sidebar/img-1.jpg") }}') !important; }
+        [data-sidebar-image="img-2"] .sidebar-background { background-image: url('{{ $appSettings->sidebar_bg_2_url ?? asset("assets/images/sidebar/img-2.jpg") }}') !important; }
+        [data-sidebar-image="img-3"] .sidebar-background { background-image: url('{{ $appSettings->sidebar_bg_3_url ?? asset("assets/images/sidebar/img-3.jpg") }}') !important; }
+        [data-sidebar-image="img-4"] .sidebar-background { background-image: url('{{ $appSettings->sidebar_bg_4_url ?? asset("assets/images/sidebar/img-4.jpg") }}') !important; }
+    </style>
 </head>

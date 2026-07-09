@@ -37,7 +37,7 @@ class ActivityTest extends TestCase
         $this->admin = User::create([
             'name'       => 'Admin',
             'first_name' => 'System',
-            'email'      => 'admin@presentia.org',
+            'email'      => 'admin@' . config('app.name') . '.org',
             'password'   => bcrypt('Admin@1234!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -47,7 +47,7 @@ class ActivityTest extends TestCase
         $this->member = User::create([
             'name'       => 'Jeune',
             'first_name' => 'Simple',
-            'email'      => 'jeune@presentia.org',
+            'email'      => 'jeune@' . config('app.name') . '.org',
             'password'   => bcrypt('Jeune@1234!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -298,7 +298,7 @@ class ActivityTest extends TestCase
         $member2 = User::create([
             'name'       => 'Jeune2',
             'first_name' => 'Simple2',
-            'email'      => 'jeune2@presentia.org',
+            'email'      => 'jeune2@' . config('app.name') . '.org',
             'password'   => bcrypt('Jeune@1234!'),
             'status'     => UserStatus::ACTIVE,
         ]);
@@ -518,7 +518,7 @@ class ActivityTest extends TestCase
         $leader = User::create([
             'name' => 'Leader A',
             'first_name' => 'Group A',
-            'email' => 'leader.a@presentia.org',
+            'email' => 'leader.a@' . config('app.name') . '.org',
             'password' => bcrypt('Leader@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
@@ -551,7 +551,7 @@ class ActivityTest extends TestCase
         $leaderA = User::create([
             'name' => 'Leader A',
             'first_name' => 'Group A',
-            'email' => 'leader.a@presentia.org',
+            'email' => 'leader.a@' . config('app.name') . '.org',
             'password' => bcrypt('Leader@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
@@ -575,7 +575,7 @@ class ActivityTest extends TestCase
         $leaderB = User::create([
             'name' => 'Leader B',
             'first_name' => 'Group B',
-            'email' => 'leader.b@presentia.org',
+            'email' => 'leader.b@' . config('app.name') . '.org',
             'password' => bcrypt('Leader@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
@@ -592,7 +592,7 @@ class ActivityTest extends TestCase
         $leader = User::create([
             'name' => 'Leader A',
             'first_name' => 'Group A',
-            'email' => 'leader.a@presentia.org',
+            'email' => 'leader.a@' . config('app.name') . '.org',
             'password' => bcrypt('Leader@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
@@ -616,7 +616,7 @@ class ActivityTest extends TestCase
         $member = User::create([
             'name' => 'Member A',
             'first_name' => 'Group A',
-            'email' => 'member.a@presentia.org',
+            'email' => 'member.a@' . config('app.name') . '.org',
             'password' => bcrypt('Member@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
@@ -648,7 +648,7 @@ class ActivityTest extends TestCase
         $leader = User::create([
             'name' => 'Leader A',
             'first_name' => 'Group A',
-            'email' => 'leader.a@presentia.org',
+            'email' => 'leader.a@' . config('app.name') . '.org',
             'password' => bcrypt('Leader@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
@@ -672,7 +672,7 @@ class ActivityTest extends TestCase
         $member = User::create([
             'name' => 'Member A',
             'first_name' => 'Group A',
-            'email' => 'member.a@presentia.org',
+            'email' => 'member.a@' . config('app.name') . '.org',
             'password' => bcrypt('Member@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
@@ -699,7 +699,7 @@ class ActivityTest extends TestCase
         $leader = User::create([
             'name' => 'Leader A',
             'first_name' => 'Group A',
-            'email' => 'leader.a@presentia.org',
+            'email' => 'leader.a@' . config('app.name') . '.org',
             'password' => bcrypt('Leader@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
@@ -765,7 +765,7 @@ class ActivityTest extends TestCase
         $leader = User::create([
             'name' => 'Leader A',
             'first_name' => 'Group A',
-            'email' => 'leader.a@presentia.org',
+            'email' => 'leader.a@' . config('app.name') . '.org',
             'password' => bcrypt('Leader@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
@@ -857,7 +857,7 @@ class ActivityTest extends TestCase
         $leader = User::create([
             'name' => 'Leader B',
             'first_name' => 'Group B',
-            'email' => 'leader.b@presentia.org',
+            'email' => 'leader.b@' . config('app.name') . '.org',
             'password' => bcrypt('Leader@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
@@ -873,7 +873,7 @@ class ActivityTest extends TestCase
         $unregisteredMember = User::create([
             'name' => 'Unregistered',
             'first_name' => 'User',
-            'email' => 'unregistered@presentia.org',
+            'email' => 'unregistered@' . config('app.name') . '.org',
             'password' => bcrypt('Password@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
@@ -931,7 +931,7 @@ class ActivityTest extends TestCase
         $leader = User::create([
             'name' => 'Leader C',
             'first_name' => 'Group C',
-            'email' => 'leader.c@presentia.org',
+            'email' => 'leader.c@' . config('app.name') . '.org',
             'password' => bcrypt('Leader@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
@@ -947,7 +947,7 @@ class ActivityTest extends TestCase
         $member = User::create([
             'name' => 'Registered',
             'first_name' => 'User',
-            'email' => 'registered@presentia.org',
+            'email' => 'registered@' . config('app.name') . '.org',
             'password' => bcrypt('Password@1234!'),
             'status' => UserStatus::ACTIVE,
         ]);
