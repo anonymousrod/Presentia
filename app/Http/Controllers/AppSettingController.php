@@ -41,7 +41,7 @@ class AppSettingController extends Controller
                 // if ($setting->$field && str_starts_with($setting->$field, 'settings/')) {
                 //     Storage::disk('public')->delete($setting->$field);
                 // }
-                
+
                 $path = $request->file($field)->store('settings', 'public');
                 $data[$field] = $path;
             }

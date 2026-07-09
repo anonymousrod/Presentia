@@ -196,9 +196,9 @@ class User extends Authenticatable
         if ($this->photo) {
             return asset('storage/' . $this->photo);
         }
-        
+
         $settings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
-        
+
         if (empty($settings->default_avatar)) {
             return asset('assets/images/users/avatar-1.jpg');
         }

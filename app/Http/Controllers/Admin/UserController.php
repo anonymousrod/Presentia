@@ -276,7 +276,7 @@ class UserController extends Controller
         $users = $query->get();
 
         $settings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
-        
+
         $logoUeebPath = str_starts_with($settings->pdf_logo_1, 'assets/') ? public_path($settings->pdf_logo_1) : storage_path('app/public/' . $settings->pdf_logo_1);
         $logoJeunessePath = str_starts_with($settings->pdf_logo_2, 'assets/') ? public_path($settings->pdf_logo_2) : storage_path('app/public/' . $settings->pdf_logo_2);
 

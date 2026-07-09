@@ -49,10 +49,10 @@ class AppServiceProvider extends ServiceProvider
         // Share app settings globally
         view()->composer('*', function ($view) {
             $settings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
-            
+
             // Generate URLs for all image fields so views don't have to check storage vs assets
             $imageFields = [
-                'favicon', 'logo_sm', 'logo_dark', 'logo_light', 
+                'favicon', 'logo_sm', 'logo_dark', 'logo_light',
                 'pdf_logo_1', 'pdf_logo_2', 'default_avatar', 'default_cover',
                 'sidebar_bg_1', 'sidebar_bg_2', 'sidebar_bg_3', 'sidebar_bg_4'
             ];

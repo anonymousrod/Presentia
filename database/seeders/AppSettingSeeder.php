@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class AppSettingSeeder extends Seeder
@@ -19,7 +18,7 @@ class AppSettingSeeder extends Seeder
                 'logo_sm' => 'Icone J-EBER.png',
                 'logo_dark' => 'Icone J-EBER.png',
                 'logo_light' => 'Icone J-EBER.png',
-                'pdf_logo_1' => 'assets/images/logo-dark.png', 
+                'pdf_logo_1' => 'assets/images/logo-dark.png',
                 'pdf_logo_2' => 'assets/images/logo-dark.png',
                 'default_avatar' => 'assets/images/users/avatar-1.jpg',
                 'default_cover' => 'assets/images/profile-bg.jpg',
