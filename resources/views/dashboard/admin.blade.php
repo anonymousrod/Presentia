@@ -94,6 +94,44 @@
         color: #fff;
         backdrop-filter: blur(5px);
     }
+
+    /* Scan Button */
+    .scan-btn {
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        border-radius: 50px;
+        box-shadow: 0 10px 20px rgba(41, 156, 219, 0.3);
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: linear-gradient(135deg, var(--vz-info) 0%, #2970db 100%);
+        border: none;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .scan-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(41, 156, 219, 0.5);
+        color: white;
+    }
+    
+    .scan-btn i {
+        font-size: 1.5rem;
+    }
+
+    @media (max-width: 991.98px) {
+        .activity-hero {
+            padding: 3rem 0 7rem 0;
+            text-align: center;
+        }
+        .scan-btn-container {
+            justify-content: center !important;
+            margin-top: 1.5rem;
+        }
+    }
 </style>
 @endpush
 
@@ -109,18 +147,24 @@
                     
                     <div class="container-fluid max-w-1200 hero-content">
                         <div class="row align-items-center">
-                            <div class="col-lg-8">
-                                <div class="d-flex align-items-center mb-4">
-                                    <span class="badge hero-badge px-3 py-2 rounded-pill shadow-sm" style="font-size: 0.75rem; letter-spacing: 1px;"><i class="mdi mdi-view-dashboard text-warning me-1"></i> TABLEAU DE BORD</span>
+                            <div class="col-lg-7">
+                                <div class="mb-4 d-flex justify-content-center justify-content-lg-start">
+                                    <span class="badge hero-badge px-3 py-2 rounded-pill shadow-sm mb-3" style="font-size: 0.75rem; letter-spacing: 1px;"><i class="mdi mdi-view-dashboard text-warning me-1"></i> TABLEAU DE BORD</span>
                                 </div>
-                                <h1 class="text-white fw-bold display-4 mb-3" style="letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">Bonjour, <span style="color: var(--vz-primary); filter: brightness(1.3);">{{ auth()->user()->first_name }} !</span></h1>
-                                <p class="fs-16 mb-0" style="max-width: 550px; line-height: 1.6; color: rgba(255,255,255,0.7);">
+                                <h1 class="text-white fw-bold display-4 mb-2 text-center text-lg-start" style="letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); line-height: 1.2;">Bonjour, <span style="color: var(--vz-primary); filter: brightness(1.3);">{{ auth()->user()->first_name }} !</span></h1>
+                                <p class="fs-16 mb-0 d-none d-lg-block" style="max-width: 550px; line-height: 1.6; color: rgba(255,255,255,0.7);">
                                     Voici un résumé complet de l'activité sur {{ config('app.name') }} aujourd'hui.
                                 </p>
+                                <p class="fs-15 mb-0 d-lg-none text-center" style="color: rgba(255,255,255,0.7);">
+                                    Scannez le code QR à l'église pour marquer votre présence.
+                                </p>
                             </div>
-                            <div class="col-lg-4 d-none d-lg-flex justify-content-end align-items-center">
-                                <div class="hero-icon-container">
-                                    <i class="mdi mdi-view-dashboard-outline"></i>
+                            <div class="col-lg-5 d-flex justify-content-lg-end scan-btn-container">
+                                <div class="text-center">
+                                    <a href="{{ route('attendance.scan') }}" class="scan-btn">
+                                        <i class="ri-qr-scan-2-line"></i> Scanner ma présence
+                                    </a>
+                                    <p class="text-white-50 mt-3 mb-0" style="font-size: 0.85rem;">Activez votre caméra pour badger à l'entrée</p>
                                 </div>
                             </div>
                         </div>

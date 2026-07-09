@@ -26,8 +26,8 @@ class ContributionController extends Controller
             }
             $allGroups = Group::all();
         } else {
-            // Sinon, c'est un chargé de collecte normal
-            $group = $user->collectedGroups()->first();
+            // Sinon, c'est un chargé de collecte ou un chef de groupe
+            $group = $user->collectedGroups()->first() ?? $user->ledGroups()->first() ?? $user->groups()->first();
             $allGroups = collect($group ? [$group] : []); // Il ne voit que son groupe
         }
 

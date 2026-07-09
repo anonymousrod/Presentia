@@ -44,7 +44,7 @@ class RemittanceController extends Controller
             $groupId = $request->input('group_id');
             $group = Group::find($groupId) ?? Group::first();
         } else {
-            $group = $user->collectedGroups()->first();
+            $group = $user->collectedGroups()->first() ?? $user->ledGroups()->first() ?? $user->groups()->first();
         }
 
         if (!$group) {

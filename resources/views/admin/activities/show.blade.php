@@ -464,6 +464,7 @@
             </div>
 
             <!-- QR Code de Présence Card -->
+            @can('qrcode.generate')
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">QR Code d'Émargement</h5>
@@ -550,6 +551,7 @@
                     @endif
                 </div>
             </div>
+            @endcan
         </div>
     </div>
 </div>
