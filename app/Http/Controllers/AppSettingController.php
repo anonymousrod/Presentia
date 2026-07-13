@@ -32,9 +32,30 @@ class AppSettingController extends Controller
             'sidebar_bg_3',
             'sidebar_bg_4',
             'auth_bg',
+            'hero_image',
+            'about_image',
         ];
 
         $data = [];
+
+        // Save text fields
+        $textFields = [
+            'hero_title',
+            'hero_subtitle',
+            'about_history',
+            'about_mission',
+            'about_vision',
+            'about_objectives',
+            'contact_phone',
+            'facebook_link',
+            'tiktok_link',
+        ];
+
+        foreach ($textFields as $field) {
+            if ($request->has($field)) {
+                $data[$field] = $request->input($field);
+            }
+        }
 
         foreach ($fields as $field) {
             if ($request->hasFile($field)) {

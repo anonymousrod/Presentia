@@ -5,9 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordChangeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // Routes d'authentification personnalisées
 Route::middleware('guest')->group(function () {
@@ -69,6 +67,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::middleware(['can:manage-users'])->group(function () {
         Route::get('settings', [App\Http\Controllers\AppSettingController::class, 'edit'])->name('settings.edit');
         Route::post('settings', [App\Http\Controllers\AppSettingController::class, 'update'])->name('settings.update');
+
+        // Galleries
+        Route::get('galleries', [App\Http\Controllers\Admin\GalleryController::class, 'index'])->name('galleries.index');
+        Route::post('galleries', [App\Http\Controllers\Admin\GalleryController::class, 'store'])->name('galleries.store');
+        Route::post('galleries/{gallery}/toggle', [App\Http\Controllers\Admin\GalleryController::class, 'toggleActive'])->name('galleries.toggle');
+        Route::delete('galleries/{gallery}', [App\Http\Controllers\Admin\GalleryController::class, 'destroy'])->name('galleries.destroy');
     });
 
     // Routes requiring general user management permissions

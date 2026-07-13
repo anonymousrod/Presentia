@@ -29,6 +29,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Administrateur — bypass via Policy::before(), mais on lui donne tout
         $admin = Role::firstOrCreate(['name' => 'Administrateur', 'guard_name' => 'web']);
         $admin->code = 'admin';
+        $admin->description = 'Super administrateur du système avec tous les accès.';
         $admin->is_system = true;
         $admin->save();
         $admin->syncPermissions(Permission::all());
@@ -36,6 +37,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Jeune — accès minimal : consulter, s'inscrire, scanner
         $jeune = Role::firstOrCreate(['name' => 'Jeune', 'guard_name' => 'web']);
         $jeune->code = 'default_user';
+        $jeune->description = 'Membre de base de la jeunesse.';
         $jeune->is_system = true;
         $jeune->save();
         $jeune->syncPermissions([
@@ -50,6 +52,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Chef de groupe — gestion de son groupe uniquement
         $chef = Role::firstOrCreate(['name' => 'Chef de groupe', 'guard_name' => 'web']);
         $chef->code = 'group_leader';
+        $chef->description = 'Responsable de la gestion et du suivi des membres de son groupe.';
         $chef->is_system = true;
         $chef->save();
         $chef->syncPermissions([
@@ -70,6 +73,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Chargé de collecte — gestion financière de son groupe
         $collecteur = Role::firstOrCreate(['name' => 'Chargé de collecte', 'guard_name' => 'web']);
         $collecteur->code = 'collector';
+        $collecteur->description = 'Responsable de la collecte des cotisations au sein du groupe.';
         $collecteur->is_system = true;
         $collecteur->save();
         $collecteur->syncPermissions([
@@ -80,7 +84,8 @@ class RolesAndPermissionsSeeder extends Seeder
         // Trésorier Général — Validation des versements
         $tresorier = Role::firstOrCreate(['name' => 'Trésorier Général', 'guard_name' => 'web']);
         $tresorier->code = 'treasurer';
-        $tresorier->is_system = false;
+        $tresorier->description = 'Gère les finances globales et valide les versements.';
+        $tresorier->is_system = true;
         $tresorier->save();
         $tresorier->syncPermissions([
             'member.view',
@@ -93,7 +98,8 @@ class RolesAndPermissionsSeeder extends Seeder
         // Membre du bureau — vision globale, pas de gestion des comptes
         $bureau = Role::firstOrCreate(['name' => 'Membre du bureau', 'guard_name' => 'web']);
         $bureau->code = 'bureau_member';
-        $bureau->is_system = false;
+        $bureau->description = 'Participe aux décisions et gère les activités globales.';
+        $bureau->is_system = true;
         $bureau->save();
         $bureau->syncPermissions([
             'activity.view',
@@ -118,7 +124,8 @@ class RolesAndPermissionsSeeder extends Seeder
         // Président — supervision globale + communication
         $president = Role::firstOrCreate(['name' => 'Président', 'guard_name' => 'web']);
         $president->code = 'president';
-        $president->is_system = false;
+        $president->description = 'Dirige l\'organisation et supervise toutes les activités.';
+        $president->is_system = true;
         $president->save();
         $president->syncPermissions([
             'activity.view',
@@ -145,7 +152,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // (les différences sont gérées via permissions directes sur l'utilisateur)
         $vp = Role::firstOrCreate(['name' => 'Vice-président', 'guard_name' => 'web']);
         $vp->code = 'vice_president';
-        $vp->is_system = false;
+        $vp->is_system = true;
         $vp->save();
         $vp->syncPermissions([
             'activity.view',

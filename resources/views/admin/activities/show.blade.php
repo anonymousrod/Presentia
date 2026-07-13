@@ -19,9 +19,27 @@
     <div class="row">
         <!-- Main details -->
         <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
-                    <h4 class="mb-0">{{ $activity->title }}</h4>
+            <div class="card mb-4 border-0 shadow-sm overflow-hidden">
+                @if($activity->image_path)
+                    <div class="position-relative bg-dark" style="height: 400px; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                        <!-- Blurred background for aspect-ratio preservation -->
+                        <div class="position-absolute w-100 h-100" style="background-image: url('{{ asset('storage/' . $activity->image_path) }}'); background-size: cover; background-position: center; filter: blur(20px) brightness(0.5); transform: scale(1.1);"></div>
+                        
+                        <!-- Actual image contained -->
+                        <img src="{{ asset('storage/' . $activity->image_path) }}" alt="{{ $activity->title }}" style="max-width: 100%; max-height: 90%; object-fit: contain; position: relative; z-index: 1; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                        
+                        <!-- Title overlay -->
+                        <div class="position-absolute bottom-0 start-0 w-100 p-4" style="background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); z-index: 2;">
+                            <h2 class="text-white mb-0 fw-bold">{{ $activity->title }}</h2>
+                        </div>
+                    </div>
+                @endif
+                <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 {{ $activity->image_path ? 'border-0 bg-white' : '' }}">
+                    @if(!$activity->image_path)
+                        <h4 class="mb-0 fw-bold text-dark">{{ $activity->title }}</h4>
+                    @else
+                        <div></div> <!-- empty div to keep flex space-between working -->
+                    @endif
                     <span class="badge bg-{{ match($activity->status?->value) {
                         'PUBLISHED' => 'success',
                         'DRAFT' => 'warning',

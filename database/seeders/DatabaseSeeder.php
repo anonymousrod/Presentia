@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             AdminSeeder::class,
             ActivityTypeSeeder::class,
-            ChartDataSeeder::class,
+            ChartDataSeeder::class, //pas en production
             // MemberSeeder::class,
             // ExecutiveSeeder::class,
             // GroupSeeder::class,

@@ -283,6 +283,30 @@
                         </li>
                         @endcanany
 
+                        {{-- Site & Paramètres --}}
+                        @can('manage-users')
+                        <li class="nav-item">
+                            <a class="nav-link menu-link {{ request()->routeIs('admin.settings.*', 'admin.galleries.*') ? 'active' : '' }}" href="#sidebarSettings" data-bs-toggle="collapse"
+                                role="button" aria-expanded="{{ request()->routeIs('admin.settings.*', 'admin.galleries.*') ? 'true' : 'false' }}" aria-controls="sidebarSettings">
+                                <i class="mdi mdi-web"></i> <span data-key="t-site">Site & Paramètres</span>
+                            </a>
+                            <div class="collapse menu-dropdown {{ request()->routeIs('admin.settings.*', 'admin.galleries.*') ? 'show' : '' }}" id="sidebarSettings">
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.galleries.index') }}" class="nav-link {{ request()->routeIs('admin.galleries.*') ? 'active' : '' }}">
+                                            Galerie Photos
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.settings.edit') }}" class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                                            Paramètres de l'App
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        @endcan
+
                     </ul>
                 </div>
                 <!-- Sidebar -->

@@ -31,6 +31,7 @@ class Activity extends Model
         'cancellation_reason',
         'qr_version',
         'is_registration_required',
+        'image_path',
     ];
 
     protected $casts = [

@@ -22,6 +22,7 @@ class Group extends Model
         'color',
         'leader_id',
         'collector_id',
+        'image_path',
     ];
 
     /**

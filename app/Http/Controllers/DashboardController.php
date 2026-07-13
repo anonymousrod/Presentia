@@ -8,11 +8,14 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->hasRole('Administrateur') || $user->hasRole('Membre du bureau')) {
+        // Récupérer les codes de tous les rôles de l'utilisateur
+        $userRoleCodes = $user->roles->pluck('code')->toArray();
+
+        if (in_array('admin', $userRoleCodes) || in_array('bureau_member', $userRoleCodes)) {
             return $this->adminDashboard();
-        } elseif ($user->hasRole('Trésorier Général')) {
+        } elseif (in_array('treasurer', $userRoleCodes)) {
             return $this->treasurerDashboard();
-        } elseif ($user->hasRole('Chef de groupe')) {
+        } elseif (in_array('group_leader', $userRoleCodes)) {
             return $this->leaderDashboard();
         } else {
             return $this->userDashboard($user);

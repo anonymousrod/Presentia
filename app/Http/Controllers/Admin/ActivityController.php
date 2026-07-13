@@ -67,8 +67,14 @@ class ActivityController extends Controller
     public function store(StoreActivityRequest $request)
     {
         $this->authorize('create', Activity::class);
+        $validated = $request->validated();
 
-        $activity = Activity::create($request->validated());
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('activities', 'public');
+            $validated['image_path'] = $path;
+        }
+
+        $activity = Activity::create($validated);
 
         if ($activity->status === ActivityStatus::PUBLISHED) {
             event(new ActivityCreated($activity));
@@ -205,8 +211,18 @@ class ActivityController extends Controller
         $this->authorize('update', $activity);
 
         $oldStatus = $activity->status;
+        $validated = $request->validated();
 
-        $activity->update($request->validated());
+        if ($request->hasFile('image')) {
+            // Optionnel : supprimer l'ancienne image
+            if ($activity->image_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($activity->image_path)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($activity->image_path);
+            }
+            $path = $request->file('image')->store('activities', 'public');
+            $validated['image_path'] = $path;
+        }
+
+        $activity->update($validated);
 
         // Si le statut passe de DRAFT à PUBLISHED, on dispatch l'event pour tout le monde ou groupe
         if ($oldStatus === ActivityStatus::DRAFT && $activity->status === ActivityStatus::PUBLISHED) {

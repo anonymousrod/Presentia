@@ -66,7 +66,12 @@ class GroupController extends Controller
             'color'       => ['nullable', 'string', 'max:7'],
             'leader_id'   => ['nullable', 'exists:users,id'],
             'collector_id' => ['nullable', 'exists:users,id'],
+            'image'       => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:5120'],
         ]);
+
+        if ($request->hasFile('image')) {
+            $data['image_path'] = $request->file('image')->store('groups', 'public');
+        }
 
         $group = Group::create($data);
 
@@ -131,7 +136,15 @@ class GroupController extends Controller
             'color'       => ['nullable', 'string', 'max:7'],
             'leader_id'   => ['nullable', 'exists:users,id'],
             'collector_id' => ['nullable', 'exists:users,id'],
+            'image'       => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:5120'],
         ]);
+
+        if ($request->hasFile('image')) {
+            if ($group->image_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($group->image_path)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($group->image_path);
+            }
+            $data['image_path'] = $request->file('image')->store('groups', 'public');
+        }
 
         $previousLeaderId = $group->leader_id;
         $previousCollectorId = $group->collector_id;

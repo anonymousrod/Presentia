@@ -19,9 +19,9 @@ class PermissionService
     /**
      * Crée un nouveau rôle Spatie et lui synchronise les permissions indiquées.
      */
-    public function createRole(string $name, array $permissionNames): Role
+    public function createRole(string $name, ?string $description, array $permissionNames): Role
     {
-        $role = Role::create(['name' => $name, 'guard_name' => 'web']);
+        $role = Role::create(['name' => $name, 'description' => $description, 'guard_name' => 'web']);
         $role->syncPermissions($permissionNames);
 
         $this->clearCache();
@@ -32,9 +32,9 @@ class PermissionService
     /**
      * Met à jour le nom et les permissions d'un rôle Spatie.
      */
-    public function updateRole(Role $role, string $name, array $permissionNames): Role
+    public function updateRole(Role $role, string $name, ?string $description, array $permissionNames): Role
     {
-        $role->update(['name' => $name]);
+        $role->update(['name' => $name, 'description' => $description]);
         $role->syncPermissions($permissionNames);
 
         $this->clearCache();

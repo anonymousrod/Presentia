@@ -16,12 +16,18 @@
             <div>
                 <div class="d-flex align-items-center gap-3 flex-wrap">
                     {{-- Avatar du groupe --}}
-                    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
-                         style="width:56px; height:56px; font-size:1.4rem;
-                                background: rgba(var(--vz-primary-rgb), 0.15);
-                                color: var(--vz-primary); flex-shrink:0;">
-                        {{ strtoupper(substr($group->name, 0, 1)) }}
-                    </div>
+                    @if($group->image_path)
+                        <div class="rounded-circle shadow-sm" style="width:72px; height:72px; overflow:hidden; flex-shrink:0; border: 3px solid #fff;">
+                            <img src="{{ asset('storage/' . $group->image_path) }}" alt="{{ $group->name }}" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                    @else
+                        <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm"
+                             style="width:72px; height:72px; font-size:1.8rem;
+                                    background: rgba(var(--vz-primary-rgb), 0.15); border: 3px solid #fff;
+                                    color: var(--vz-primary); flex-shrink:0;">
+                            {{ strtoupper(substr($group->name, 0, 1)) }}
+                        </div>
+                    @endif
                     <div>
                         <div class="d-flex align-items-center gap-2 flex-wrap">
                             <h1 class="h3 mb-0 fw-bold">{{ $group->name }}</h1>
@@ -75,6 +81,48 @@
 
     {{-- ======= COLONNE GAUCHE : Membres & Historique ======= --}}
     <div class="col-lg-8">
+
+        {{-- ---- Affecter un membre ---- --}}
+        @can('assignMember', $group)
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header border-0 py-3 px-4 d-flex align-items-center gap-3"
+                 style="border-bottom: 1px solid rgba(var(--vz-border-color-translucent), 1) !important;">
+                <div class="rounded p-2 flex-shrink-0"
+                     style="background: rgba(var(--vz-success-rgb), 0.15); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                    <i class="mdi mdi-account-plus fs-20" style="color: var(--vz-success);"></i>
+                </div>
+                <h5 class="mb-0 fw-bold">Affecter un membre</h5>
+            </div>
+            <div class="card-body px-4 py-3">
+                <form action="{{ route('admin.groups.members.assign', $group) }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="user_id" class="form-label text-muted" style="font-size: 0.82rem;">
+                            Sélectionner un utilisateur
+                        </label>
+                        <select id="user_id" name="user_id"
+                                class="form-select @error('user_id') is-invalid @enderror"
+                                required
+                                style="border-radius: 0.5rem;">
+                            <option value="">— Sélectionner un utilisateur —</option>
+                            @foreach($availableUsers as $user)
+                                <option value="{{ $user->id }}">
+                                    {{ $user->first_name }} {{ $user->name }}
+                                    @if($user->phone) ({{ $user->phone }}) @endif
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('user_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <button type="submit" class="btn btn-success w-100" style="border-radius: 0.5rem;">
+                        <i class="mdi mdi-account-plus me-1"></i>Ajouter au groupe
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endcan
 
         {{-- ---- Carte Membres Actifs ---- --}}
         <div class="card border-0 shadow-sm mb-4">
@@ -444,47 +492,7 @@
             </div>
         </div>
 
-        {{-- ---- Affecter un membre ---- --}}
-        @can('assignMember', $group)
-        <div class="card border-0 shadow-sm">
-            <div class="card-header border-0 py-3 px-4 d-flex align-items-center gap-3"
-                 style="border-bottom: 1px solid rgba(var(--vz-border-color-translucent), 1) !important;">
-                <div class="rounded p-2 flex-shrink-0"
-                     style="background: rgba(var(--vz-success-rgb), 0.15); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
-                    <i class="mdi mdi-account-plus fs-20" style="color: var(--vz-success);"></i>
-                </div>
-                <h5 class="mb-0 fw-bold">Affecter un membre</h5>
-            </div>
-            <div class="card-body px-4 py-3">
-                <form action="{{ route('admin.groups.members.assign', $group) }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="user_id" class="form-label text-muted" style="font-size: 0.82rem;">
-                            Sélectionner un utilisateur
-                        </label>
-                        <select id="user_id" name="user_id"
-                                class="form-select @error('user_id') is-invalid @enderror"
-                                required
-                                style="border-radius: 0.5rem;">
-                            <option value="">— Sélectionner un utilisateur —</option>
-                            @foreach($availableUsers as $user)
-                                <option value="{{ $user->id }}">
-                                    {{ $user->first_name }} {{ $user->name }}
-                                    @if($user->phone) ({{ $user->phone }}) @endif
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('user_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <button type="submit" class="btn btn-success w-100" style="border-radius: 0.5rem;">
-                        <i class="mdi mdi-account-plus me-1"></i>Ajouter au groupe
-                    </button>
-                </form>
-            </div>
-        </div>
-        @endcan
+
 
     </div>
 </div>

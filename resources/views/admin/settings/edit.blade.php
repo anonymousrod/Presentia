@@ -57,6 +57,16 @@
                                 <i class="ri-layout-left-2-line me-1 align-bottom"></i> Fonds de Menu (Sidebar)
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#home" role="tab">
+                                <i class="ri-home-4-line me-1 align-bottom"></i> Page d'Accueil
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#socials" role="tab">
+                                <i class="ri-share-line me-1 align-bottom"></i> Réseaux Sociaux
+                            </a>
+                        </li>
                     </ul>
 
                     <!-- Tab panes -->
@@ -187,6 +197,82 @@
                                         <small class="text-muted d-block">Image d'arrière-plan {{ $i }} proposée pour la sidebar dans la personnalisation du thème.</small>
                                     </div>
                                 @endfor
+                            </div>
+                        </div>
+                        
+                        {{-- TAB: Home Page Settings --}}
+                        <div class="tab-pane" id="home" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">Titre principal (Hero)</label>
+                                    <input type="text" name="hero_title" class="form-control" value="{{ old('hero_title', $setting->hero_title ?? '') }}">
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">Sous-titre (Hero)</label>
+                                    <textarea name="hero_subtitle" class="form-control" rows="2">{{ old('hero_subtitle', $setting->hero_subtitle ?? '') }}</textarea>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">Image de fond (Hero)</label>
+                                    <div class="d-flex align-items-center mb-2">
+                                        @if($setting->hero_image)
+                                            <div class="me-3 bg-dark p-2 rounded text-center" style="min-width: 120px;">
+                                                <img src="{{ asset('storage/' . $setting->hero_image) }}" alt="Hero Image" class="img-fluid rounded" style="max-height: 60px;">
+                                            </div>
+                                        @endif
+                                        <input type="file" name="hero_image" class="form-control" accept="image/*">
+                                    </div>
+                                    <small class="text-muted d-block">L'image principale tout en haut de la page d'accueil.</small>
+                                </div>
+                                <div class="col-md-12 mb-4">
+                                    <hr>
+                                    <h5 class="mb-3">Section: Qui sommes-nous ?</h5>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <label class="form-label">Notre Histoire</label>
+                                    <textarea name="about_history" class="form-control" rows="4">{{ old('about_history', $setting->about_history ?? '') }}</textarea>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <label class="form-label">Notre Mission</label>
+                                    <textarea name="about_mission" class="form-control" rows="4">{{ old('about_mission', $setting->about_mission ?? '') }}</textarea>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <label class="form-label">Notre Vision</label>
+                                    <textarea name="about_vision" class="form-control" rows="4">{{ old('about_vision', $setting->about_vision ?? '') }}</textarea>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">Image de Présentation (About)</label>
+                                    <div class="d-flex align-items-center mb-2">
+                                        @if($setting->about_image)
+                                            <div class="me-3 bg-light p-2 rounded text-center" style="width: 120px;">
+                                                <img src="{{ asset('storage/' . $setting->about_image) }}" alt="About Image" class="img-fluid rounded" style="max-height: 60px;">
+                                            </div>
+                                        @endif
+                                        <input type="file" name="about_image" class="form-control" accept="image/*">
+                                    </div>
+                                    <small class="text-muted d-block">Image affichée à côté du texte "Qui sommes-nous".</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {{-- TAB: Social Networks --}}
+                        <div class="tab-pane" id="socials" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">Lien Facebook de la jeunesse</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-primary text-white border-primary"><i class="ri-facebook-circle-fill"></i></span>
+                                        <input type="url" name="facebook_link" class="form-control" placeholder="https://www.facebook.com/..." value="{{ old('facebook_link', $setting->facebook_link ?? '') }}">
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Ex: https://www.facebook.com/jeuneseber</small>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">Lien TikTok de la jeunesse</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-dark text-white border-dark"><i class="ri-tiktok-fill"></i></span>
+                                        <input type="url" name="tiktok_link" class="form-control" placeholder="https://www.tiktok.com/@..." value="{{ old('tiktok_link', $setting->tiktok_link ?? '') }}">
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Ex: https://www.tiktok.com/@jeuneseber</small>
+                                </div>
                             </div>
                         </div>
                     </div>

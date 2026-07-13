@@ -110,7 +110,7 @@
     </div>
 </div>
 <div class="container-fluid max-w-1200 px-4">
-    <form action="{{ route('admin.activities.update', $activity) }}" method="POST">
+    <form action="{{ route('admin.activities.update', $activity) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         
@@ -137,6 +137,19 @@
                             <label for="description" class="form-label fw-medium text-body">Description</label>
                             <textarea class="form-control premium-input @error('description') is-invalid @enderror" id="description" name="description" rows="4" placeholder="Décrivez les objectifs et le programme de l'activité...">{{ old('description', $activity->description) }}</textarea>
                             @error('description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="image" class="form-label fw-medium text-body">Affiche de l'événement <span class="text-muted">(Optionnel)</span></label>
+                            @if($activity->image_path)
+                                <div class="mb-2">
+                                    <img src="{{ asset('storage/' . $activity->image_path) }}" alt="Affiche" class="img-thumbnail" style="max-height: 150px;">
+                                </div>
+                            @endif
+                            <input type="file" class="form-control premium-input @error('image') is-invalid @enderror" id="image" name="image" accept="image/*">
+                            @error('image')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

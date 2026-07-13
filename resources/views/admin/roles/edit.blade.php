@@ -109,6 +109,17 @@
                     @endif
                 </div>
 
+                {{-- Role Description --}}
+                <div class="card-body p-3 border-bottom border-dashed">
+                    <label class="form-label fw-semibold text-uppercase text-muted fs-10 letter-spacing-1">Description <span class="text-muted text-lowercase">(Optionnel)</span></label>
+                    <textarea name="description" id="description" rows="3"
+                           class="form-control @error('description') is-invalid @enderror"
+                           placeholder="ex: Rôle assigné aux personnes qui...">{{ old('description', $role->description) }}</textarea>
+                    @error('description')
+                        <div class="text-danger mt-1 fs-12">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 {{-- Stats --}}
                 <div class="card-body p-3 border-bottom border-dashed">
                     <div class="row g-2">

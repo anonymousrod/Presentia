@@ -62,6 +62,7 @@ class UpdateActivityRequest extends FormRequest
             'responsible_id'      => ['nullable', 'exists:users,id'],
             'cancellation_reason' => ['required_if:status,CANCELLED', 'nullable', 'string'],
             'is_registration_required' => ['nullable', 'boolean'],
+            'image'               => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:5120'],
         ];
     }
 

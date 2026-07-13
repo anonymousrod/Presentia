@@ -102,7 +102,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.groups.store') }}" method="POST">
+    <form action="{{ route('admin.groups.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         
         <div class="row g-4">
@@ -134,6 +134,12 @@
                             <textarea id="description" name="description" class="form-control premium-input @error('description') is-invalid @enderror"
                                 rows="5" placeholder="Description du groupe">{{ old('description') }}</textarea>
                             @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="image" class="form-label fw-medium text-body">Affiche / Image du groupe <span class="text-muted">(Optionnel)</span></label>
+                            <input type="file" id="image" name="image" class="form-control premium-input @error('image') is-invalid @enderror" accept="image/*">
+                            @error('image')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                     </div>
                 </div>

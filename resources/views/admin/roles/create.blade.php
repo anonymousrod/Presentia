@@ -47,6 +47,22 @@
                             <div class="form-text text-muted">Le nom doit être unique. Il définit l'identité du rôle.</div>
                         </div>
 
+                        <!-- Description du Rôle -->
+                        <div class="mb-4">
+                            <label for="description" class="form-label fw-bold">Description du rôle <span class="text-muted">(Optionnel)</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="ri-text-wrap"></i></span>
+                                <input type="text" name="description" id="description" 
+                                       class="form-control @error('description') is-invalid @enderror" 
+                                       placeholder="ex: Rôle assigné aux personnes qui..."
+                                       value="{{ old('description') }}">
+                            </div>
+                            @error('description')
+                                <div class="text-danger mt-1 fs-12">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text text-muted">Cette description sera affichée sur la page d'accueil sous le rôle.</div>
+                        </div>
+
                         <!-- Attribution des Permissions -->
                         <div class="border-top border-top-dashed pt-4 mt-4">
                             <h5 class="fs-15 mb-3">Attribution des Permissions <span class="badge bg-info-subtle text-info fs-11 ms-2">Groupées par ressource</span></h5>

@@ -1,519 +1,579 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-layout="horizontal" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name') }} | Plateforme EBER</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil | {{ config('app.name') }}</title>
 
-    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;800;1,400&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome for Premium Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ $settings->favicon_url ?? asset('assets/images/favicon.ico') }}">
 
-    <!-- Premium CSS Styles -->
+    <!-- Swiper -->
+    <link href="{{ asset('assets/libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" />
+
+    <!-- Bootstrap Css -->
+    <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <!-- App Css -->
+    <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
+    <!-- Custom Css -->
+    <link href="{{ asset('assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
+
     <style>
-        :root {
-            --bg-primary: #0a0b10;
-            --text-primary: #f3f4f6;
-            --text-secondary: #9ca3af;
-            --accent-glow: rgba(99, 102, 241, 0.15);
-            --gradient-1: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-            --gradient-glow: linear-gradient(135deg, rgba(99, 102, 241, 0.5) 0%, rgba(168, 85, 247, 0.5) 50%, rgba(236, 72, 153, 0.5) 100%);
-            --card-bg: rgba(17, 18, 28, 0.65);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --font-display: 'Outfit', sans-serif;
-            --font-sans: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: var(--font-sans);
-            min-height: 100vh;
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
+        /* Custom Styles for Home Page */
+        .hero-section {
             position: relative;
+            padding: 150px 0 120px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #fff;
         }
-
-        /* Ambient Glowing Background Orbs */
-        .glow-orb {
+        .hero-overlay {
             position: absolute;
-            border-radius: 50%;
-            filter: blur(140px);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4));
+        }
+        .hero-content {
+            position: relative;
             z-index: 1;
-            pointer-events: none;
-            opacity: 0.4;
         }
-
-        .orb-1 {
-            width: 400px;
-            height: 400px;
-            background: #6366f1;
-            top: -10%;
-            left: -10%;
-            animation: float 20s infinite alternate;
-        }
-
-        .orb-2 {
-            width: 500px;
-            height: 500px;
-            background: #ec4899;
-            bottom: -10%;
-            right: -10%;
-            animation: float 25s infinite alternate-reverse;
-        }
-
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(50px, 50px) scale(1.1); }
-        }
-
-        /* Header Navigation Styles */
-        header {
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 2rem;
             position: relative;
-            z-index: 10;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 2rem 4rem;
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
+            padding-bottom: 10px;
         }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-        }
-
-        .logo-icon {
-            font-size: 2rem;
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: spin-slow 8s linear infinite;
-        }
-
-        .logo-text {
-            font-family: var(--font-display);
-            font-size: 1.75rem;
-            font-weight: 800;
-            letter-spacing: -0.05em;
-            color: #fff;
-        }
-
-        .logo-text span {
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 0.5rem 0.25rem;
-        }
-
-        .nav-link:hover {
-            color: #fff;
-        }
-
-        .nav-link::after {
+        .section-title::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gradient-1);
-            transition: width 0.3s ease;
+            width: 60px;
+            height: 3px;
+            background-color: var(--vz-primary);
         }
-
-        .nav-link:hover::after {
-            width: 100%;
+        .text-center .section-title::after {
+            left: 50%;
+            transform: translateX(-50%);
         }
-
-        /* Main Hero Section */
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            z-index: 5;
-            padding: 4rem 2rem;
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 0.6rem 1.2rem;
-            border-radius: 9999px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            color: #a855f7;
-            margin-bottom: 2rem;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        
+        /* Navbar Custom */
+        .navbar-custom {
+            padding: 15px 0;
             transition: all 0.3s ease;
+            background-color: transparent;
+            position: absolute;
+            width: 100%;
+            z-index: 999;
         }
-
-        .hero-badge:hover {
-            border-color: rgba(168, 85, 247, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .hero-badge i {
-            font-size: 0.75rem;
-            color: #ec4899;
-        }
-
-        h1.hero-title {
-            font-family: var(--font-display);
-            font-size: 4.5rem;
-            font-weight: 800;
-            line-height: 1.1;
-            letter-spacing: -0.03em;
+        .navbar-custom .navbar-brand {
             color: #fff;
-            margin-bottom: 1.5rem;
-            max-width: 900px;
-        }
-
-        h1.hero-title span {
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            position: relative;
-        }
-
-        .hero-desc {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            max-width: 650px;
-            line-height: 1.6;
-            margin-bottom: 3rem;
-        }
-
-        /* Action Buttons */
-        .cta-container {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 4rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .btn-premium {
-            text-decoration: none;
-            padding: 1.1rem 2.2rem;
-            font-size: 1.05rem;
             font-weight: 700;
-            border-radius: 12px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            font-size: 24px;
+        }
+        .navbar-custom .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            padding: 0 15px;
+            transition: color 0.3s;
+        }
+        .navbar-custom .nav-link:hover {
+            color: #fff;
+        }
+        .navbar-custom.is-sticky {
+            background-color: var(--vz-primary);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            animation: fadeInDown 0.5s;
+        }
+
+        /* Org Chart Cards */
+        .org-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 15px;
             overflow: hidden;
-            z-index: 1;
+            background: var(--vz-card-bg-custom);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .org-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .org-img-wrapper {
+            height: 250px;
+            overflow: hidden;
+        }
+        .org-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .org-card:hover .org-img {
+            transform: scale(1.05);
+        }
+
+        /* Group Cards */
+        .group-card {
+            border-radius: 15px;
+            border: none;
+            transition: all 0.3s;
+            height: 100%;
+        }
+        .group-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: var(--vz-primary);
+            color: white;
+            padding: 60px 0;
+        }
+
+        /* Gallery */
+        .gallery-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: transform 0.3s;
             cursor: pointer;
         }
-
-        .btn-primary-gradient {
-            background: var(--gradient-1);
-            color: #fff;
-            box-shadow: 0 4px 30px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-primary-gradient:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.6);
-        }
-
-        .btn-primary-gradient::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient-glow);
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .btn-primary-gradient:hover::before {
-            opacity: 1;
-        }
-
-        .btn-secondary-outline {
-            background: rgba(255, 255, 255, 0.02);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(10px);
-        }
-
-        .btn-secondary-outline:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-3px);
-        }
-
-        /* Glassmorphism Feature Grid */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            width: 100%;
-            margin-top: 2rem;
-        }
-
-        .feature-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 2.5rem;
-            text-align: left;
-            backdrop-filter: blur(20px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+        .gallery-item {
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-bottom: 24px;
+        }
+        .gallery-item:hover .gallery-img {
+            transform: scale(1.1);
         }
 
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
-            pointer-events: none;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(99, 102, 241, 0.3);
-            box-shadow: 0 20px 45px rgba(99, 102, 241, 0.15);
-        }
-
-        .feature-icon-wrapper {
-            width: 60px;
-            height: 60px;
-            border-radius: 14px;
-            background: rgba(99, 102, 241, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 1.75rem;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .feature-card:hover .feature-icon-wrapper {
-            background: var(--gradient-1);
-            border-color: transparent;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-
-        .feature-icon-wrapper i {
-            font-size: 1.5rem;
-            color: #6366f1;
-            transition: all 0.3s ease;
-        }
-
-        .feature-card:hover .feature-icon-wrapper i {
-            color: #fff;
-        }
-
-        .feature-title {
-            font-family: var(--font-display);
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 0.75rem;
-        }
-
-        .feature-desc {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        /* Footer */
-        footer {
-            position: relative;
-            z-index: 10;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 2.5rem;
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--vz-primary), var(--vz-info));
+            color: white;
+            padding: 80px 0;
             text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            width: 100%;
+            border-radius: 20px;
+            margin: 40px 0;
         }
-
-        footer span {
-            color: #fff;
+        
+        /* Footer */
+        .footer-custom {
+            background-color: #1a1d21;
+            color: #a1aab2;
+            padding: 60px 0 20px;
+        }
+        .footer-custom h5 {
+            color: white;
             font-weight: 600;
+            margin-bottom: 20px;
         }
-
-        footer i {
-            color: #ec4899;
-            margin: 0 0.25rem;
+        .footer-links a {
+            color: #a1aab2;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            transition: color 0.3s;
         }
-
-        /* Animations */
-        @keyframes spin-slow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Responsive Design Rules */
-        @media (max-width: 1024px) {
-            .features-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            h1.hero-title {
-                font-size: 3.5rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            header {
-                padding: 1.5rem 2rem;
-                flex-direction: column;
-                gap: 1.5rem;
-            }
-            .features-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            h1.hero-title {
-                font-size: 2.75rem;
-            }
-            .cta-container {
-                flex-direction: column;
-                width: 100%;
-                max-width: 320px;
-            }
-            .btn-premium {
-                width: 100%;
-                justify-content: center;
-            }
+        .footer-links a:hover {
+            color: white;
         }
     </style>
 </head>
 <body>
-    <!-- Ambient Glowing Orbs -->
-    <div class="glow-orb orb-1"></div>
-    <div class="glow-orb orb-2"></div>
 
-    <!-- Header Navigation -->
-    <header>
-        <a href="{{ url('/') }}" class="logo-container">
-            <i class="fa-solid fa-cube logo-icon"></i>
-            <span class="logo-text">{{ config('app.name') }}</span>
-        </a>
-        <nav>
-            @auth
-                <a href="{{ route('dashboard') }}" class="nav-link">Tableau de bord</a>
-            @else
-                <a href="{{ route('login') }}" class="nav-link">Connexion</a>
-            @endauth
-        </nav>
-    </header>
-
-    <!-- Main Hero Content -->
-    <main>
-        <div class="hero-badge">
-            <i class="fa-solid fa-sparkles"></i> Nouveau : Gestion EBER Simplifiée
-        </div>
-        <h1 class="hero-title">Optimisez le suivi et l'<span>engagement</span> de vos équipes</h1>
-        <p class="hero-desc">La plateforme moderne et intuitive conçue pour la gestion des présences, la planification des activités et le suivi de l'engagement des jeunes pour le projet EBER.</p>
-
-        <div class="cta-container">
-            @auth
-                <a href="{{ route('dashboard') }}" class="btn-premium btn-primary-gradient">
-                    <i class="fa-solid fa-gauge-high"></i> Accéder au Tableau de Bord
-                </a>
-            @else
-                <a href="{{ route('login') }}" class="btn-premium btn-primary-gradient">
-                    <i class="fa-solid fa-right-to-bracket"></i> Se connecter
-                </a>
-            @endauth
-            <a href="#features" class="btn-premium btn-secondary-outline">
-                <i class="fa-solid fa-compass"></i> Découvrir les fonctionnalités
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-custom" id="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="ri-cube-fill me-2 align-middle"></i>{{ config('app.name') }}
             </a>
-        </div>
-
-        <!-- Glassmorphism Features Grid -->
-        <div class="features-grid" id="features">
-            <!-- Feature 1 -->
-            <div class="feature-card">
-                <div class="feature-icon-wrapper">
-                    <i class="fa-solid fa-users"></i>
-                </div>
-                <h3 class="feature-title">Gestion de Groupes</h3>
-                <p class="feature-desc">Structurez vos membres par catégories et assignez des leaders de groupe pour une coordination fluide et décentralisée.</p>
-            </div>
-
-            <!-- Feature 2 -->
-            <div class="feature-card">
-                <div class="feature-icon-wrapper">
-                    <i class="fa-solid fa-calendar-check"></i>
-                </div>
-                <h3 class="feature-title">Suivi des Présences</h3>
-                <p class="feature-desc">Enregistrez et analysez la participation des jeunes aux différentes activités en temps réel avec des indicateurs clés d'assiduité.</p>
-            </div>
-
-            <!-- Feature 3 -->
-            <div class="feature-card">
-                <div class="feature-icon-wrapper">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </div>
-                <h3 class="feature-title">Sécurité & Rôles</h3>
-                <p class="feature-desc">Contrôle d'accès robuste basé sur des rôles et permissions personnalisés (Spatie), assurant la protection totale des données.</p>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="ri-menu-line text-white"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="#about">Qui sommes-nous</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#organization">Organisation</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#groups">Groupes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#events">Événements</a></li>
+                    <li class="nav-item ms-3">
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="btn btn-light btn-rounded">Mon Tableau de bord</a>
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-light btn-rounded">Se connecter</a>
+                        @endauth
+                    </li>
+                </ul>
             </div>
         </div>
-    </main>
+    </nav>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; <script>document.write(new Date().getFullYear())</script> <span>{{ config('app.name') }}</span>. Fait avec <i class="fa-solid fa-heart"></i> pour EBER.</p>
+    <!-- 1. HERO SECTION -->
+    @php
+        $heroBg = $settings->hero_image ? asset('storage/' . $settings->hero_image) : asset('assets/images/home/hero-bg.jpg');
+    @endphp
+    <section class="hero-section" style="background-image: url('{{ $heroBg }}');">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold mb-4">{{ $settings->hero_title ?? 'Bienvenue dans notre Jeunesse' }}</h1>
+                    <p class="lead mb-5" style="font-size: 1.2rem; max-width: 600px;">
+                        {{ $settings->hero_subtitle ?? 'Découvrez notre vision, nos valeurs et participez à nos activités pour grandir ensemble dans la foi.' }}
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="#about" class="btn btn-primary btn-lg px-4">Découvrir</a>
+                        <a href="{{ route('login') }}" class="btn btn-outline-light btn-lg px-4">Espace Membre</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container mt-5">
+        
+        <!-- 2. PRESENTATION DE LA JEUNESSE -->
+        <section id="about" class="py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    @php
+                        $aboutImg = $settings->about_image ? asset('storage/' . $settings->about_image) : asset('assets/images/home/about.jpg');
+                    @endphp
+                    <img src="{{ $aboutImg }}" alt="Présentation" class="img-fluid rounded-4 shadow-lg">
+                </div>
+                <div class="col-lg-6 ps-lg-5">
+                    <h2 class="section-title">Qui sommes-nous ?</h2>
+                    <div class="mb-4">
+                        <h5 class="fw-bold text-primary"><i class="ri-history-line align-middle me-1"></i> Notre Histoire</h5>
+                        <p class="text-muted">{{ $settings->about_history ?? "La jeunesse a été fondée avec pour but de rassembler les jeunes autour des valeurs chrétiennes, en leur offrant un cadre d'épanouissement spirituel et social." }}</p>
+                    </div>
+                    <div class="mb-4">
+                        <h5 class="fw-bold text-success"><i class="ri-flag-line align-middle me-1"></i> Notre Mission</h5>
+                        <p class="text-muted">{{ $settings->about_mission ?? "Équiper et former la nouvelle génération pour qu'elle soit une lumière dans le monde, en cultivant l'amour, l'entraide et le leadership." }}</p>
+                    </div>
+                    <div class="mb-4">
+                        <h5 class="fw-bold text-info"><i class="ri-eye-line align-middle me-1"></i> Notre Vision</h5>
+                        <p class="text-muted">{{ $settings->about_vision ?? "Voir chaque jeune découvrir son potentiel et s'engager activement dans la société et dans l'église." }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. CHIFFRES CLES -->
+        <section class="stats-section rounded-4 my-5 shadow-lg">
+            <div class="container">
+                <div class="row text-center">
+                    <div class="col-md-3 col-6 mb-4 mb-md-0">
+                        <h2 class="fw-bold display-5 mb-2"><span class="counter-value" data-target="{{ $stats['users'] }}">0</span></h2>
+                        <p class="fs-16 mb-0 text-white-75">Jeunes engagés</p>
+                    </div>
+                    <div class="col-md-3 col-6 mb-4 mb-md-0">
+                        <h2 class="fw-bold display-5 mb-2"><span class="counter-value" data-target="{{ $stats['groups'] }}">0</span></h2>
+                        <p class="fs-16 mb-0 text-white-75">Groupes actifs</p>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <h2 class="fw-bold display-5 mb-2"><span class="counter-value" data-target="{{ $stats['events'] }}">0</span></h2>
+                        <p class="fs-16 mb-0 text-white-75">Événements organisés</p>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <h2 class="fw-bold display-5 mb-2"><span class="counter-value" data-target="{{ $stats['leaders'] }}">0</span></h2>
+                        <p class="fs-16 mb-0 text-white-75">Responsables</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. NOTRE ORGANISATION -->
+        <section id="organization" class="py-5">
+            <div class="text-center mb-5">
+                <h2 class="section-title d-inline-block">Notre Organisation</h2>
+                <p class="text-muted mt-3">Découvrez l'équipe dirigeante de notre jeunesse.</p>
+            </div>
+            <div class="row justify-content-center">
+                @foreach($leaders as $leader)
+                    <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                        <div class="card org-card h-100">
+                            <div class="org-img-wrapper">
+                                @php
+                                    $photoUrl = $leader->photo ? asset('storage/' . $leader->photo) : asset('assets/images/home/user-placeholder.jpg');
+                                @endphp
+                                <img src="{{ $photoUrl }}" class="org-img" alt="{{ $leader->name }}">
+                            </div>
+                            <div class="card-body text-center p-4">
+                                <h5 class="fw-bold mb-1">{{ $leader->first_name }} {{ $leader->name }}</h5>
+                                <div class="d-flex flex-wrap justify-content-center gap-1 mb-2">
+                                    @foreach($leader->roles as $role)
+                                        @if(in_array($role->name, ['Administrateur', 'Président', 'Vice Président', 'Membre du bureau']))
+                                            <span class="badge bg-primary-subtle text-primary mb-2">{{ $role->name == 'Administrateur' ? 'Président' : $role->name }}</span>
+                                            @if($role->description)
+                                                <p class="text-muted fs-13 mb-0 text-center">{{ $role->description }}</p>
+                                            @endif
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+
+        <!-- 4. LES GROUPES -->
+        <section id="groups" class="py-5 bg-light rounded-4 px-4 my-5">
+            <div class="text-center mb-5">
+                <h2 class="section-title d-inline-block">Nos Groupes</h2>
+                <p class="text-muted mt-3">Rejoignez un groupe de proximité pour partager et grandir ensemble.</p>
+            </div>
+            <div class="row">
+                @foreach($groups as $index => $group)
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card group-card shadow-sm h-100">
+                            @if($group->image_path)
+                                <div class="position-relative bg-dark" style="height: 200px; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                    <div class="position-absolute w-100 h-100" style="background-image: url('{{ asset('storage/' . $group->image_path) }}'); background-size: cover; background-position: center; filter: blur(10px) brightness(0.6); transform: scale(1.1);"></div>
+                                    <img src="{{ asset('storage/' . $group->image_path) }}" alt="{{ $group->name }}" style="max-width: 100%; max-height: 100%; object-fit: contain; position: relative; z-index: 1;">
+                                    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), transparent); z-index: 2;"></div>
+                                </div>
+                            @else
+                                <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background: linear-gradient(135deg, {{ $group->color ?? '#405189' }}dd, {{ $group->color ?? '#405189' }});">
+                                    <i class="ri-group-line text-white opacity-75" style="font-size: 5rem;"></i>
+                                </div>
+                            @endif
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold" style="color: {{ $group->color ?? '#405189' }}">{{ $group->name }}</h5>
+                                <p class="card-text text-muted small">{{ $group->description ?? 'Aucune description disponible pour ce groupe.' }}</p>
+                                
+                                <hr class="border-dashed my-3">
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge bg-light text-dark mb-1 d-block text-start"><i class="ri-user-star-line text-warning"></i> Chef: {{ $group->leader ? $group->leader->first_name : 'N/A' }}</span>
+                                        <span class="badge bg-light text-dark d-block text-start"><i class="ri-hand-coin-line text-success"></i> Col: {{ $group->collector ? $group->collector->first_name : 'N/A' }}</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <h4 class="mb-0 fw-bold">{{ $group->members_count }}</h4>
+                                        <small class="text-muted">Membres</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+
+        <!-- 6. GALERIE PHOTOS -->
+        <section id="gallery" class="py-5 bg-light rounded-4 px-4 my-5">
+            <div class="text-center mb-5">
+                <h2 class="section-title d-inline-block">Notre Galerie</h2>
+                <p class="text-muted mt-3">Quelques souvenirs de nos moments passés ensemble.</p>
+            </div>
+            <div class="row">
+                @forelse($galleries as $index => $gallery)
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="gallery-item shadow-sm">
+                            <img src="{{ asset('storage/' . $gallery->image_path) }}" alt="{{ $gallery->title }}" class="gallery-img">
+                        </div>
+                    </div>
+                @empty
+                    <!-- Placeholders si la galerie est vide -->
+                    <div class="col-lg-4 col-md-6"><div class="gallery-item shadow-sm"><img src="{{ asset('assets/images/home/group-1.jpg') }}" class="gallery-img" alt="Gallery 1"></div></div>
+                    <div class="col-lg-4 col-md-6"><div class="gallery-item shadow-sm"><img src="{{ asset('assets/images/home/activity.jpg') }}" class="gallery-img" alt="Gallery 2"></div></div>
+                    <div class="col-lg-4 col-md-6"><div class="gallery-item shadow-sm"><img src="{{ asset('assets/images/home/group-2.jpg') }}" class="gallery-img" alt="Gallery 3"></div></div>
+                @endforelse
+            </div>
+        </section>
+
+        <!-- 7. ACTUALITES / EVENEMENTS -->
+        <section id="events" class="py-5">
+            <div class="text-center mb-5">
+                <h2 class="section-title d-inline-block">Prochains Événements</h2>
+                <p class="text-muted mt-3">Ne manquez pas nos prochaines rencontres.</p>
+            </div>
+            
+            <div class="row">
+                @forelse($activities as $activity)
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100 border-0 shadow-sm overflow-hidden">
+                            @if($activity->image_path)
+                                <div class="position-relative bg-dark" style="height: 200px; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                    <div class="position-absolute w-100 h-100" style="background-image: url('{{ asset('storage/' . $activity->image_path) }}'); background-size: cover; background-position: center; filter: blur(10px) brightness(0.6); transform: scale(1.1);"></div>
+                                    <img src="{{ asset('storage/' . $activity->image_path) }}" alt="{{ $activity->title }}" style="max-width: 100%; max-height: 100%; object-fit: contain; position: relative; z-index: 1;">
+                                    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), transparent); z-index: 2;"></div>
+                                </div>
+                            @else
+                                @php
+                                    $gradients = [
+                                        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                                        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                                        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
+                                    ];
+                                    $bg = $gradients[$loop->index % 4];
+                                @endphp
+                                <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background: {{ $bg }};">
+                                    <i class="ri-calendar-event-line text-white opacity-75" style="font-size: 5rem;"></i>
+                                </div>
+                            @endif
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="badge bg-primary-subtle text-primary">{{ \Carbon\Carbon::parse($activity->start_time)->format('d M Y') }}</span>
+                                    <span class="text-muted small"><i class="ri-map-pin-line"></i> {{ $activity->location ?? 'Non défini' }}</span>
+                                </div>
+                                <h5 class="card-title fw-bold">{{ $activity->title }}</h5>
+                                <p class="card-text text-muted small text-truncate-2">{{ Str::limit(strip_tags($activity->description), 100) }}</p>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 pb-3">
+                                <a href="{{ route('login') }}" class="btn btn-primary w-100">S'inscrire à l'événement</a>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-12 text-center py-5">
+                        <div class="avatar-lg mx-auto mb-3">
+                            <div class="avatar-title bg-light text-primary rounded-circle fs-24">
+                                <i class="ri-calendar-event-line"></i>
+                            </div>
+                        </div>
+                        <h5>Aucun événement à venir</h5>
+                        <p class="text-muted">Restez à l'écoute, de nouvelles activités seront bientôt programmées !</p>
+                    </div>
+                @endforelse
+            </div>
+        </section>
+
+        <!-- 8. APPEL A L'ACTION -->
+        <section class="cta-section shadow-lg">
+            <div class="container">
+                <h2 class="display-5 fw-bold mb-4">Rejoignez-nous dès aujourd'hui !</h2>
+                <p class="lead mb-5 mx-auto" style="max-width: 700px;">
+                    Vous souhaitez faire partie de notre merveilleuse jeunesse, participer à nos activités et grandir avec nous ?
+                </p>
+                <div class="d-inline-flex align-items-center bg-white rounded-pill p-2 pe-4 shadow-sm" style="cursor: pointer;" onclick="window.location.href='tel:{{ str_replace(' ', '', $adminPhone) }}'">
+                    <div class="avatar-sm me-3">
+                        <div class="avatar-title bg-primary rounded-circle">
+                            <i class="ri-phone-fill fs-20"></i>
+                        </div>
+                    </div>
+                    <div class="text-start">
+                        <span class="d-block text-muted small fw-medium">Contactez le Président pour être ajouté :</span>
+                        <span class="d-block text-dark fw-bold fs-18">{{ $adminPhone }}</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- 9. FOOTER -->
+    <footer class="footer-custom mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h4 class="text-white fw-bold mb-3">Notre Jeunesse</h4>
+                    <p class="text-muted pe-4">
+                        Une communauté dynamique de jeunes engagés, unis par la foi et le désir de grandir ensemble.
+                    </p>
+                    <div class="d-flex gap-2 mt-4">
+                        @if(!empty($settings->facebook_link))
+                            <a href="{{ $settings->facebook_link }}" target="_blank" class="btn btn-sm btn-icon btn-outline-dark rounded-circle border-secondary text-white" style="transition: all 0.3s; background: rgba(0, 0, 0, 0.5);">
+                                <i class="ri-facebook-fill fs-18"></i>
+                            </a>
+                        @endif
+                        @if(!empty($settings->tiktok_link))
+                            <a href="{{ $settings->tiktok_link }}" target="_blank" class="btn btn-sm btn-icon btn-outline-dark rounded-circle border-secondary text-white" style="transition: all 0.3s; background: rgba(0, 0, 0, 0.5);">
+                                <i class="ri-tiktok-fill fs-18"></i>
+                            </a>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-lg-2 col-6 mb-4">
+                    <h5>Navigation</h5>
+                    <div class="footer-links">
+                        <a href="#about">Qui sommes-nous ?</a>
+                        <a href="#organization">Organisation</a>
+                        <a href="#groups">Nos Groupes</a>
+                        <a href="#events">Événements</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6 mb-4">
+                    <h5>Liens Utiles</h5>
+                    <div class="footer-links">
+                        <a href="{{ route('login') }}">Connexion Espace Membre</a>
+                        <a href="#">Politique de confidentialité</a>
+                        <a href="#">Mentions légales</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 mb-4">
+                    <h5>Contact</h5>
+                    <p class="text-muted mb-2"><i class="ri-map-pin-line me-2"></i> Lome, Togo</p>
+                    <p class="text-muted mb-2"><i class="ri-phone-line me-2"></i> {{ $adminPhone }}</p>
+                    <p class="text-muted mb-0"><i class="ri-mail-line me-2"></i> contact@jeunesse.com</p>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="text-center text-muted">
+                <p class="mb-0">&copy; {{ date('Y') }} Plateforme de la Jeunesse. Tous droits réservés.</p>
+            </div>
+        </div>
     </footer>
+
+    <!-- JAVASCRIPT -->
+    <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/swiper/swiper-bundle.min.js') }}"></script>
+    <script>
+        // Navbar Sticky effect
+        window.addEventListener('scroll', function() {
+            var navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('is-sticky');
+            } else {
+                navbar.classList.remove('is-sticky');
+            }
+        });
+
+        // CountUp JS
+        document.addEventListener("DOMContentLoaded", function() {
+            const counters = document.querySelectorAll('.counter-value');
+            const speed = 200;
+
+            const animateCounters = () => {
+                counters.forEach(counter => {
+                    const target = +counter.getAttribute('data-target');
+                    const count = +counter.innerText;
+                    const inc = target / speed;
+
+                    if(count < target) {
+                        counter.innerText = Math.ceil(count + inc);
+                        setTimeout(animateCounters, 10);
+                    } else {
+                        counter.innerText = target;
+                    }
+                });
+            };
+            
+            // Simple Intersection Observer to start counting when visible
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if(entry.isIntersecting) {
+                        animateCounters();
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            counters.forEach(counter => {
+                observer.observe(counter);
+            });
+        });
+    </script>
 </body>
 </html>

@@ -60,13 +60,14 @@ class RoleController extends Controller
 
         $data = $request->validate([
             'name'          => ['required', 'string', 'max:255', 'unique:roles,name'],
+            'description'   => ['nullable', 'string', 'max:255'],
             'permissions'   => ['nullable', 'array'],
             'permissions.*' => ['string', 'exists:permissions,name'],
         ]);
 
         $permissionNames = $data['permissions'] ?? [];
 
-        $role = $this->permissionService->createRole($data['name'], $permissionNames);
+        $role = $this->permissionService->createRole($data['name'], $data['description'] ?? null, $permissionNames);
 
         return redirect()->route('admin.roles.index')
             ->with('success', "Le rôle « {$role->name} » a été créé avec succès.");
@@ -126,13 +127,14 @@ class RoleController extends Controller
 
         $data = $request->validate([
             'name'          => ['required', 'string', 'max:255', 'unique:roles,name,' . $role->id],
+            'description'   => ['nullable', 'string', 'max:255'],
             'permissions'   => ['nullable', 'array'],
             'permissions.*' => ['string', 'exists:permissions,name'],
         ]);
 
         $permissionNames = $data['permissions'] ?? [];
 
-        $this->permissionService->updateRole($role, $data['name'], $permissionNames);
+        $this->permissionService->updateRole($role, $data['name'], $data['description'] ?? null, $permissionNames);
 
         return redirect()->route('admin.roles.index')
             ->with('success', "Le rôle « {$role->name} » a été mis à jour.");
