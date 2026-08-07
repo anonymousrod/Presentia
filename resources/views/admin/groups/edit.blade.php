@@ -1,74 +1,200 @@
 @extends('layouts.app')
 
 @push('css')
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
-    /* Thematic Section Headers */
+    /* ── Section Headers ── */
     .section-header {
-        font-size: 0.85rem;
+        font-size: 0.78rem;
         text-transform: uppercase;
-        letter-spacing: 1.5px;
+        letter-spacing: 2px;
         color: var(--vz-primary);
         font-weight: 700;
         display: flex;
         align-items: center;
         margin-bottom: 1.5rem;
     }
-    .section-header i {
-        margin-right: 0.5rem;
-        font-size: 1.2rem;
-    }
+    .section-header i { margin-right: 0.5rem; font-size: 1.1rem; }
     .section-header::after {
         content: '';
         flex: 1;
         height: 1px;
-        background: rgba(var(--vz-primary-rgb), 0.15);
+        background: rgba(var(--vz-primary-rgb), 0.12);
         margin-left: 1rem;
     }
 
-    /* Custom Inputs */
+    /* ── Premium Input ── */
     .premium-input {
-        border-radius: 0.5rem;
+        border-radius: 0.6rem;
         padding: 0.65rem 1rem;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
+        background-color: var(--vz-input-bg);
+        border-color: var(--vz-input-border);
+        color: var(--vz-body-color);
     }
     .premium-input:focus {
         border-color: var(--vz-primary);
-        box-shadow: 0 0 0 0.25rem rgba(var(--vz-primary-rgb), 0.15);
+        box-shadow: 0 0 0 0.2rem rgba(var(--vz-primary-rgb), 0.15);
     }
-    
-    /* Save Button */
+
+    /* ── Save Button ── */
     .btn-save {
-        padding: 0.8rem 2rem;
+        padding: 0.75rem 1.5rem;
         font-weight: 600;
-        letter-spacing: 0.5px;
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 10px rgba(var(--vz-primary-rgb), 0.3);
-        transition: all 0.3s;
+        letter-spacing: 0.4px;
+        border-radius: 0.6rem;
+        box-shadow: 0 4px 12px rgba(var(--vz-primary-rgb), 0.3);
+        transition: all 0.25s ease;
     }
     .btn-save:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(var(--vz-primary-rgb), 0.4);
+        box-shadow: 0 6px 18px rgba(var(--vz-primary-rgb), 0.4);
     }
 
-    .ts-wrapper.form-select {
-        padding: 0;
-        border: none;
-        height: auto;
+    /* ════════════════════════════════
+       SELECT2  —  Professional Style
+    ════════════════════════════════ */
+
+    /* Container */
+    .select2-container { width: 100% !important; }
+
+    /* Trigger button */
+    .select2-container--default .select2-selection--single {
+        display: flex;
+        align-items: center;
+        height: 42px;
+        padding: 0 0.9rem;
+        border-radius: 0.6rem;
+        border: 1px solid var(--vz-input-border);
+        background-color: var(--vz-input-bg);
+        color: var(--vz-body-color);
+        transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .ts-control {
-        border-radius: 0.5rem;
-        border: 1px solid var(--vz-border-color);
-        padding: 0.65rem 1rem;
-        transition: all 0.3s ease;
-    }
-    .ts-control.focus {
+    .select2-container--default.select2-container--focus .select2-selection--single,
+    .select2-container--default.select2-container--open .select2-selection--single {
         border-color: var(--vz-primary);
-        box-shadow: 0 0 0 0.25rem rgba(var(--vz-primary-rgb), 0.15);
+        box-shadow: 0 0 0 0.2rem rgba(var(--vz-primary-rgb), 0.15);
+        outline: none;
     }
-    .ts-dropdown {
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: var(--vz-body-color);
+        line-height: 1;
+        padding: 0;
+        flex: 1;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: var(--vz-secondary-color);
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        position: static;
+        display: flex;
+        align-items: center;
+        margin-left: 0.5rem;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow b {
+        border-top-color: var(--vz-secondary-color);
+    }
+    /* Clear button */
+    .select2-container--default .select2-selection--single .select2-selection__clear {
+        font-size: 1.2rem;
+        color: var(--vz-danger);
+        margin-right: 0.5rem;
+    }
+
+    /* Dropdown panel */
+    .select2-dropdown {
+        border: 1px solid var(--vz-border-color);
+        border-radius: 0.6rem;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        background-color: var(--vz-choices-bg);
+        overflow: hidden;
+        z-index: 9999;
+    }
+    .select2-container--open .select2-dropdown--below { border-top: none; border-radius: 0 0 0.6rem 0.6rem; }
+    .select2-container--open .select2-dropdown--above { border-bottom: none; border-radius: 0.6rem 0.6rem 0 0; }
+
+    /* Search input inside dropdown */
+    .select2-search--dropdown {
+        padding: 0.6rem 0.75rem;
+        background-color: var(--vz-choices-bg);
+        border-bottom: 1px solid var(--vz-border-color);
+    }
+    .select2-search--dropdown .select2-search__field {
         border-radius: 0.5rem;
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+        border: 1px solid var(--vz-input-border);
+        padding: 0.45rem 0.75rem;
+        width: 100%;
+        background-color: var(--vz-input-bg);
+        color: var(--vz-body-color);
+        font-size: 0.875rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .select2-search--dropdown .select2-search__field:focus {
+        outline: none;
+        border-color: var(--vz-primary);
+        box-shadow: 0 0 0 0.15rem rgba(var(--vz-primary-rgb), 0.15);
+    }
+
+    /* Results list */
+    .select2-results__options { max-height: 220px; overflow-y: auto; padding: 0.25rem 0; }
+    .select2-results__option {
+        padding: 0.55rem 1rem;
+        font-size: 0.875rem;
+        color: var(--vz-body-color);
+        transition: background 0.15s;
+    }
+    .select2-results__option--highlighted[aria-selected] {
+        background-color: rgba(var(--vz-primary-rgb), 0.1);
+        color: var(--vz-primary);
+    }
+    .select2-results__option[aria-selected="true"] {
+        background-color: rgba(var(--vz-primary-rgb), 0.15);
+        color: var(--vz-primary);
+        font-weight: 600;
+    }
+
+    /* User info inside option */
+    .s2-user-row { display: flex; align-items: center; gap: 0.6rem; }
+    .s2-avatar {
+        width: 30px; height: 30px;
+        border-radius: 50%;
+        background: rgba(var(--vz-primary-rgb), 0.12);
+        color: var(--vz-primary);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    .s2-name  { font-size: 0.875rem; font-weight: 500; line-height: 1.2; }
+    .s2-phone { font-size: 0.75rem; color: var(--vz-secondary-color); }
+
+    /* Dark Mode Overrides */
+    [data-bs-theme="dark"] .premium-input,
+    [data-bs-theme="dark"] .select2-container--default .select2-selection--single,
+    [data-bs-theme="dark"] .select2-dropdown,
+    [data-bs-theme="dark"] .select2-search--dropdown,
+    [data-bs-theme="dark"] .select2-search--dropdown .select2-search__field {
+        background-color: var(--vz-choices-bg, #212529);
+        border-color: var(--vz-border-color, #40464c);
+        color: var(--vz-body-color, #ced4da);
+    }
+    [data-bs-theme="dark"] .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: var(--vz-body-color, #ced4da);
+    }
+    [data-bs-theme="dark"] .select2-results__option {
+        color: var(--vz-body-color, #ced4da);
+    }
+    [data-bs-theme="dark"] .select2-results__option--highlighted[aria-selected],
+    [data-bs-theme="dark"] .select2-results__option[aria-selected="true"] {
+        background-color: rgba(var(--vz-primary-rgb), 0.2);
+    }
+
+    /* "No results" message */
+    .select2-results__message {
+        padding: 0.75rem 1rem;
+        color: var(--vz-secondary-color);
+        font-size: 0.85rem;
+        text-align: center;
     }
 </style>
 @endpush
@@ -168,14 +294,18 @@
 
                         <hr class="border-dashed my-4">
 
+                        {{-- ── Chef de groupe ── --}}
                         <div class="mb-4">
-                            <label for="leader_id" class="form-label fw-medium text-body">Chef de groupe</label>
-                            <select id="leader_id" name="leader_id" class="form-select @error('leader_id') is-invalid @enderror">
-                                <option value="">— Aucun chef désigné —</option>
+                            <label for="leader_id" class="form-label fw-medium text-body d-flex align-items-center gap-2">
+                                <i class="mdi mdi-account-star-outline text-primary fs-16"></i> Chef de groupe
+                            </label>
+                            <select id="leader_id" name="leader_id" class="select2-person @error('leader_id') is-invalid @enderror">
+                                <option value=""></option>
                                 @foreach($users as $user)
-                                    <option value="{{ $user->id }}" {{ old('leader_id', $group->leader_id) == $user->id ? 'selected' : '' }}>
+                                    <option value="{{ $user->id }}"
+                                        data-phone="{{ $user->phone }}"
+                                        {{ old('leader_id', $group->leader_id) == $user->id ? 'selected' : '' }}>
                                         {{ $user->first_name }} {{ $user->name }}
-                                        @if($user->phone) ({{ $user->phone }}) @endif
                                     </option>
                                 @endforeach
                             </select>
@@ -183,16 +313,21 @@
                                 <i class="mdi mdi-information"></i>
                                 Attribue automatiquement le rôle "Chef de groupe".
                             </div>
-                            @error('leader_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @error('leader_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </div>
+
+                        {{-- ── Chargé de collecte ── --}}
                         <div class="mb-4">
-                            <label for="collector_id" class="form-label fw-medium text-body">Chargé de collecte</label>
-                            <select id="collector_id" name="collector_id" class="form-select @error('collector_id') is-invalid @enderror">
-                                <option value="">— Aucun chargé désigné —</option>
+                            <label for="collector_id" class="form-label fw-medium text-body d-flex align-items-center gap-2">
+                                <i class="mdi mdi-hand-coin-outline text-warning fs-16"></i> Chargé de collecte
+                            </label>
+                            <select id="collector_id" name="collector_id" class="select2-person @error('collector_id') is-invalid @enderror">
+                                <option value=""></option>
                                 @foreach($users as $user)
-                                    <option value="{{ $user->id }}" {{ old('collector_id', $group->collector_id) == $user->id ? 'selected' : '' }}>
+                                    <option value="{{ $user->id }}"
+                                        data-phone="{{ $user->phone }}"
+                                        {{ old('collector_id', $group->collector_id) == $user->id ? 'selected' : '' }}>
                                         {{ $user->first_name }} {{ $user->name }}
-                                        @if($user->phone) ({{ $user->phone }}) @endif
                                     </option>
                                 @endforeach
                             </select>
@@ -200,7 +335,7 @@
                                 <i class="mdi mdi-information"></i>
                                 Attribue automatiquement le rôle "Chargé de collecte".
                             </div>
-                            @error('collector_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @error('collector_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </div>
 
                         <div class="d-grid mt-4 pt-2">
@@ -217,19 +352,49 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        new TomSelect('#leader_id', {
-            create: false,
-            placeholder: '— Aucun chef désigné —',
-            allowEmptyOption: true
-        });
-        new TomSelect('#collector_id', {
-            create: false,
-            placeholder: '— Aucun chargé désigné —',
-            allowEmptyOption: true
-        });
+(function($) {
+    /* Helper: génère les initiales d'un nom */
+    function initials(name) {
+        return name.trim().split(/\s+/).map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    }
+
+    /* Rendu d'une option dans la liste déroulante */
+    function formatOption(option) {
+        if (!option.id) {
+            return $('<span class="text-muted">— Aucun désigné —</span>');
+        }
+        var phone = $(option.element).data('phone') || '';
+        return $(
+            '<div class="s2-user-row">' +
+              '<div class="s2-avatar">' + initials(option.text) + '</div>' +
+              '<div>' +
+                '<div class="s2-name">' + option.text + '</div>' +
+                (phone ? '<div class="s2-phone"><i class="mdi mdi-phone-outline"></i> ' + phone + '</div>' : '') +
+              '</div>' +
+            '</div>'
+        );
+    }
+
+    /* Rendu de la sélection active (dans le champ fermé) */
+    function formatSelection(option) {
+        if (!option.id) return option.text;
+        return option.text;
+    }
+
+    $('.select2-person').select2({
+        width: '100%',
+        allowClear: true,
+        placeholder: '— Aucun désigné —',
+        templateResult:    formatOption,
+        templateSelection: formatSelection,
+        language: {
+            noResults:    function() { return 'Aucun résultat trouvé'; },
+            searching:    function() { return 'Recherche en cours…'; }
+        }
     });
+})(jQuery);
 </script>
 @endpush

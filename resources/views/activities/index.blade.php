@@ -184,11 +184,13 @@
                  style="border-radius: 0.75rem; border-left: 4px solid {{ $cardAccent }} !important; transition: transform 0.2s, box-shadow 0.2s;">
 
                 @if($activity->image_path)
-                    <div class="position-relative bg-dark" style="height: 200px; width: 100%; overflow: hidden; border-radius: 0.75rem 0.75rem 0 0; margin-left: -4px; display: flex; align-items: center; justify-content: center;">
-                        <div class="position-absolute w-100 h-100" style="background-image: url('{{ asset('storage/' . $activity->image_path) }}'); background-size: cover; background-position: center; filter: blur(10px) brightness(0.6); transform: scale(1.1);"></div>
-                        <img src="{{ asset('storage/' . $activity->image_path) }}" alt="{{ $activity->title }}" style="max-width: 100%; max-height: 100%; object-fit: contain; position: relative; z-index: 1;">
-                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), transparent); z-index: 2;"></div>
-                    </div>
+                    <a href="{{ asset('storage/' . $activity->image_path) }}" target="_blank" class="d-block">
+                        <div class="position-relative bg-dark" style="height: 200px; width: 100%; overflow: hidden; border-radius: 0.75rem 0.75rem 0 0; margin-left: -4px; display: flex; align-items: center; justify-content: center;">
+                            <div class="position-absolute w-100 h-100" style="background-image: url('{{ asset('storage/' . $activity->image_path) }}'); background-size: cover; background-position: center; filter: blur(10px) brightness(0.6); transform: scale(1.1);"></div>
+                            <img src="{{ asset('storage/' . $activity->image_path) }}" alt="{{ $activity->title }}" style="max-width: 100%; max-height: 100%; object-fit: contain; position: relative; z-index: 1;">
+                            <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), transparent); z-index: 2;"></div>
+                        </div>
+                    </a>
                 @else
                     {{-- Accent top bar --}}
                     <div style="height: 3px; background: {{ $cardAccent }}; border-radius: 0.75rem 0.75rem 0 0; margin-left: -4px;"></div>

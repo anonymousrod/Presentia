@@ -14,9 +14,13 @@ use App\Http\Requests\Admin\UpdateActivityRequest;
 use App\Enums\ActivityStatus;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use App\Traits\OptimizesImages;
 
 class ActivityController extends Controller
 {
+    use OptimizesImages;
+
     /**
      * Display a listing of the resource.
      */
@@ -70,7 +74,7 @@ class ActivityController extends Controller
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('activities', 'public');
+            $path = $this->optimizeAndStoreImage($request->file('image'), 'activities');
             $validated['image_path'] = $path;
         }
 
@@ -218,7 +222,8 @@ class ActivityController extends Controller
             if ($activity->image_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($activity->image_path)) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($activity->image_path);
             }
-            $path = $request->file('image')->store('activities', 'public');
+
+            $path = $this->optimizeAndStoreImage($request->file('image'), 'activities');
             $validated['image_path'] = $path;
         }
 

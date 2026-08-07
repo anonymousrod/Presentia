@@ -7,9 +7,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use App\Traits\OptimizesImages;
 
 class ProfileController extends Controller
 {
+    use OptimizesImages;
+
     /**
      * Display the user's profile and settings form.
      */
@@ -100,7 +103,7 @@ class ProfileController extends Controller
     public function updateAvatar(Request $request)
     {
         $request->validate([
-            'photo' => ['required', 'image', 'max:2048']
+            'photo' => ['required', 'image', 'max:51200'] // 50MB max
         ]);
 
         $user = $request->user();
@@ -109,7 +112,7 @@ class ProfileController extends Controller
             Storage::disk('public')->delete($user->photo);
         }
 
-        $path = $request->file('photo')->store('avatars', 'public');
+        $path = $this->optimizeAndStoreImage($request->file('photo'), 'avatars');
         $user->update(['photo' => $path]);
 
         return back()->with('status', 'avatar-updated');
@@ -121,7 +124,7 @@ class ProfileController extends Controller
     public function updateCover(Request $request)
     {
         $request->validate([
-            'cover_photo' => ['required', 'image', 'max:5120']
+            'cover_photo' => ['required', 'image', 'max:51200']
         ]);
 
         $user = $request->user();
@@ -130,7 +133,7 @@ class ProfileController extends Controller
             Storage::disk('public')->delete($user->cover_photo);
         }
 
-        $path = $request->file('cover_photo')->store('covers', 'public');
+        $path = $this->optimizeAndStoreImage($request->file('cover_photo'), 'covers');
         $user->update(['cover_photo' => $path]);
 
         return back()->with('status', 'cover-updated');

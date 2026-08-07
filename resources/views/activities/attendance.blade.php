@@ -115,10 +115,8 @@
 
             {{-- En-tête de la carte --}}
             <div class="card-header border-0 py-3 px-4">
-                <div class="d-flex flex-column flex-md-row align-items-md-center gap-3">
-
-                    {{-- Titre + compteur --}}
-                    <div class="flex-grow-1 d-flex align-items-center gap-2">
+                <div class="d-flex flex-column gap-3">
+                    <div class="d-flex align-items-center gap-2">
                         <div class="rounded p-2 flex-shrink-0"
                              style="background: rgba(var(--vz-primary-rgb), 0.15); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
                             <i class="mdi mdi-format-list-checks fs-20" style="color: var(--vz-primary);"></i>
@@ -128,43 +126,53 @@
                             <small class="text-muted">Gérer les statuts de présence</small>
                         </div>
                     </div>
-
-                    {{-- Sélecteur ajout membre --}}
-                    @if(count($otherEligibleUsers) > 0)
-                    <div class="d-flex align-items-center gap-2" style="min-width: 320px;">
-                        <select class="form-select form-select-sm" x-model="selectedUserId" style="border-radius: 0.5rem;">
-                            <option value="">— Ajouter un membre à la volée —</option>
-                            @foreach($otherEligibleUsers as $u)
-                                <option value="{{ $u->id }}">{{ $u->first_name }} {{ $u->name }}</option>
-                            @endforeach
-                        </select>
-                        <button class="btn btn-sm btn-primary text-nowrap px-3" type="button"
-                                @click="addUnregisteredMember()"
-                                :disabled="!selectedUserId || isClosed"
-                                style="border-radius: 0.5rem;">
-                            <i class="mdi mdi-plus me-1"></i>Ajouter
-                        </button>
-                    </div>
-                    @endif
-
-                    {{-- Recherche --}}
-                    <div style="min-width: 220px; position: relative;">
-                        <i class="mdi mdi-magnify" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color: var(--vz-secondary-color); pointer-events:none;"></i>
-                        <input type="text"
-                               x-model="searchQuery"
-                               class="form-control form-control-sm ps-4"
-                               placeholder="Rechercher un membre..."
-                               style="border-radius: 0.5rem; padding-left: 2rem;">
+                    
+                    <div class="row g-2">
+                        @if(count($otherEligibleUsers) > 0)
+                        <div class="col-12 col-md-7 col-lg-6">
+                            <label class="form-label fw-semibold mb-1" style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color: var(--vz-secondary-color);">
+                                <i class="mdi mdi-account-plus-outline me-1"></i>Ajouter à la volée
+                            </label>
+                            <div class="input-group input-group-sm">
+                                <select class="form-select" x-model="selectedUserId" style="border-radius: 0.4rem 0 0 0.4rem;">
+                                    <option value="">— Sélectionner un membre —</option>
+                                    @foreach($otherEligibleUsers as $u)
+                                        <option value="{{ $u->id }}">{{ $u->first_name }} {{ $u->name }}</option>
+                                    @endforeach
+                                </select>
+                                <button class="btn btn-primary" type="button"
+                                        @click="addUnregisteredMember()"
+                                        :disabled="!selectedUserId || isClosed"
+                                        style="border-radius: 0 0.4rem 0.4rem 0; white-space: nowrap;">
+                                    <i class="mdi mdi-plus"></i>
+                                    <span class="d-none d-sm-inline ms-1">Ajouter</span>
+                                </button>
+                            </div>
+                        </div>
+                        @endif
+                        <div class="col-12 col-md-5 col-lg-4">
+                            <label class="form-label fw-semibold mb-1" style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color: var(--vz-secondary-color);">
+                                <i class="mdi mdi-magnify me-1"></i>Rechercher parmi les inscrits
+                            </label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text"><i class="mdi mdi-magnify"></i></span>
+                                <input type="text"
+                                       x-model="searchQuery"
+                                       class="form-control"
+                                       placeholder="Nom ou email..."
+                                       style="border-radius: 0 0.4rem 0.4rem 0;">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {{-- Liste des membres (Desktop: Tableau, Mobile: Cartes) --}}
-            <div class="card-body p-0 bg-light bg-md-white">
+            <div class="card-body p-0">
                 
                 {{-- VUE DESKTOP (Tableau classique) --}}
                 <div class="table-responsive d-none d-md-block">
-                    <table class="table align-middle mb-0 bg-white" id="attendance-table">
+                    <table class="table align-middle mb-0" id="attendance-table">
                         <thead style="background: rgba(var(--vz-primary-rgb), 0.08);">
                             <tr>
                                 <th class="ps-4 py-3 fw-semibold" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; width: 22%;">

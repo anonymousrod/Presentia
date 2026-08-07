@@ -14,10 +14,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Traits\Auditable;
+use App\Traits\HasHashid;
 
 class User extends Authenticatable
 {
-    use HasRoles;
+    use HasRoles, HasHashid;
     use SoftDeletes;
     use HasFactory;
     use Notifiable;

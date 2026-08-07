@@ -94,7 +94,7 @@
                     <select name="group_id" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="">Tous les groupes</option>
                         @foreach($groups as $g)
-                            <option value="{{ $g->id }}" {{ request('group_id') == $g->id ? 'selected' : '' }}>{{ $g->name }}</option>
+                            <option value="{{ encode_id($g->id) }}" {{ decode_id(request('group_id')) == $g->id ? 'selected' : '' }}>{{ $g->name }}</option>
                         @endforeach
                     </select>
 

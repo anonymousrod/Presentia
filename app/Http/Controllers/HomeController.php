@@ -56,7 +56,7 @@ class HomeController extends Controller
         ];
 
         // 4. Galerie
-        $galleries = Gallery::where('is_active', true)->latest()->take(12)->get();
+        $galleries = Gallery::where('is_active', true)->latest()->paginate(8, ['*'], 'gallery_page');
 
         // 5. Actualités (Prochaines activités)
         $activities = Activity::where('start_time', '>=', now())

@@ -20,7 +20,7 @@
                     <select name="user_id" class="form-select @error('user_id') is-invalid @enderror" required>
                         <option value="">-- Sélectionner un membre --</option>
                         @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                            <option value="{{ encode_id($user->id) }}" {{ old('user_id') == encode_id($user->id) ? 'selected' : '' }}>
                                 {{ $user->name }} {{ $user->first_name }}
                             </option>
                         @endforeach

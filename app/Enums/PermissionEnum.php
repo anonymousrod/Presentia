@@ -124,7 +124,7 @@ enum PermissionEnum: string
             self::GROUP_EDIT               => 'Modifier un groupe',
             self::GROUP_DELETE             => 'Supprimer un groupe',
             self::GROUP_ASSIGN_MEMBER      => 'Assigner un membre à un groupe',
-            self::ACTIVITY_VIEW            => 'Voir les activités',
+            self::ACTIVITY_VIEW            => 'Voir toutes les activités (publiées ou non)',
             self::ACTIVITY_CREATE          => 'Créer une activité',
             self::ACTIVITY_EDIT            => 'Modifier une activité',
             self::ATTENDANCE_VIEW          => 'Voir toutes les présences',

@@ -18,7 +18,10 @@ class RemittanceController extends Controller
         $query = Remittance::with(['collector', 'group']);
 
         if ($request->filled('group_id')) {
-            $query->where('group_id', $request->group_id);
+            $groupId = decode_id($request->group_id);
+            if ($groupId) {
+                $query->where('group_id', $groupId);
+            }
         }
 
         if ($request->filled('status')) {
@@ -41,7 +44,8 @@ class RemittanceController extends Controller
     {
         $user = auth()->user();
         if ($user->can('finance.view_all')) {
-            $groupId = $request->input('group_id');
+            $groupIdHash = $request->input('group_id');
+            $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
             $group = Group::find($groupId) ?? Group::first();
         } else {
             $group = $user->collectedGroups()->first() ?? $user->ledGroups()->first() ?? $user->groups()->first();

@@ -14,7 +14,7 @@
                     <label for="group_id" class="form-label mb-0 text-nowrap">Changer de groupe :</label>
                     <select name="group_id" id="group_id" class="form-select form-select-sm" onchange="this.form.submit()">
                         @foreach($groups as $g)
-                            <option value="{{ $g->id }}" {{ $g->id == $group->id ? 'selected' : '' }}>{{ $g->name }}</option>
+                            <option value="{{ encode_id($g->id) }}" {{ decode_id(request('group_id', encode_id($group->id ?? null))) == $g->id ? 'selected' : '' }}>{{ $g->name }}</option>
                         @endforeach
                     </select>
                 </form>

@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\AppSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\OptimizesImages;
 
 class AppSettingController extends Controller
 {
+    use OptimizesImages;
     public function edit()
     {
         $setting = AppSetting::firstOrCreate(['id' => 1]);
@@ -64,7 +66,7 @@ class AppSettingController extends Controller
                 //     Storage::disk('public')->delete($setting->$field);
                 // }
 
-                $path = $request->file($field)->store('settings', 'public');
+                $path = $this->optimizeAndStoreImage($request->file($field), 'settings');
                 $data[$field] = $path;
             }
         }

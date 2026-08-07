@@ -46,7 +46,7 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label fw-semibold">ID Utilisateur</label>
-                        <input type="number" name="user_id" class="form-control" value="{{ request('user_id') }}" placeholder="Ex: 5">
+                        <input type="text" name="user_id" class="form-control" value="{{ request('user_id') }}" placeholder="Ex: Mj3kB9">
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary me-2 w-100-mobile"><i class="ri-filter-line align-bottom me-1"></i> Filtrer</button>
@@ -84,7 +84,7 @@
                                             <h5 class="fs-13 mb-0 fw-semibold text-body">
                                                 {{ $log->user ? $log->user->first_name . ' ' . $log->user->name : 'Système' }}
                                             </h5>
-                                            <span class="text-muted small">ID: {{ $log->user_id ?? 'N/A' }}</span>
+                                            <span class="text-muted small">ID: {{ encode_id($log->user_id) ?? 'N/A' }}</span>
                                         </div>
                                     </div>
                                 </td>

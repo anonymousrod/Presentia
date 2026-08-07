@@ -377,35 +377,35 @@
 <style>
     /* Radio Option Cards */
     .status-option-card {
-        border: 2px solid #eff2f7;
+        border: 2px solid var(--vz-border-color);
         border-radius: 10px;
         padding: 16px;
         cursor: pointer;
         transition: all 0.2s ease-in-out;
-        background-color: #fff;
+        background-color: var(--vz-card-bg, #fff);
     }
     .status-option-card:hover {
-        border-color: #e2e5ec;
-        background-color: #f8f9fa;
+        border-color: var(--vz-primary);
+        background-color: var(--vz-light);
         transform: translateY(-1px);
     }
     
     /* Checked styles */
     .status-option-input[value="PRESENT"]:checked + .status-option-card {
         border-color: #0ab39c !important;
-        background-color: rgba(10, 179, 156, 0.04) !important;
+        background-color: rgba(10, 179, 156, 0.08) !important;
         box-shadow: 0 4px 12px rgba(10, 179, 156, 0.08);
     }
     
     .status-option-input[value="UNCERTAIN"]:checked + .status-option-card {
         border-color: #f7b84b !important;
-        background-color: rgba(247, 184, 75, 0.04) !important;
+        background-color: rgba(247, 184, 75, 0.08) !important;
         box-shadow: 0 4px 12px rgba(247, 184, 75, 0.08);
     }
     
     .status-option-input[value="ABSENT_JUSTIFIED"]:checked + .status-option-card {
         border-color: #f06548 !important;
-        background-color: rgba(240, 101, 72, 0.04) !important;
+        background-color: rgba(240, 101, 72, 0.08) !important;
         box-shadow: 0 4px 12px rgba(240, 101, 72, 0.08);
     }
     
@@ -413,9 +413,17 @@
     .status-option-input:disabled + .status-option-card {
         cursor: not-allowed;
         opacity: 0.6;
-        background-color: #f8f9fa;
+        background-color: var(--vz-light);
         transform: none !important;
         box-shadow: none !important;
+    }
+    
+    /* Dark mode explicit overrides */
+    [data-bs-theme="dark"] .status-option-card {
+        background-color: var(--vz-choices-bg);
+    }
+    [data-bs-theme="dark"] .status-option-card:hover {
+        background-color: var(--vz-light);
     }
     
     /* Premium details cards hover micro-animation */

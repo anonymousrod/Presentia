@@ -295,7 +295,8 @@ class StatisticsController extends Controller
         $groups = collect();
         if ($isGlobal) {
             $groups = Group::orderBy('name')->get();
-            $groupId = $request->input('group_id', $groups->first()?->id);
+            $groupIdHash = $request->input('group_id');
+            $groupId = $groupIdHash ? decode_id($groupIdHash) : $groups->first()?->id;
         } else {
             $groupId = $user->ledGroups()->first()?->id;
         }
@@ -385,7 +386,8 @@ class StatisticsController extends Controller
             abort(403, 'Accès non autorisé.');
         }
 
-        $groupId = $request->input('group_id');
+        $groupIdHash = $request->input('group_id');
+        $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
         $typeId = $request->input('activity_type_id');
         $dateFrom = $request->input('date_from');
         $dateTo = $request->input('date_to');
@@ -442,7 +444,8 @@ class StatisticsController extends Controller
             abort(403, 'Accès non autorisé.');
         }
 
-        $groupId = $request->input('group_id');
+        $groupIdHash = $request->input('group_id');
+        $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
         $typeId = $request->input('activity_type_id');
         $dateFrom = $request->input('date_from');
         $dateTo = $request->input('date_to');

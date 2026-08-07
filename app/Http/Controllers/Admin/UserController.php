@@ -13,12 +13,12 @@ use App\Notifications\Admin\NewMemberCreatedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Traits\OptimizesImages;
 
 class UserController extends Controller
 {
+    use OptimizesImages;
+
     /**
      * Liste des utilisateurs avec filtres et recherche.
      */
@@ -152,22 +152,13 @@ class UserController extends Controller
 
         $data = $request->validated();
 
-        // Traitement de la photo avec intervention/image
         if ($request->hasFile('photo')) {
             // Supprimer l'ancienne photo si elle existe
             if ($user->photo && Storage::disk('public')->exists($user->photo)) {
                 Storage::disk('public')->delete($user->photo);
             }
 
-            $file = $request->file('photo');
-            $filename = 'photos/' . Str::uuid() . '.' . $file->getClientOriginalExtension();
-
-            $manager = new ImageManager(new Driver());
-            $image = $manager->read($file->getRealPath());
-            $image->scaleDown(800, 800);
-
-            Storage::disk('public')->put($filename, (string) $image->encode());
-            $data['photo'] = $filename;
+            $data['photo'] = $this->optimizeAndStoreImage($request->file('photo'), 'photos');
         }
 
         $oldStatus = $user->status->value;

@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\Auditable;
+use App\Traits\HasHashid;
 
 class Activity extends Model
 {
-    use HasFactory;
+    use HasFactory, HasHashid;
     use SoftDeletes;
     use Auditable;
 

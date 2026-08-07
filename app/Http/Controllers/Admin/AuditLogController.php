@@ -21,7 +21,10 @@ class AuditLogController extends Controller
         }
 
         if ($request->filled('user_id')) {
-            $query->where('user_id', $request->input('user_id'));
+            $userId = decode_id($request->input('user_id'));
+            if ($userId) {
+                $query->where('user_id', $userId);
+            }
         }
 
         if ($request->filled('auditable_type')) {

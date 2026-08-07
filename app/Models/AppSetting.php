@@ -35,4 +35,24 @@ class AppSetting extends Model
         'facebook_link',
         'tiktok_link',
     ];
+
+    public function getFaviconUrlAttribute()
+    {
+        return $this->favicon ? asset('storage/' . $this->favicon) : asset('assets/images/favicon.ico');
+    }
+
+    public function getLogoSmUrlAttribute()
+    {
+        return $this->logo_sm ? asset('storage/' . $this->logo_sm) : asset('assets/images/logo-sm.png');
+    }
+
+    public function getLogoDarkUrlAttribute()
+    {
+        return $this->logo_dark ? asset('storage/' . $this->logo_dark) : asset('assets/images/logo-dark.png');
+    }
+
+    public function getLogoLightUrlAttribute()
+    {
+        return $this->logo_light ? asset('storage/' . $this->logo_light) : asset('assets/images/logo-light.png');
+    }
 }

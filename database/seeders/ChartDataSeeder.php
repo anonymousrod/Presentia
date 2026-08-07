@@ -87,12 +87,12 @@ class ChartDataSeeder extends Seeder
             $color = $data['color'];
 
             // Création du Chef de groupe
-            $chefName = 'Chef ' . $groupName;
+            $faker = \Faker\Factory::create('fr_FR');
             $chef = User::firstOrCreate(
                 ['email' => 'chef_' . Str::slug($groupName) . '@eber.org'],
                 [
-                    'name' => explode(' ', $chefName)[1] ?? 'Chef',
-                    'first_name' => explode(' ', $chefName)[0],
+                    'name' => $groupName,
+                    'first_name' => $faker->firstName,
                     'phone' => strval($phoneCounter++),
                     'password' => $defaultPassword,
                     'status' => 'ACTIVE',

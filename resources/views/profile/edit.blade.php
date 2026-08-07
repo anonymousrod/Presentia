@@ -257,7 +257,7 @@
                             <div class="d-flex">
                                 <div class="flex-shrink-0 avatar-xs">
                                     <div class="avatar-title rounded bg-primary-subtle text-primary">
-                                        <i class="ri-church-line"></i>
+                                        <i class="ri-hand-heart-line"></i>
                                     </div>
                                 </div>
                                 <div class="flex-grow-1 ms-3">
@@ -286,7 +286,7 @@
                             <li>
                                 <div class="d-flex">
                                     <div class="flex-shrink-0 avatar-xs">
-                                        <div class="avatar-title rounded bg-light text-dark border">
+                                        <div class="avatar-title rounded bg-info-subtle text-info">
                                             <i class="ri-information-line"></i>
                                         </div>
                                     </div>

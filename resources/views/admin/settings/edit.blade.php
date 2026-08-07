@@ -286,4 +286,27 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Restore active tab from localStorage
+    var activeTab = localStorage.getItem('activeSettingTab');
+    if(activeTab){
+        var tabElement = document.querySelector('a[href="' + activeTab + '"]');
+        if(tabElement) {
+            var tab = new bootstrap.Tab(tabElement);
+            tab.show();
+        }
+    }
+
+    // Save active tab on change
+    var tabLinks = document.querySelectorAll('a[data-bs-toggle="tab"]');
+    tabLinks.forEach(function(link) {
+        link.addEventListener('shown.bs.tab', function (e) {
+            var target = e.target.getAttribute('href');
+            localStorage.setItem('activeSettingTab', target);
+        });
+    });
+});
+</script>
 @endsection

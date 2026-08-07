@@ -18,7 +18,8 @@ class ContributionController extends Controller
 
         // Si l'utilisateur peut tout voir (Trésorier/Admin), il peut choisir le groupe
         if ($user->can('finance.view_all')) {
-            $groupId = $request->input('group_id');
+            $groupIdHash = $request->input('group_id');
+            $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
             if ($groupId) {
                 $group = Group::find($groupId);
             } else {
@@ -166,7 +167,8 @@ class ContributionController extends Controller
 
         $user = auth()->user();
         if ($user->can('finance.view_all')) {
-            $groupId = $request->input('group_id');
+            $groupIdHash = $request->input('group_id');
+            $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
             $group = Group::find($groupId) ?? Group::first();
         } else {
             $group = $user->collectedGroups()->first();

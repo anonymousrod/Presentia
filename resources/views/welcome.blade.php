@@ -39,6 +39,14 @@
             position: relative;
             z-index: 1;
         }
+        .hero-text-container {
+            background: rgba(0, 0, 0, 0.55);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
         .section-title {
             font-weight: 700;
             margin-bottom: 2rem;
@@ -79,8 +87,10 @@
             padding: 0 15px;
             transition: color 0.3s;
         }
-        .navbar-custom .nav-link:hover {
-            color: #fff;
+        .navbar-custom .nav-link:hover,
+        .navbar-custom .nav-link:focus,
+        .navbar-custom .nav-link.active {
+            color: #f1c40f !important; /* Jaune/Or pour bien ressortir au survol */
         }
         .navbar-custom.is-sticky {
             background-color: var(--vz-primary);
@@ -131,9 +141,40 @@
 
         /* Stats Section */
         .stats-section {
-            background: var(--vz-primary);
-            color: white;
-            padding: 60px 0;
+            background: linear-gradient(135deg, #2b3964 0%, #405189 100%);
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .stat-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            height: 100%;
+        }
+        .stat-box:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        .stat-box h2 {
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .stat-box p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
 
         /* Gallery */
@@ -192,8 +233,13 @@
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-custom" id="navbar">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="ri-cube-fill me-2 align-middle"></i>{{ config('app.name') }}
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                @if(!empty($settings->logo_light))
+                    <img src="{{ $settings->logo_light_url }}" alt="Logo" height="35" class="me-2">
+                @else
+                    <i class="ri-cube-fill me-2 align-middle fs-3"></i>
+                @endif
+                <span class="fs-4">{{ config('app.name') }}</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="ri-menu-line text-white"></i>
@@ -225,13 +271,15 @@
         <div class="container hero-content">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <h1 class="display-4 fw-bold mb-4">{{ $settings->hero_title ?? 'Bienvenue dans notre Jeunesse' }}</h1>
-                    <p class="lead mb-5" style="font-size: 1.2rem; max-width: 600px;">
-                        {{ $settings->hero_subtitle ?? 'Découvrez notre vision, nos valeurs et participez à nos activités pour grandir ensemble dans la foi.' }}
-                    </p>
-                    <div class="d-flex gap-3 flex-wrap">
-                        <a href="#about" class="btn btn-primary btn-lg px-4">Découvrir</a>
-                        <a href="{{ route('login') }}" class="btn btn-outline-light btn-lg px-4">Espace Membre</a>
+                    <div class="hero-text-container">
+                        <h1 class="display-4 fw-bold mb-4 text-white">{{ $settings->hero_title ?? 'Bienvenue dans notre Jeunesse' }}</h1>
+                        <p class="lead mb-5 text-light" style="font-size: 1.2rem; max-width: 600px;">
+                            {{ $settings->hero_subtitle ?? 'Découvrez notre vision, nos valeurs et participez à nos activités pour grandir ensemble dans la foi.' }}
+                        </p>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <a href="#about" class="btn btn-primary btn-lg px-4">Découvrir</a>
+                            <a href="{{ route('login') }}" class="btn btn-outline-light btn-lg px-4">Espace Membre</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -270,22 +318,30 @@
         <!-- 5. CHIFFRES CLES -->
         <section class="stats-section rounded-4 my-5 shadow-lg">
             <div class="container">
-                <div class="row text-center">
-                    <div class="col-md-3 col-6 mb-4 mb-md-0">
-                        <h2 class="fw-bold display-5 mb-2"><span class="counter-value" data-target="{{ $stats['users'] }}">0</span></h2>
-                        <p class="fs-16 mb-0 text-white-75">Jeunes engagés</p>
+                <div class="row text-center g-4">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-box">
+                            <h2 class="fw-bold"><span class="counter-value" data-target="{{ $stats['users'] }}">0</span></h2>
+                            <p class="mb-0">Jeunes engagés</p>
+                        </div>
                     </div>
-                    <div class="col-md-3 col-6 mb-4 mb-md-0">
-                        <h2 class="fw-bold display-5 mb-2"><span class="counter-value" data-target="{{ $stats['groups'] }}">0</span></h2>
-                        <p class="fs-16 mb-0 text-white-75">Groupes actifs</p>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-box">
+                            <h2 class="fw-bold"><span class="counter-value" data-target="{{ $stats['groups'] }}">0</span></h2>
+                            <p class="mb-0">Groupes actifs</p>
+                        </div>
                     </div>
-                    <div class="col-md-3 col-6">
-                        <h2 class="fw-bold display-5 mb-2"><span class="counter-value" data-target="{{ $stats['events'] }}">0</span></h2>
-                        <p class="fs-16 mb-0 text-white-75">Événements organisés</p>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-box">
+                            <h2 class="fw-bold"><span class="counter-value" data-target="{{ $stats['events'] }}">0</span></h2>
+                            <p class="mb-0">Événements</p>
+                        </div>
                     </div>
-                    <div class="col-md-3 col-6">
-                        <h2 class="fw-bold display-5 mb-2"><span class="counter-value" data-target="{{ $stats['leaders'] }}">0</span></h2>
-                        <p class="fs-16 mb-0 text-white-75">Responsables</p>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-box">
+                            <h2 class="fw-bold"><span class="counter-value" data-target="{{ $stats['leaders'] }}">0</span></h2>
+                            <p class="mb-0">Responsables</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -380,7 +436,9 @@
                 @forelse($galleries as $index => $gallery)
                     <div class="col-lg-3 col-md-4 col-sm-6">
                         <div class="gallery-item shadow-sm">
-                            <img src="{{ asset('storage/' . $gallery->image_path) }}" alt="{{ $gallery->title }}" class="gallery-img">
+                            <a href="{{ asset('storage/' . $gallery->image_path) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $gallery->image_path) }}" alt="{{ $gallery->title }}" class="gallery-img">
+                            </a>
                         </div>
                     </div>
                 @empty
@@ -389,6 +447,10 @@
                     <div class="col-lg-4 col-md-6"><div class="gallery-item shadow-sm"><img src="{{ asset('assets/images/home/activity.jpg') }}" class="gallery-img" alt="Gallery 2"></div></div>
                     <div class="col-lg-4 col-md-6"><div class="gallery-item shadow-sm"><img src="{{ asset('assets/images/home/group-2.jpg') }}" class="gallery-img" alt="Gallery 3"></div></div>
                 @endforelse
+            </div>
+            
+            <div class="mt-4 d-flex justify-content-center">
+                {{ $galleries->fragment('gallery')->links() }}
             </div>
         </section>
 
@@ -404,11 +466,11 @@
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card h-100 border-0 shadow-sm overflow-hidden">
                             @if($activity->image_path)
-                                <div class="position-relative bg-dark" style="height: 200px; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                <a href="{{ asset('storage/' . $activity->image_path) }}" target="_blank" class="position-relative bg-dark d-flex align-items-center justify-content-center" style="height: 200px; width: 100%; overflow: hidden; text-decoration: none;">
                                     <div class="position-absolute w-100 h-100" style="background-image: url('{{ asset('storage/' . $activity->image_path) }}'); background-size: cover; background-position: center; filter: blur(10px) brightness(0.6); transform: scale(1.1);"></div>
                                     <img src="{{ asset('storage/' . $activity->image_path) }}" alt="{{ $activity->title }}" style="max-width: 100%; max-height: 100%; object-fit: contain; position: relative; z-index: 1;">
                                     <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), transparent); z-index: 2;"></div>
-                                </div>
+                                </a>
                             @else
                                 @php
                                     $gradients = [
@@ -508,8 +570,8 @@
                     <h5>Liens Utiles</h5>
                     <div class="footer-links">
                         <a href="{{ route('login') }}">Connexion Espace Membre</a>
-                        <a href="#">Politique de confidentialité</a>
-                        <a href="#">Mentions légales</a>
+                        <a href="{{ route('privacy') }}">Politique de confidentialité</a>
+                        <a href="{{ route('legal') }}">Mentions légales</a>
                     </div>
                 </div>
                 <div class="col-lg-3 mb-4">

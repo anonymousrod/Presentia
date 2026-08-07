@@ -37,6 +37,10 @@ class NotificationController extends Controller
 
     public function sendGroup(Request $request)
     {
+        $request->merge([
+            'group_id' => decode_id($request->input('group_id'))
+        ]);
+
         $data = $request->validate([
             'title'   => 'required|string|max:255',
             'message' => 'required|string',
@@ -61,6 +65,10 @@ class NotificationController extends Controller
 
     public function sendRole(Request $request)
     {
+        $request->merge([
+            'role_id' => decode_id($request->input('role_id'))
+        ]);
+
         $data = $request->validate([
             'title'   => 'required|string|max:255',
             'message' => 'required|string',
@@ -84,6 +92,10 @@ class NotificationController extends Controller
 
     public function sendIndividual(Request $request)
     {
+        $request->merge([
+            'user_id' => decode_id($request->input('user_id'))
+        ]);
+
         $data = $request->validate([
             'title'   => 'required|string|max:255',
             'message' => 'required|string',

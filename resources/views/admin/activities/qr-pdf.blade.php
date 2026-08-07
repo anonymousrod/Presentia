@@ -318,7 +318,24 @@
         <table class="header-table">
             <tr>
                 <td class="header-logo-cell">
-                    <div class="org-name">&#9670; {{ config('app.name') }}</div>
+                    <div class="org-name">
+                        <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                            <tr>
+                                @if(!empty($logoUeebBase64))
+                                <td style="padding: 0 10px 0 0; vertical-align: middle; line-height: 1;">
+                                    <img src="{{ $logoUeebBase64 }}" alt="Logo" height="28" style="vertical-align: middle;">
+                                </td>
+                                @else
+                                <td style="padding: 0 10px 0 0; vertical-align: middle; line-height: 1; font-size: 26px; color: #ffffff;">
+                                    &#9670;
+                                </td>
+                                @endif
+                                <td style="padding: 0; vertical-align: middle; line-height: 1; font-size: 28px; font-weight: bold; color: #ffffff; letter-spacing: 2px; text-transform: uppercase;">
+                                    {{ config('app.name') }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                     <div class="org-tagline">Système de Gestion des Présences</div>
                 </td>
                 <!-- <td class="header-badge-cell">

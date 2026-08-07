@@ -20,7 +20,7 @@
                     <select name="group_id" class="form-select @error('group_id') is-invalid @enderror" required>
                         <option value="">-- Sélectionner un groupe --</option>
                         @foreach($groups as $group)
-                            <option value="{{ $group->id }}" {{ old('group_id') == $group->id ? 'selected' : '' }}>
+                            <option value="{{ encode_id($group->id) }}" {{ old('group_id') == encode_id($group->id) ? 'selected' : '' }}>
                                 {{ $group->name }}
                             </option>
                         @endforeach

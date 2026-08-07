@@ -11,12 +11,15 @@ use App\Notifications\Member\RemovedFromGroupNotification;
 use App\Notifications\Admin\GroupLeaderAssignedNotification;
 use App\Notifications\Admin\GroupCollectorAssignedNotification;
 use App\Notifications\Admin\RoleRevokedNotification;
+use App\Traits\OptimizesImages;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Storage;
 
 class GroupController extends Controller
 {
+    use OptimizesImages;
     use AuthorizesRequests;
     public function index(Request $request)
     {
@@ -66,11 +69,11 @@ class GroupController extends Controller
             'color'       => ['nullable', 'string', 'max:7'],
             'leader_id'   => ['nullable', 'exists:users,id'],
             'collector_id' => ['nullable', 'exists:users,id'],
-            'image'       => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:5120'],
+            'image'       => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:51200'],
         ]);
 
         if ($request->hasFile('image')) {
-            $data['image_path'] = $request->file('image')->store('groups', 'public');
+            $data['image_path'] = $this->optimizeAndStoreImage($request->file('image'), 'groups');
         }
 
         $group = Group::create($data);
@@ -136,14 +139,14 @@ class GroupController extends Controller
             'color'       => ['nullable', 'string', 'max:7'],
             'leader_id'   => ['nullable', 'exists:users,id'],
             'collector_id' => ['nullable', 'exists:users,id'],
-            'image'       => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:5120'],
+            'image'       => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:51200'],
         ]);
 
         if ($request->hasFile('image')) {
             if ($group->image_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($group->image_path)) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($group->image_path);
             }
-            $data['image_path'] = $request->file('image')->store('groups', 'public');
+            $data['image_path'] = $this->optimizeAndStoreImage($request->file('image'), 'groups');
         }
 
         $previousLeaderId = $group->leader_id;

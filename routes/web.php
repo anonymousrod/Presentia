@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+// Pages légales
+Route::view('/politique-de-confidentialite', 'pages.privacy')->name('privacy');
+Route::view('/mentions-legales', 'pages.legal')->name('legal');
+
 // Routes d'authentification personnalisées
 Route::middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -72,6 +76,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::get('galleries', [App\Http\Controllers\Admin\GalleryController::class, 'index'])->name('galleries.index');
         Route::post('galleries', [App\Http\Controllers\Admin\GalleryController::class, 'store'])->name('galleries.store');
         Route::post('galleries/{gallery}/toggle', [App\Http\Controllers\Admin\GalleryController::class, 'toggleActive'])->name('galleries.toggle');
+        Route::delete('galleries/bulk-destroy', [App\Http\Controllers\Admin\GalleryController::class, 'bulkDestroy'])->name('galleries.bulk-destroy');
         Route::delete('galleries/{gallery}', [App\Http\Controllers\Admin\GalleryController::class, 'destroy'])->name('galleries.destroy');
     });
 

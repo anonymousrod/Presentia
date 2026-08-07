@@ -41,7 +41,6 @@ class RolesAndPermissionsSeeder extends Seeder
         $jeune->is_system = true;
         $jeune->save();
         $jeune->syncPermissions([
-            'activity.view',
             'registration.create',
             'registration.edit_own',
             'registration.cancel_own',

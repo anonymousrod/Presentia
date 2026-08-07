@@ -110,7 +110,7 @@
                         <p class="toolbar-label mb-1"><i class="ri-team-line me-1"></i>Groupe</p>
                         <select name="group_id" class="form-select form-select-sm" onchange="this.form.submit()" style="min-width: 160px;">
                             @foreach($allGroups as $g)
-                                <option value="{{ $g->id }}" {{ $g->id == $group->id ? 'selected' : '' }}>{{ $g->name }}</option>
+                                <option value="{{ encode_id($g->id) }}" {{ $g->id == $group->id ? 'selected' : '' }}>{{ $g->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -298,7 +298,7 @@
             <div class="card-body">
                 <form action="{{ route('admin.finance.contributions.store') }}" method="POST">
                     @csrf
-                    <input type="hidden" name="group_id" value="{{ $group->id }}">
+                    <input type="hidden" name="group_id" value="{{ encode_id($group->id) }}">
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle table-nowrap mb-0">
                             <thead class="table-light">
@@ -408,7 +408,7 @@
                 <button type="button" class="btn btn-light w-100 w-sm-auto" data-bs-dismiss="modal">Annuler</button>
                 <form action="{{ route('admin.finance.remittances.store') }}" method="POST" class="d-inline-block w-100 w-sm-auto">
                     @csrf
-                    <input type="hidden" name="group_id" value="{{ $group->id }}">
+                    <input type="hidden" name="group_id" value="{{ encode_id($group->id) }}">
                     <button type="submit" class="btn btn-success w-100 w-sm-auto">Oui, déclarer le versement</button>
                 </form>
             </div>
