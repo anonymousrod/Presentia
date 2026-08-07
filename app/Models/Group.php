@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\Auditable;
 use App\Traits\HasHashid;
 
 class Group extends Model
 {
-    use HasFactory, HasHashid;
+    use HasFactory;
+    use HasHashid;
     use SoftDeletes;
     use Auditable;
 

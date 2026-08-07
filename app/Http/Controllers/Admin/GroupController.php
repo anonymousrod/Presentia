@@ -15,7 +15,6 @@ use App\Traits\OptimizesImages;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Storage;
 
 class GroupController extends Controller
 {

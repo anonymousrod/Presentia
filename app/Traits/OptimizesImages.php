@@ -21,26 +21,26 @@ trait OptimizesImages
     public function optimizeAndStoreImage(UploadedFile $file, string $path, ?int $maxWidth = 1920, int $quality = 80): string
     {
         $manager = new ImageManager(new Driver());
-        
+
         $image = $manager->read($file->getRealPath());
-        
+
         // Resize if it's wider than max width, keeping aspect ratio
         if ($maxWidth && $image->width() > $maxWidth) {
             $image->scale(width: $maxWidth);
         }
-        
+
         $filename = uniqid() . '_' . time() . '.webp';
         $fullDirectoryPath = storage_path('app/public/' . $path);
-        
+
         if (!file_exists($fullDirectoryPath)) {
             mkdir($fullDirectoryPath, 0755, true);
         }
-        
+
         $fullPath = $fullDirectoryPath . '/' . $filename;
-        
+
         // Save as WebP
         $image->toWebp($quality)->save($fullPath);
-        
+
         return $path . '/' . $filename;
     }
 }

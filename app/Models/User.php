@@ -18,7 +18,8 @@ use App\Traits\HasHashid;
 
 class User extends Authenticatable
 {
-    use HasRoles, HasHashid;
+    use HasRoles;
+    use HasHashid;
     use SoftDeletes;
     use HasFactory;
     use Notifiable;

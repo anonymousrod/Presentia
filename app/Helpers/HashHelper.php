@@ -32,7 +32,7 @@ if (!function_exists('decode_id')) {
             return null;
         }
 
-        // Hashids::decode renvoie un tableau d'entiers. 
+        // Hashids::decode renvoie un tableau d'entiers.
         // Comme on encode toujours un seul ID, on prend le premier élément.
         $decoded = Hashids::decode($hash);
 

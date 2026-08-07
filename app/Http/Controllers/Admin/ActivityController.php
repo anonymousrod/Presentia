@@ -14,7 +14,6 @@ use App\Http\Requests\Admin\UpdateActivityRequest;
 use App\Enums\ActivityStatus;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\DB;
 use App\Traits\OptimizesImages;
 
 class ActivityController extends Controller

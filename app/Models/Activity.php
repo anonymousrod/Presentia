@@ -12,7 +12,8 @@ use App\Traits\HasHashid;
 
 class Activity extends Model
 {
-    use HasFactory, HasHashid;
+    use HasFactory;
+    use HasHashid;
     use SoftDeletes;
     use Auditable;
 

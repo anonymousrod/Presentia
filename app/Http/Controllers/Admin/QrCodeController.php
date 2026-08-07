@@ -81,12 +81,12 @@ class QrCodeController extends Controller
         $qrCodeDataUri = $result->getDataUri();
 
         $settings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
-        
+
         $logoName = $settings->pdf_logo_1 ?: 'Icone J-EBER.png';
-        $logoUeebPath = str_starts_with($logoName, 'assets/') || $logoName === 'Icone J-EBER.png' 
-            ? public_path('assets/images/' . str_replace('assets/images/', '', $logoName)) 
+        $logoUeebPath = str_starts_with($logoName, 'assets/') || $logoName === 'Icone J-EBER.png'
+            ? public_path('assets/images/' . str_replace('assets/images/', '', $logoName))
             : storage_path('app/public/' . $logoName);
-            
+
         $logoUeebBase64 = '';
         if (file_exists($logoUeebPath)) {
             $logoUeebBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoUeebPath));
