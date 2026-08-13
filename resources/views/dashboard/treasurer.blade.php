@@ -284,7 +284,7 @@
                                                                 <i class="ri-team-fill"></i>
                                                             </span>
                                                         </div>
-                                                        <span class="fw-semibold text-dark">{{ $remittance->group->name ?? 'N/A' }}</span>
+                                                        <span class="fw-semibold text-body">{{ $remittance->group->name ?? 'N/A' }}</span>
                                                     </div>
                                                 </td>
                                                 <td>
@@ -313,7 +313,7 @@
                                                             <i class="ri-check-double-line"></i>
                                                         </div>
                                                     </div>
-                                                    <h5 class="fs-15 text-dark mb-1">Aucun versement en attente</h5>
+                                                    <h5 class="fs-15 mb-1">Aucun versement en attente</h5>
                                                     <p class="text-muted mb-0">Tous les versements ont été traités.</p>
                                                 </td>
                                             </tr>

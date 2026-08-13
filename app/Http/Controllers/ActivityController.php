@@ -72,7 +72,7 @@ class ActivityController extends Controller
         }
 
         if ($request->filled('type')) {
-            $query->where('activity_type_id', $request->type);
+            $query->where('activity_type_id', decode_id($request->type));
         }
 
         // Default status_filter to 'upcoming' if not present in request query

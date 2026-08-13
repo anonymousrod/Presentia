@@ -30,7 +30,7 @@
                     <select name="type" class="form-select">
                         <option value="">Tous les types</option>
                         @foreach($activityTypes as $type)
-                            <option value="{{ $type->id }}" {{ request('type') == $type->id ? 'selected' : '' }}>
+                            <option value="{{ encode_id($type->id) }}" {{ request('type') == encode_id($type->id) ? 'selected' : '' }}>
                                 {{ $type->name }}
                             </option>
                         @endforeach
@@ -89,7 +89,7 @@
                             <td>{{ $activity->start_time->format('d/m/Y H:i') }}</td>
                             <td>{{ $activity->end_time->format('d/m/Y H:i') }}</td>
                             <td>
-                                <span class="badge bg-soft-dark text-dark">{{ $activity->visibility?->label() ?? 'Tout le monde' }}</span>
+                                <span class="badge bg-secondary-subtle text-body">{{ $activity->visibility?->label() ?? 'Tout le monde' }}</span>
                             </td>
                             <td>
                                 @if($activity->visibility?->value === 'GROUP')

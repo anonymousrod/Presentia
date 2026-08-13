@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @push('css')
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
     /* ── Section Headers ── */
     .section-header {
@@ -196,6 +195,162 @@
         font-size: 0.85rem;
         text-align: center;
     }
+    /* ── Member Picker ── */
+    .member-picker { position: relative; }
+    .member-picker-trigger {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.6rem 0.85rem;
+        border-radius: 0.6rem;
+        border: 1px solid var(--vz-input-border);
+        background: var(--vz-input-bg);
+        cursor: pointer !important;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        min-height: 44px;
+        user-select: none;
+    }
+    .member-picker-trigger:hover {
+        border-color: var(--vz-primary);
+    }
+    .member-picker-trigger.open {
+        border-color: var(--vz-primary);
+        box-shadow: 0 0 0 0.2rem rgba(var(--vz-primary-rgb), 0.15);
+    }
+    .member-picker-avatar {
+        width: 30px; height: 30px;
+        border-radius: 50%;
+        background: rgba(var(--vz-primary-rgb), 0.1);
+        color: var(--vz-primary);
+        font-size: 0.7rem;
+        font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+    .member-picker-avatar.empty {
+        background: var(--vz-light);
+        color: var(--vz-secondary-color);
+    }
+    .member-picker-label {
+        flex: 1;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--vz-body-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .member-picker-label.placeholder {
+        color: var(--vz-secondary-color);
+        font-weight: 400;
+    }
+    .member-picker-label small {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--vz-secondary-color);
+        font-weight: 400;
+        margin-top: 1px;
+    }
+    .member-picker-chevron {
+        margin-left: auto;
+        font-size: 1rem;
+        color: var(--vz-secondary-color);
+        transition: transform 0.2s;
+    }
+    .member-picker-trigger.open .member-picker-chevron { transform: rotate(180deg); }
+    .member-picker-clear {
+        width: 22px; height: 22px;
+        border-radius: 50%;
+        background: rgba(var(--vz-danger-rgb), 0.1);
+        color: var(--vz-danger);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: background 0.15s;
+        flex-shrink: 0;
+    }
+    .member-picker-clear:hover { background: rgba(var(--vz-danger-rgb), 0.2); }
+
+    /* Dropdown */
+    .member-picker-dropdown {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0; right: 0;
+        background: var(--vz-card-bg, #fff);
+        border: 1px solid var(--vz-border-color);
+        border-radius: 0.65rem;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+        z-index: 1050;
+        overflow: hidden;
+        display: none;
+        animation: mpFadeIn 0.15s ease;
+    }
+    .member-picker-dropdown.show { display: block; }
+    @keyframes mpFadeIn {
+        from { opacity: 0; transform: translateY(-6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .member-picker-search-wrap {
+        padding: 0.6rem 0.7rem;
+        border-bottom: 1px solid var(--vz-border-color);
+    }
+    .member-picker-search {
+        width: 100%;
+        padding: 0.4rem 0.75rem 0.4rem 2rem;
+        border: 1px solid var(--vz-input-border);
+        border-radius: 0.45rem;
+        background: var(--vz-input-bg);
+        color: var(--vz-body-color);
+        font-size: 0.84rem;
+        outline: none;
+        transition: border-color 0.2s;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: 0.55rem center;
+    }
+    .member-picker-search:focus { border-color: var(--vz-primary); }
+    .member-picker-list { max-height: 210px; overflow-y: auto; padding: 0.3rem 0; }
+    .member-picker-item {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.55rem 0.85rem;
+        cursor: pointer;
+        transition: background 0.12s;
+    }
+    .member-picker-item:hover { background: rgba(var(--vz-primary-rgb), 0.06); }
+    .member-picker-item.selected {
+        background: rgba(var(--vz-primary-rgb), 0.1);
+    }
+    .member-picker-item.selected .mpi-name { color: var(--vz-primary); font-weight: 600; }
+    .member-picker-item .mp-avatar {
+        width: 32px; height: 32px;
+        border-radius: 50%;
+        font-size: 0.72rem;
+        font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+    .mpi-name  { font-size: 0.84rem; font-weight: 500; color: var(--vz-body-color); line-height: 1.2; }
+    .mpi-phone { font-size: 0.73rem; color: var(--vz-secondary-color); }
+    .member-picker-none {
+        padding: 1rem;
+        text-align: center;
+        font-size: 0.84rem;
+        color: var(--vz-secondary-color);
+        display: none;
+    }
+    .member-picker-none.show { display: block; }
+
+    /* Dark mode */
+    [data-bs-theme="dark"] .member-picker-dropdown {
+        background: var(--vz-card-bg, #212529);
+        border-color: var(--vz-border-color, #40464c);
+    }
+    [data-bs-theme="dark"] .member-picker-trigger {
+        background: var(--vz-input-bg);
+        border-color: var(--vz-input-border);
+    }
 </style>
 @endpush
 
@@ -296,46 +451,116 @@
 
                         {{-- ── Chef de groupe ── --}}
                         <div class="mb-4">
-                            <label for="leader_id" class="form-label fw-medium text-body d-flex align-items-center gap-2">
-                                <i class="mdi mdi-account-star-outline text-primary fs-16"></i> Chef de groupe
+                            <label class="form-label fw-medium text-body d-flex align-items-center gap-1 mb-2">
+                                <i class="mdi mdi-crown-outline text-warning"></i> Chef de groupe
                             </label>
-                            <select id="leader_id" name="leader_id" class="select2-person @error('leader_id') is-invalid @enderror">
-                                <option value=""></option>
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}"
-                                        data-phone="{{ $user->phone }}"
-                                        {{ old('leader_id', $group->leader_id) == $user->id ? 'selected' : '' }}>
-                                        {{ $user->first_name }} {{ $user->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div class="form-text text-info mt-2" style="font-size: 0.8rem;">
-                                <i class="mdi mdi-information"></i>
+                            <div class="member-picker" id="picker-leader">
+                                <input type="hidden" name="leader_id" id="leader_id_hidden"
+                                    value="{{ old('leader_id', $group->leader_id) }}">
+                                <div class="member-picker-trigger" id="trigger-leader" tabindex="0">
+                                    <div class="member-picker-avatar empty" id="avatar-leader">
+                                        <i class="mdi mdi-account-outline"></i>
+                                    </div>
+                                    <div class="member-picker-label placeholder" id="label-leader">— Aucun chef désigné —</div>
+                                    <span class="member-picker-clear d-none" id="clear-leader" title="Effacer">
+                                        <i class="mdi mdi-close"></i>
+                                    </span>
+                                    <i class="mdi mdi-chevron-down member-picker-chevron"></i>
+                                </div>
+                                <div class="member-picker-dropdown" id="dropdown-leader">
+                                    <div class="member-picker-search-wrap">
+                                        <input type="text" class="member-picker-search" id="search-leader" placeholder="Rechercher un membre..." autocomplete="off">
+                                    </div>
+                                    <div class="member-picker-list" id="list-leader">
+                                        @foreach($users as $user)
+                                            @php
+                                                $initials = mb_strtoupper(mb_substr($user->first_name, 0, 1) . mb_substr($user->name, 0, 1));
+                                                $colors = ['#4f46e5','#0891b2','#059669','#d97706','#dc2626','#7c3aed'];
+                                                $color  = $colors[abs(crc32($user->name)) % count($colors)];
+                                            @endphp
+                                            <div class="member-picker-item"
+                                                data-id="{{ $user->id }}"
+                                                data-name="{{ $user->first_name }} {{ $user->name }}"
+                                                data-phone="{{ $user->phone ?? '' }}"
+                                                data-initials="{{ $initials }}"
+                                                data-color="{{ $color }}">
+                                                <div class="mp-avatar" style="background:{{ $color }}20; color:{{ $color }};">
+                                                    {{ $initials }}
+                                                </div>
+                                                <div>
+                                                    <div class="mpi-name">{{ $user->first_name }} {{ $user->name }}</div>
+                                                    @if($user->phone)
+                                                        <div class="mpi-phone"><i class="mdi mdi-phone-outline"></i> {{ $user->phone }}</div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="member-picker-none" id="none-leader">Aucun résultat</div>
+                                </div>
+                            </div>
+                            <div class="form-text mt-2 text-muted" style="font-size:0.78rem;">
+                                <i class="mdi mdi-information-outline"></i>
                                 Attribue automatiquement le rôle "Chef de groupe".
                             </div>
-                            @error('leader_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                            @error('leader_id')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                         </div>
 
                         {{-- ── Chargé de collecte ── --}}
                         <div class="mb-4">
-                            <label for="collector_id" class="form-label fw-medium text-body d-flex align-items-center gap-2">
-                                <i class="mdi mdi-hand-coin-outline text-warning fs-16"></i> Chargé de collecte
+                            <label class="form-label fw-medium text-body d-flex align-items-center gap-1 mb-2">
+                                <i class="mdi mdi-hand-coin-outline text-success"></i> Chargé de collecte
                             </label>
-                            <select id="collector_id" name="collector_id" class="select2-person @error('collector_id') is-invalid @enderror">
-                                <option value=""></option>
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}"
-                                        data-phone="{{ $user->phone }}"
-                                        {{ old('collector_id', $group->collector_id) == $user->id ? 'selected' : '' }}>
-                                        {{ $user->first_name }} {{ $user->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div class="form-text text-info mt-2" style="font-size: 0.8rem;">
-                                <i class="mdi mdi-information"></i>
+                            <div class="member-picker" id="picker-collector">
+                                <input type="hidden" name="collector_id" id="collector_id_hidden"
+                                    value="{{ old('collector_id', $group->collector_id) }}">
+                                <div class="member-picker-trigger" id="trigger-collector" tabindex="0">
+                                    <div class="member-picker-avatar empty" id="avatar-collector">
+                                        <i class="mdi mdi-account-outline"></i>
+                                    </div>
+                                    <div class="member-picker-label placeholder" id="label-collector">— Aucun chargé désigné —</div>
+                                    <span class="member-picker-clear d-none" id="clear-collector" title="Effacer">
+                                        <i class="mdi mdi-close"></i>
+                                    </span>
+                                    <i class="mdi mdi-chevron-down member-picker-chevron"></i>
+                                </div>
+                                <div class="member-picker-dropdown" id="dropdown-collector">
+                                    <div class="member-picker-search-wrap">
+                                        <input type="text" class="member-picker-search" id="search-collector" placeholder="Rechercher un membre..." autocomplete="off">
+                                    </div>
+                                    <div class="member-picker-list" id="list-collector">
+                                        @foreach($users as $user)
+                                            @php
+                                                $initials = mb_strtoupper(mb_substr($user->first_name, 0, 1) . mb_substr($user->name, 0, 1));
+                                                $colors = ['#4f46e5','#0891b2','#059669','#d97706','#dc2626','#7c3aed'];
+                                                $color  = $colors[crc32($user->name) % count($colors)];
+                                            @endphp
+                                            <div class="member-picker-item"
+                                                data-id="{{ $user->id }}"
+                                                data-name="{{ $user->first_name }} {{ $user->name }}"
+                                                data-phone="{{ $user->phone ?? '' }}"
+                                                data-initials="{{ $initials }}"
+                                                data-color="{{ $color }}">
+                                                <div class="mp-avatar" style="background:{{ $color }}20; color:{{ $color }};">
+                                                    {{ $initials }}
+                                                </div>
+                                                <div>
+                                                    <div class="mpi-name">{{ $user->first_name }} {{ $user->name }}</div>
+                                                    @if($user->phone)
+                                                        <div class="mpi-phone"><i class="mdi mdi-phone-outline"></i> {{ $user->phone }}</div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="member-picker-none" id="none-collector">Aucun résultat</div>
+                                </div>
+                            </div>
+                            <div class="form-text mt-2 text-muted" style="font-size:0.78rem;">
+                                <i class="mdi mdi-information-outline"></i>
                                 Attribue automatiquement le rôle "Chargé de collecte".
                             </div>
-                            @error('collector_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                            @error('collector_id')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                         </div>
 
                         <div class="d-grid mt-4 pt-2">
@@ -352,49 +577,97 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-(function($) {
-    /* Helper: génère les initiales d'un nom */
-    function initials(name) {
-        return name.trim().split(/\s+/).map(w => w[0]).join('').substring(0, 2).toUpperCase();
-    }
+(function() {
+    function MemberPicker(id, initialValue, initialUsers) {
+        const hidden    = document.getElementById(id + '_id_hidden');
+        const trigger   = document.getElementById('trigger-' + id);
+        const dropdown  = document.getElementById('dropdown-' + id);
+        const avatarEl  = document.getElementById('avatar-' + id);
+        const labelEl   = document.getElementById('label-' + id);
+        const clearBtn  = document.getElementById('clear-' + id);
+        const searchEl  = document.getElementById('search-' + id);
+        const listEl    = document.getElementById('list-' + id);
+        const noneEl    = document.getElementById('none-' + id);
+        const items     = Array.from(listEl.querySelectorAll('.member-picker-item'));
 
-    /* Rendu d'une option dans la liste déroulante */
-    function formatOption(option) {
-        if (!option.id) {
-            return $('<span class="text-muted">— Aucun désigné —</span>');
+        let selected = null;
+
+        function select(item) {
+            selected = item;
+            hidden.value  = item ? item.dataset.id : '';
+            const color   = item ? item.dataset.color : null;
+            const initials = item ? item.dataset.initials : null;
+            const name     = item ? item.dataset.name : null;
+            const phone    = item ? item.dataset.phone : null;
+
+            if (item) {
+                avatarEl.className = 'member-picker-avatar';
+                avatarEl.innerHTML = initials;
+                avatarEl.style.background = color + '22';
+                avatarEl.style.color = color;
+                labelEl.className = 'member-picker-label';
+                labelEl.innerHTML = name + (phone ? '<small><i class="mdi mdi-phone-outline"></i> ' + phone + '</small>' : '');
+                clearBtn.classList.remove('d-none');
+            } else {
+                avatarEl.className = 'member-picker-avatar empty';
+                avatarEl.innerHTML = '<i class="mdi mdi-account-outline"></i>';
+                avatarEl.style.background = '';
+                avatarEl.style.color = '';
+                labelEl.className = 'member-picker-label placeholder';
+                labelEl.textContent = id === 'leader' ? '— Aucun chef désigné —' : '— Aucun chargé désigné —';
+                clearBtn.classList.add('d-none');
+            }
+
+            items.forEach(i => i.classList.toggle('selected', i === item));
         }
-        var phone = $(option.element).data('phone') || '';
-        return $(
-            '<div class="s2-user-row">' +
-              '<div class="s2-avatar">' + initials(option.text) + '</div>' +
-              '<div>' +
-                '<div class="s2-name">' + option.text + '</div>' +
-                (phone ? '<div class="s2-phone"><i class="mdi mdi-phone-outline"></i> ' + phone + '</div>' : '') +
-              '</div>' +
-            '</div>'
-        );
-    }
 
-    /* Rendu de la sélection active (dans le champ fermé) */
-    function formatSelection(option) {
-        if (!option.id) return option.text;
-        return option.text;
-    }
-
-    $('.select2-person').select2({
-        width: '100%',
-        allowClear: true,
-        placeholder: '— Aucun désigné —',
-        templateResult:    formatOption,
-        templateSelection: formatSelection,
-        language: {
-            noResults:    function() { return 'Aucun résultat trouvé'; },
-            searching:    function() { return 'Recherche en cours…'; }
+        function open() {
+            dropdown.classList.add('show');
+            trigger.classList.add('open');
+            searchEl.value = '';
+            filterItems('');
+            searchEl.focus();
         }
+
+        function close() {
+            dropdown.classList.remove('show');
+            trigger.classList.remove('open');
+        }
+
+        function filterItems(q) {
+            let visible = 0;
+            items.forEach(item => {
+                const match = item.dataset.name.toLowerCase().includes(q.toLowerCase())
+                           || item.dataset.phone.includes(q);
+                item.style.display = match ? '' : 'none';
+                if (match) visible++;
+            });
+            noneEl.classList.toggle('show', visible === 0);
+        }
+
+        // init pre-selected
+        if (initialValue) {
+            const preItem = items.find(i => i.dataset.id == initialValue);
+            if (preItem) select(preItem);
+        }
+
+        trigger.addEventListener('click', () => dropdown.classList.contains('show') ? close() : open());
+        trigger.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+        clearBtn.addEventListener('click', e => { e.stopPropagation(); select(null); });
+        searchEl.addEventListener('input', e => filterItems(e.target.value));
+        items.forEach(item => {
+            item.addEventListener('click', () => { select(item); close(); });
+        });
+        document.addEventListener('click', e => {
+            if (!trigger.closest('.member-picker').contains(e.target)) close();
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        MemberPicker('leader',    '{{ old('leader_id', $group->leader_id) }}');
+        MemberPicker('collector', '{{ old('collector_id', $group->collector_id) }}');
     });
-})(jQuery);
+})();
 </script>
 @endpush

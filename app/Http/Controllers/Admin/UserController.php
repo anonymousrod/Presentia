@@ -214,6 +214,14 @@ class UserController extends Controller
     {
         $this->authorize('update', User::class);
 
+        if ($request->has('user_ids')) {
+            $request->merge([
+                'user_ids' => array_map(function($id) {
+                    return decode_id($id);
+                }, (array) $request->user_ids)
+            ]);
+        }
+
         $request->validate([
             'user_ids' => 'required|array',
             'user_ids.*' => 'exists:users,id',

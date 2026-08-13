@@ -22,7 +22,7 @@ class QrCodeController extends Controller
         $url = URL::temporarySignedRoute(
             'attendance.validate',
             $expires,
-            ['activity' => $activity->id, 'v' => $activity->qr_version]
+            ['activity' => encode_id($activity->id), 'v' => $activity->qr_version]
         );
 
         session()->put("activity_qr_url_{$activity->id}", $url);
@@ -62,7 +62,7 @@ class QrCodeController extends Controller
             $url = URL::temporarySignedRoute(
                 'attendance.validate',
                 $expires,
-                ['activity' => $activity->id, 'v' => $activity->qr_version]
+                ['activity' => encode_id($activity->id), 'v' => $activity->qr_version]
             );
 
             session()->put("activity_qr_url_{$activity->id}", $url);

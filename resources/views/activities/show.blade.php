@@ -58,7 +58,7 @@
     $isWaitlisted = $myRegistration ? $myRegistration->is_waitlisted : false;
 @endphp
 
-<div class="row">
+<div class="row pb-5 pb-lg-0 mb-4 mb-lg-0">
     <!-- Left Column: Activity Details -->
     <div class="col-lg-8">
         <div class="card shadow-sm border-0 mb-4">
@@ -78,73 +78,73 @@
                     </div>
                 </div>
 
-                <h2 class="text-dark fw-bold mb-3">{{ $activity->title }}</h2>
+                <h2 class="fw-bold mb-3 fs-20 fs-md-24">{{ $activity->title }}</h2>
 
-                <!-- Premium colored details cards grid -->
-                <div class="row g-3 my-4">
+                <!-- Premium colored details cards grid (2x2 on mobile, 4 in row on XL) -->
+                <div class="row g-2 g-sm-3 my-4">
                     <!-- Date de début -->
-                    <div class="col-sm-6 col-xl-3">
+                    <div class="col-6 col-xl-3">
                         <div class="card border-0 h-100 rounded-3 info-card-premium bg-primary-subtle border-start border-primary border-3 shadow-none">
-                            <div class="card-body p-3 d-flex align-items-center">
-                                <div class="avatar-sm flex-shrink-0 me-3">
-                                    <span class="avatar-title bg-primary text-white rounded-circle fs-20 shadow-sm">
+                            <div class="card-body p-2 p-sm-3 d-flex align-items-center">
+                                <div class="avatar-xs avatar-sm-md flex-shrink-0 me-2 me-sm-3">
+                                    <span class="avatar-title bg-primary text-white rounded-circle fs-16 fs-sm-20 shadow-sm">
                                         <i class="ri-calendar-event-line"></i>
                                     </span>
                                 </div>
                                 <div class="overflow-hidden">
-                                    <small class="text-primary d-block uppercase tracking-wider fs-10 fw-semibold">Date de début</small>
-                                    <span class="fw-bold text-dark fs-14">{{ $activity->start_time->format('d/m/Y H:i') }}</span>
+                                    <small class="text-primary d-block uppercase tracking-wider fs-9 fs-sm-10 fw-semibold">Début</small>
+                                    <span class="fw-bold text-body fs-12 fs-sm-14">{{ $activity->start_time->format('d/m/Y H:i') }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Date de fin -->
-                    <div class="col-sm-6 col-xl-3">
+                    <div class="col-6 col-xl-3">
                         <div class="card border-0 h-100 rounded-3 info-card-premium bg-info-subtle border-start border-info border-3 shadow-none">
-                            <div class="card-body p-3 d-flex align-items-center">
-                                <div class="avatar-sm flex-shrink-0 me-3">
-                                    <span class="avatar-title bg-info text-white rounded-circle fs-20 shadow-sm">
+                            <div class="card-body p-2 p-sm-3 d-flex align-items-center">
+                                <div class="avatar-xs avatar-sm-md flex-shrink-0 me-2 me-sm-3">
+                                    <span class="avatar-title bg-info text-white rounded-circle fs-16 fs-sm-20 shadow-sm">
                                         <i class="ri-calendar-check-line"></i>
                                     </span>
                                 </div>
                                 <div class="overflow-hidden">
-                                    <small class="text-info d-block uppercase tracking-wider fs-10 fw-semibold">Date de fin</small>
-                                    <span class="fw-bold text-dark fs-14">{{ $activity->end_time->format('d/m/Y H:i') }}</span>
+                                    <small class="text-info d-block uppercase tracking-wider fs-9 fs-sm-10 fw-semibold">Fin</small>
+                                    <span class="fw-bold text-body fs-12 fs-sm-14">{{ $activity->end_time->format('d/m/Y H:i') }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Lieu -->
-                    <div class="col-sm-6 col-xl-3">
+                    <div class="col-6 col-xl-3">
                         <div class="card border-0 h-100 rounded-3 info-card-premium bg-success-subtle border-start border-success border-3 shadow-none">
-                            <div class="card-body p-3 d-flex align-items-center">
-                                <div class="avatar-sm flex-shrink-0 me-3">
-                                    <span class="avatar-title bg-success text-white rounded-circle fs-20 shadow-sm">
+                            <div class="card-body p-2 p-sm-3 d-flex align-items-center">
+                                <div class="avatar-xs avatar-sm-md flex-shrink-0 me-2 me-sm-3">
+                                    <span class="avatar-title bg-success text-white rounded-circle fs-16 fs-sm-20 shadow-sm">
                                         <i class="ri-map-pin-line"></i>
                                     </span>
                                 </div>
                                 <div class="overflow-hidden">
-                                    <small class="text-success d-block uppercase tracking-wider fs-10 fw-semibold">Lieu</small>
-                                    <span class="fw-bold text-dark fs-14 text-truncate d-block" title="{{ $activity->location ?: 'Non spécifié' }}">{{ $activity->location ?: 'Non spécifié' }}</span>
+                                    <small class="text-success d-block uppercase tracking-wider fs-9 fs-sm-10 fw-semibold">Lieu</small>
+                                    <span class="fw-bold text-body fs-12 fs-sm-14 text-truncate d-block" title="{{ $activity->location ?: 'Non spécifié' }}">{{ $activity->location ?: 'Non spécifié' }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Capacité -->
-                    <div class="col-sm-6 col-xl-3">
+                    <div class="col-6 col-xl-3">
                         <div class="card border-0 h-100 rounded-3 info-card-premium bg-warning-subtle border-start border-warning border-3 shadow-none">
-                            <div class="card-body p-3 d-flex align-items-center">
-                                <div class="avatar-sm flex-shrink-0 me-3">
-                                    <span class="avatar-title bg-warning text-white rounded-circle fs-20 shadow-sm">
+                            <div class="card-body p-2 p-sm-3 d-flex align-items-center">
+                                <div class="avatar-xs avatar-sm-md flex-shrink-0 me-2 me-sm-3">
+                                    <span class="avatar-title bg-warning text-white rounded-circle fs-16 fs-sm-20 shadow-sm">
                                         <i class="ri-team-line"></i>
                                     </span>
                                 </div>
                                 <div class="overflow-hidden">
-                                    <small class="text-warning d-block uppercase tracking-wider fs-10 fw-semibold">Capacité</small>
-                                    <span class="fw-bold text-dark fs-14 d-block">
+                                    <small class="text-warning d-block uppercase tracking-wider fs-9 fs-sm-10 fw-semibold">Capacité</small>
+                                    <span class="fw-bold text-body fs-12 fs-sm-14 d-block">
                                         @if($activity->capacity)
                                             {{ $activeRegistrationsCount }} / {{ $activity->capacity }}
                                         @else
@@ -158,8 +158,8 @@
                 </div>
 
                 <div class="mt-4">
-                    <h5 class="fw-bold mb-3 text-dark">Description</h5>
-                    <div class="text-muted fs-15 leading-relaxed">
+                    <h5 class="fw-bold mb-3">Description</h5>
+                    <div class="text-muted fs-14 fs-md-15 leading-relaxed">
                         {!! nl2br(e($activity->description ?: 'Aucune description fournie.')) !!}
                     </div>
                 </div>
@@ -173,7 +173,7 @@
                         </div>
                         <div>
                             <small class="text-muted d-block">Responsable de l'activité</small>
-                            <span class="fw-bold text-dark fs-14">
+                            <span class="fw-bold text-body fs-14">
                                 @if($activity->responsible)
                                     {{ $activity->responsible->first_name }} {{ $activity->responsible->name }}
                                 @else
@@ -187,7 +187,7 @@
         </div>
     </div>
 
-    <!-- Right Column: Registration Status Cockpit -->
+    <!-- Right Column: Registration Status Cockpit (Desktop & Mobile view) -->
     <div class="col-lg-4">
         @can('manage', $activity)
             <div class="card shadow-sm border-0 border-start border-success border-3 mb-4 animate__animated animate__fadeIn">
@@ -222,8 +222,8 @@
                 </div>
             </div>
         @else
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-soft-primary border-0 py-3">
+        <div class="card shadow-sm border-0" id="registrationCardDesktop">
+            <div class="card-header bg-soft-primary border-0 py-3 d-flex align-items-center justify-content-between">
                 <h5 class="card-title mb-0 fw-bold text-primary"><i class="mdi mdi-cog-outline me-2"></i>Mon Inscription</h5>
             </div>
             
@@ -374,6 +374,160 @@
     </div>
 </div>
 
+{{-- 📱 MOBILE APP NATIVE EXPERIENCE (Sticky Bottom Bar & Bottom Sheet) --}}
+@if($activity->is_registration_required)
+<div class="mobile-sticky-bar d-lg-none fixed-bottom p-3 shadow-lg">
+    <div class="d-flex align-items-center justify-content-between gap-2">
+        <div>
+            <small class="text-muted d-block text-uppercase fs-10 tracking-wider fw-semibold">Statut actuel</small>
+            <span class="fw-bold fs-13 d-flex align-items-center gap-1">
+                @if(!$myRegistration)
+                    <span class="text-secondary"><i class="mdi mdi-circle-medium"></i> Non Inscrit(e)</span>
+                @elseif($isWaitlisted)
+                    <span class="text-warning"><i class="mdi mdi-clock-outline"></i> En attente</span>
+                @elseif($currentStatusVal === 'PRESENT')
+                    <span class="text-success"><i class="mdi mdi-check-circle-outline"></i> Inscrit(e)</span>
+                @elseif($currentStatusVal === 'UNCERTAIN')
+                    <span class="text-info"><i class="mdi mdi-help-circle-outline"></i> Incertain(e)</span>
+                @elseif($currentStatusVal === 'ABSENT_JUSTIFIED')
+                    <span class="text-danger"><i class="mdi mdi-close-circle-outline"></i> Absent(e)</span>
+                @endif
+            </span>
+        </div>
+        <div>
+            @if(!$isLocked)
+                <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold d-flex align-items-center gap-1 text-nowrap" data-bs-toggle="offcanvas" data-bs-target="#mobileRegistrationSheet">
+                    <i class="mdi mdi-pencil-outline"></i>
+                    <span>{{ $myRegistration ? 'Modifier' : 'S\'inscrire' }}</span>
+                </button>
+            @else
+                <button type="button" class="btn btn-secondary rounded-pill px-3 shadow-sm fw-semibold" disabled>
+                    <i class="mdi mdi-lock-outline me-1"></i> Fermé
+                </button>
+            @endif
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Bottom Sheet Offcanvas -->
+<div class="offcanvas offcanvas-bottom rounded-top-4 d-lg-none h-auto" tabindex="-1" id="mobileRegistrationSheet" aria-labelledby="mobileRegistrationSheetLabel" style="max-height: 85vh;">
+    <div class="bottom-sheet-handle mx-auto mt-2"></div>
+    <div class="offcanvas-header border-bottom py-3">
+        <div class="d-flex align-items-center gap-2">
+            <div class="avatar-xs flex-shrink-0">
+                <span class="avatar-title bg-primary-subtle text-primary rounded-circle"><i class="mdi mdi-cog-outline"></i></span>
+            </div>
+            <h5 class="offcanvas-title fw-bold fs-16" id="mobileRegistrationSheetLabel">Mon Inscription</h5>
+        </div>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-3 p-sm-4">
+        <form action="{{ $formRoute }}" method="POST" 
+              x-data="{ 
+                  statusMobile: '{{ old('status', $currentStatusVal ?: 'PRESENT') }}', 
+                  isLockedMobile: {{ $isLocked ? 'true' : 'false' }} 
+              }">
+            @csrf
+            @if($formMethod === 'PUT')
+                @method('PUT')
+            @endif
+
+            <div class="mb-4">
+                <label class="form-label fw-bold mb-3">Sélectionnez votre statut :</label>
+
+                <!-- PRESENT option -->
+                <div class="mb-2">
+                    <input class="status-option-input d-none" 
+                           type="radio" 
+                           name="status" 
+                           id="mob-status-present" 
+                           value="PRESENT" 
+                           x-model="statusMobile"
+                           :disabled="isLockedMobile">
+                    <label class="status-option-card d-block w-100" for="mob-status-present">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="fw-bold mb-1 text-success"><i class="mdi mdi-checkbox-marked-circle-outline me-2"></i>Je participe</h6>
+                                <small class="text-muted">Je serai présent à cette activité</small>
+                            </div>
+                            <div class="flex-shrink-0 ms-2" x-show="statusMobile === 'PRESENT'">
+                                <span class="badge bg-success rounded-circle p-1"><i class="mdi mdi-check"></i></span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- UNCERTAIN option -->
+                <div class="mb-2">
+                    <input class="status-option-input d-none" 
+                           type="radio" 
+                           name="status" 
+                           id="mob-status-uncertain" 
+                           value="UNCERTAIN" 
+                           x-model="statusMobile"
+                           :disabled="isLockedMobile">
+                    <label class="status-option-card d-block w-100" for="mob-status-uncertain">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="fw-bold mb-1 text-warning"><i class="mdi mdi-help-circle-outline me-2"></i>Incertain(e)</h6>
+                                <small class="text-muted">Je ne suis pas encore sûr(e) d'y assister</small>
+                            </div>
+                            <div class="flex-shrink-0 ms-2" x-show="statusMobile === 'UNCERTAIN'">
+                                <span class="badge bg-warning rounded-circle p-1"><i class="mdi mdi-check"></i></span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- ABSENT_JUSTIFIED option -->
+                <div class="mb-2">
+                    <input class="status-option-input d-none" 
+                           type="radio" 
+                           name="status" 
+                           id="mob-status-absent" 
+                           value="ABSENT_JUSTIFIED" 
+                           x-model="statusMobile"
+                           :disabled="isLockedMobile">
+                    <label class="status-option-card d-block w-100" for="mob-status-absent">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="fw-bold mb-1 text-danger"><i class="mdi mdi-close-circle-outline me-2"></i>Je n'y vais pas / Absent</h6>
+                                <small class="text-muted">Se désinscrire ou déclarer son absence</small>
+                            </div>
+                            <div class="flex-shrink-0 ms-2" x-show="statusMobile === 'ABSENT_JUSTIFIED'">
+                                <span class="badge bg-danger rounded-circle p-1"><i class="mdi mdi-check"></i></span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Justification block -->
+            <div class="mb-4" x-show="statusMobile === 'ABSENT_JUSTIFIED'" x-transition:enter="fade-in">
+                <label for="mob_justification" class="form-label fw-bold">Motif d'absence / désinscription <span class="text-danger">*</span></label>
+                <textarea class="form-control" 
+                          name="justification" 
+                          id="mob_justification" 
+                          rows="3" 
+                          placeholder="Veuillez renseigner le motif de votre absence (min. 5 caractères)"
+                          :required="statusMobile === 'ABSENT_JUSTIFIED'"
+                          :disabled="isLockedMobile">{{ old('justification', $myRegistration ? $myRegistration->justification : '') }}</textarea>
+            </div>
+
+            @if(!$isLocked)
+                <button type="submit" class="btn btn-primary w-100 btn-lg shadow-sm rounded-pill">
+                    <i class="mdi mdi-content-save-outline me-1"></i> Enregistrer mon choix
+                </button>
+            @else
+                <button type="button" class="btn btn-secondary w-100 btn-lg shadow-sm rounded-pill" disabled>
+                    <i class="mdi mdi-lock-outline me-1"></i> Inscriptions fermées
+                </button>
+            @endif
+        </form>
+    </div>
+</div>
+@endif
+
 <style>
     /* Radio Option Cards */
     .status-option-card {
@@ -434,6 +588,35 @@
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     }
+    
+    /* Mobile App UX Specific Styles */
+    .mobile-sticky-bar {
+        background: var(--vz-card-bg, #ffffff);
+        border-top: 1px solid var(--vz-border-color);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        z-index: 1040;
+        box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.08) !important;
+    }
+    
+    [data-bs-theme="dark"] .mobile-sticky-bar {
+        background: rgba(33, 37, 41, 0.95);
+        border-top-color: var(--vz-border-color);
+    }
+    
+    .bottom-sheet-handle {
+        width: 38px;
+        height: 4px;
+        background-color: var(--vz-border-color);
+        border-radius: 2px;
+    }
+    
+    .rounded-top-4 {
+        border-top-left-radius: 1.25rem !important;
+        border-top-right-radius: 1.25rem !important;
+    }
+    
+    .fs-9 { font-size: 0.6875rem; }
     
     /* Fade animation */
     .fade-in {

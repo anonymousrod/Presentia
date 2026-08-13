@@ -536,7 +536,7 @@
                                         </td>
                                         <td>{{ $joinedAt }}</td>
                                         <td>
-                                            <a href="{{ route('admin.groups.show', $group->id) }}" class="btn btn-sm btn-soft-info" data-bs-toggle="tooltip" title="Voir le groupe">
+                                            <a href="{{ route('admin.groups.show', $group) }}" class="btn btn-sm btn-soft-info" data-bs-toggle="tooltip" title="Voir le groupe">
                                                 <i class="ri-eye-fill"></i>
                                             </a>
                                         </td>

@@ -34,9 +34,9 @@
                         </div>
                     </div>
                 @endif
-                <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 {{ $activity->image_path ? 'border-0 bg-white' : '' }}">
+                <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 {{ $activity->image_path ? 'border-0' : '' }}">
                     @if(!$activity->image_path)
-                        <h4 class="mb-0 fw-bold text-dark">{{ $activity->title }}</h4>
+                        <h4 class="mb-0 fw-bold">{{ $activity->title }}</h4>
                     @else
                         <div></div> <!-- empty div to keep flex space-between working -->
                     @endif
@@ -96,7 +96,7 @@
                         date: '{{ $reg->created_at->format('d/m/Y H:i') }}',
                         status: '{{ $reg->is_waitlisted ? 'attente' : (($reg->status?->value ?? $reg->status) === 'PRESENT' ? 'inscrit' : (($reg->status?->value ?? $reg->status) === 'UNCERTAIN' ? 'incertain' : 'desinscrit')) }}',
                         justification: '{{ addslashes($reg->justification ?: '') }}',
-                        user_url: '{{ route('admin.users.show', $reg->user_id) }}',
+                        user_url: '{{ route('admin.users.show', encode_id($reg->user_id)) }}',
                         group_ids: [{{ $reg->user->groups->pluck('id')->join(',') }}]
                     },
                     @endforeach
@@ -259,7 +259,7 @@
                         status: '{{ $att->status->value }}',
                         source: '{{ $att->scan_source }}',
                         note: '{{ addslashes($att->note ?: '') }}',
-                        user_url: '{{ route('admin.users.show', $att->user_id) }}',
+                        user_url: '{{ route('admin.users.show', encode_id($att->user_id)) }}',
                         group_ids: [{{ $att->user->groups->pluck('id')->join(',') }}]
                     },
                     @endforeach
@@ -438,7 +438,7 @@
 
                     <div class="mb-3">
                         <strong>Visibilité :</strong>
-                        <p><span class="badge bg-soft-dark text-dark fs-12">{{ $activity->visibility?->label() ?? 'Tout le monde' }}</span></p>
+                        <p><span class="badge bg-secondary-subtle text-body fs-12">{{ $activity->visibility?->label() ?? 'Tout le monde' }}</span></p>
                         @if($activity->visibility?->value === 'GROUP')
                             <div class="text-muted"><i class="mdi mdi-account-group"></i> Groupe : {{ $activity->group?->name }}</div>
                         @elseif($activity->visibility?->value === 'ROLE')

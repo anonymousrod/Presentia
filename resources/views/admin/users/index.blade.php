@@ -104,7 +104,7 @@
                             <tr>
                                 <td>
                                     @can('member.edit')
-                                    <input class="form-check-input user-checkbox" type="checkbox" name="user_ids[]" value="{{ $user->id }}">
+                                    <input class="form-check-input user-checkbox" type="checkbox" name="user_ids[]" value="{{ encode_id($user->id) }}">
                                     @endcan
                                 </td>
                                 <td>
@@ -174,7 +174,7 @@
                                 <div class="d-flex align-items-center justify-content-between mb-3">
                                     <div class="d-flex align-items-center gap-2">
                                         @can('member.edit')
-                                        <input class="form-check-input user-checkbox" type="checkbox" name="user_ids[]" value="{{ $user->id }}">
+                                        <input class="form-check-input user-checkbox" type="checkbox" name="user_ids[]" value="{{ encode_id($user->id) }}">
                                         @endcan
                                         @if($user->photo)
                                             <img src="{{ asset('storage/' . $user->photo) }}" alt="Photo" class="rounded-circle" width="40" height="40" style="object-fit: cover;">

@@ -51,7 +51,8 @@ class AttendanceController extends Controller
             }
         }
 
-        $activityId = $request->query('activity');
+        $activityIdHash = $request->query('activity');
+        $activityId = decode_id($activityIdHash);
         $version = $request->query('v');
 
         $activity = Activity::findOrFail($activityId);

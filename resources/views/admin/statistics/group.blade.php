@@ -102,7 +102,7 @@
                             <select id="global-filter-type" class="form-select form-select-sm" style="min-width: 150px;">
                                 <option value="">Tous les types</option>
                                 @foreach($activityTypes as $type)
-                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                    <option value="{{ encode_id($type->id) }}">{{ $type->name }}</option>
                                 @endforeach
                             </select>
                         </div>

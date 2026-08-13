@@ -318,7 +318,7 @@
                                                             <i class="ri-file-list-3-line"></i>
                                                         </div>
                                                     </div>
-                                                    <h5 class="fs-15 text-dark mb-1">Aucune activité récente</h5>
+                                                    <h5 class="fs-15 mb-1">Aucune activité récente</h5>
                                                     <p class="text-muted mb-0">Il n'y a pas d'activité à gérer pour le moment.</p>
                                                 </td>
                                             </tr>

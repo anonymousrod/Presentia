@@ -411,8 +411,8 @@
                                 
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <span class="badge bg-light text-dark mb-1 d-block text-start"><i class="ri-user-star-line text-warning"></i> Chef: {{ $group->leader ? $group->leader->first_name : 'N/A' }}</span>
-                                        <span class="badge bg-light text-dark d-block text-start"><i class="ri-hand-coin-line text-success"></i> Col: {{ $group->collector ? $group->collector->first_name : 'N/A' }}</span>
+                                        <span class="badge bg-secondary-subtle text-body mb-1 d-block text-start"><i class="ri-user-star-line text-warning"></i> Chef: {{ $group->leader ? $group->leader->first_name : 'N/A' }}</span>
+                                        <span class="badge bg-secondary-subtle text-body d-block text-start"><i class="ri-hand-coin-line text-success"></i> Col: {{ $group->collector ? $group->collector->first_name : 'N/A' }}</span>
                                     </div>
                                     <div class="text-center">
                                         <h4 class="mb-0 fw-bold">{{ $group->members_count }}</h4>
@@ -519,7 +519,7 @@
                 <p class="lead mb-5 mx-auto" style="max-width: 700px;">
                     Vous souhaitez faire partie de notre merveilleuse jeunesse, participer à nos activités et grandir avec nous ?
                 </p>
-                <div class="d-inline-flex align-items-center bg-white rounded-pill p-2 pe-4 shadow-sm" style="cursor: pointer;" onclick="window.location.href='tel:{{ str_replace(' ', '', $adminPhone) }}'">
+                <div class="d-inline-flex align-items-center bg-body-secondary rounded-pill p-2 pe-4 shadow-sm" style="cursor: pointer;" onclick="window.location.href='tel:{{ str_replace(' ', '', $adminPhone) }}'">
                     <div class="avatar-sm me-3">
                         <div class="avatar-title bg-primary rounded-circle">
                             <i class="ri-phone-fill fs-20"></i>
@@ -527,7 +527,7 @@
                     </div>
                     <div class="text-start">
                         <span class="d-block text-muted small fw-medium">Contactez le Président pour être ajouté :</span>
-                        <span class="d-block text-dark fw-bold fs-18">{{ $adminPhone }}</span>
+                        <span class="d-block text-body fw-bold fs-18">{{ $adminPhone }}</span>
                     </div>
                 </div>
             </div>

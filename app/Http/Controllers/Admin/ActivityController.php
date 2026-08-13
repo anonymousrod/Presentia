@@ -34,7 +34,7 @@ class ActivityController extends Controller
         }
 
         if ($request->filled('type')) {
-            $query->where('activity_type_id', $request->type);
+            $query->where('activity_type_id', decode_id($request->type));
         }
 
         if ($request->filled('status')) {

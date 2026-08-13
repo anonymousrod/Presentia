@@ -288,7 +288,7 @@
                                                             </div>
                                                         </div>
                                                         <div>
-                                                            <h5 class="fs-15 fw-semibold mb-2 text-dark">{{ $activity->title }}</h5>
+                                                            <h5 class="fs-15 fw-semibold mb-2">{{ $activity->title }}</h5>
                                                             <span class="badge bg-primary-subtle text-primary py-1 px-2">{{ $activity->type->name ?? 'Activité' }}</span>
                                                         </div>
                                                     </div>
@@ -317,7 +317,7 @@
                                                             <i class="ri-calendar-2-line"></i>
                                                         </div>
                                                     </div>
-                                                    <h5 class="fs-15 text-dark mb-1">Aucune activité prévue</h5>
+                                                    <h5 class="fs-15 mb-1">Aucune activité prévue</h5>
                                                     <p class="text-muted mb-0">Revenez plus tard pour voir le programme.</p>
                                                 </td>
                                             </tr>

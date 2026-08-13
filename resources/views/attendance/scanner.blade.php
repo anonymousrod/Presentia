@@ -156,7 +156,7 @@
                 if (data.status === 'success') {
                     let statusLabel = data.data.status === 'PRESENT' ? 
                         '<span class="badge bg-success">PRÉSENT (À l\'heure)</span>' : 
-                        '<span class="badge bg-warning text-dark">EN RETARD</span>';
+                        '<span class="badge bg-warning-subtle text-warning">EN RETARD</span>';
                     
                     let detailsHtml = `
                         <p class="mb-1"><strong>${data.message}</strong></p>

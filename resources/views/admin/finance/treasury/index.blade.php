@@ -176,7 +176,7 @@
                                             </div>
                                             <div class="modal-footer justify-content-center">
                                                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
-                                                <form action="{{ route('admin.finance.remittances.validate', $rem->id) }}" method="POST" class="d-inline-block">
+                                                <form action="{{ route('admin.finance.remittances.validate', $rem) }}" method="POST" class="d-inline-block">
                                                     @csrf
                                                     <button type="submit" class="btn btn-success">Confirmer la réception</button>
                                                 </form>

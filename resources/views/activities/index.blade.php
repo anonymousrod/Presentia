@@ -81,7 +81,7 @@
                 <select name="type" class="form-select" style="border-radius: 0.5rem;">
                     <option value="">Tous les types</option>
                     @foreach($activityTypes as $type)
-                        <option value="{{ $type->id }}" {{ request('type') == $type->id ? 'selected' : '' }}>
+                        <option value="{{ encode_id($type->id) }}" {{ request('type') == encode_id($type->id) ? 'selected' : '' }}>
                             {{ $type->name }}
                         </option>
                     @endforeach

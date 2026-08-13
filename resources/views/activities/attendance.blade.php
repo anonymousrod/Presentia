@@ -344,7 +344,7 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <div class="fw-bold text-dark" style="font-size: 0.95rem; line-height: 1.2;" x-text="member.full_name"></div>
+                                                <div class="fw-bold text-body" style="font-size: 0.95rem; line-height: 1.2;" x-text="member.full_name"></div>
                                                 <small class="text-muted" x-text="member.email"></small>
                                             </div>
                                         </div>

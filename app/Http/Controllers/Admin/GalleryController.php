@@ -61,6 +61,14 @@ class GalleryController extends Controller
 
     public function bulkDestroy(Request $request)
     {
+        if ($request->has('gallery_ids')) {
+            $request->merge([
+                'gallery_ids' => array_map(function($id) {
+                    return decode_id($id);
+                }, (array) $request->gallery_ids)
+            ]);
+        }
+
         $request->validate([
             'gallery_ids' => 'required|array',
             'gallery_ids.*' => 'exists:galleries,id',

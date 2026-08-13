@@ -32,7 +32,7 @@ class GlobalSearchController extends Controller
                         'type' => 'Membre',
                         'title' => $user->first_name . ' ' . $user->name,
                         'subtitle' => $user->email,
-                        'url' => route('admin.users.show', $user->id),
+                        'url' => route('admin.users.show', $user),
                         'icon' => 'ri-user-line',
                     ];
                 });
@@ -50,7 +50,7 @@ class GlobalSearchController extends Controller
                         'type' => 'Groupe',
                         'title' => $group->name,
                         'subtitle' => $group->category ?? 'Sans catégorie',
-                        'url' => route('admin.groups.show', $group->id),
+                        'url' => route('admin.groups.show', $group),
                         'icon' => 'ri-group-line',
                     ];
                 });
@@ -67,7 +67,7 @@ class GlobalSearchController extends Controller
                         'type' => 'Activité',
                         'title' => $activity->title,
                         'subtitle' => optional($activity->start_time)->format('d/m/Y H:i') ?? 'Non planifiée',
-                        'url' => route('admin.activities.show', $activity->id),
+                        'url' => route('admin.activities.show', $activity),
                         'icon' => 'ri-calendar-event-line',
                     ];
                 });

@@ -74,7 +74,7 @@
                         <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
                             <div class="card border shadow-none h-100 mb-0 position-relative">
                                 <div class="position-absolute top-0 start-0 p-2 z-1">
-                                    <input type="checkbox" name="gallery_ids[]" value="{{ $gallery->id }}" class="form-check-input gallery-checkbox fs-5" onchange="toggleBulkDeleteBtn()" style="cursor: pointer; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+                                    <input type="checkbox" name="gallery_ids[]" class="form-check-input gallery-checkbox fs-5" value="{{ encode_id($gallery->id) }}" onchange="toggleBulkDeleteBtn()" style="cursor: pointer; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
                                 </div>
                                 <img src="{{ asset('storage/' . $gallery->image_path) }}" class="card-img-top" alt="{{ $gallery->title }}" style="height: 200px; object-fit: cover;">
                                 <div class="card-body p-3 text-center">
@@ -82,7 +82,7 @@
                                     
                                     <div class="d-flex justify-content-between align-items-center mt-3">
                                         <!-- Formulaire Activer/Désactiver -->
-                                        <form action="{{ route('admin.galleries.toggle', $gallery->id) }}" method="POST">
+                                        <form action="{{ route('admin.galleries.toggle', $gallery) }}" method="POST" class="d-inline">
                                             @csrf
                                             <div class="form-check form-switch form-switch-success" title="Afficher sur l'accueil">
                                                 <input class="form-check-input" type="checkbox" role="switch" onchange="this.form.submit()" {{ $gallery->is_active ? 'checked' : '' }}>
@@ -91,7 +91,7 @@
                                         </form>
 
                                         <!-- Bouton de suppression individuelle -->
-                                        <button type="button" class="btn btn-sm btn-soft-danger" onclick="openDeleteModal({{ $gallery->id }})">
+                                        <button type="button" class="btn btn-sm btn-soft-danger" onclick="openDeleteModal('{{ encode_id($gallery->id) }}')">
                                             <i class="ri-delete-bin-line"></i>
                                         </button>
                                     </div>

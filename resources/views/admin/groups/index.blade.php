@@ -55,7 +55,7 @@
                             <td>{{ $group->category ?? '—' }}</td>
                             <td>
                                 @if($group->leader)
-                                    <span class="badge bg-info text-dark">
+                                    <span class="badge bg-info-subtle text-info">
                                         {{ $group->leader->first_name }} {{ $group->leader->name }}
                                     </span>
                                 @else

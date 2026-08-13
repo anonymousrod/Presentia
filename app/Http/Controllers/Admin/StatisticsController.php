@@ -72,7 +72,8 @@ class StatisticsController extends Controller
      */
     public function chartPresenceEvolution(Request $request): JsonResponse
     {
-        $typeId = $request->input('activity_type_id');
+        $typeIdHash = $request->input('activity_type_id');
+        $typeId = $typeIdHash ? decode_id($typeIdHash) : null;
         $dateFrom = $request->input('date_from');
         $dateTo = $request->input('date_to');
 
@@ -120,7 +121,8 @@ class StatisticsController extends Controller
      */
     public function chartPresenceByGroup(Request $request): JsonResponse
     {
-        $typeId = $request->input('activity_type_id');
+        $typeIdHash = $request->input('activity_type_id');
+        $typeId = $typeIdHash ? decode_id($typeIdHash) : null;
         $dateFrom = $request->input('date_from');
         $dateTo = $request->input('date_to');
 
@@ -180,7 +182,8 @@ class StatisticsController extends Controller
      */
     public function chartIndividualParticipation(Request $request): JsonResponse
     {
-        $typeId = $request->input('activity_type_id');
+        $typeIdHash = $request->input('activity_type_id');
+        $typeId = $typeIdHash ? decode_id($typeIdHash) : null;
         $dateFrom = $request->input('date_from');
         $dateTo = $request->input('date_to');
 
@@ -233,7 +236,8 @@ class StatisticsController extends Controller
      */
     public function chartAffluenceByActivity(Request $request): JsonResponse
     {
-        $typeId = $request->input('activity_type_id');
+        $typeIdHash = $request->input('activity_type_id');
+        $typeId = $typeIdHash ? decode_id($typeIdHash) : null;
         $dateFrom = $request->input('date_from');
         $dateTo = $request->input('date_to');
 
@@ -388,7 +392,8 @@ class StatisticsController extends Controller
 
         $groupIdHash = $request->input('group_id');
         $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
-        $typeId = $request->input('activity_type_id');
+        $typeIdHash = $request->input('activity_type_id');
+        $typeId = $typeIdHash ? decode_id($typeIdHash) : null;
         $dateFrom = $request->input('date_from');
         $dateTo = $request->input('date_to');
 
@@ -446,7 +451,8 @@ class StatisticsController extends Controller
 
         $groupIdHash = $request->input('group_id');
         $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
-        $typeId = $request->input('activity_type_id');
+        $typeIdHash = $request->input('activity_type_id');
+        $typeId = $typeIdHash ? decode_id($typeIdHash) : null;
         $dateFrom = $request->input('date_from');
         $dateTo = $request->input('date_to');
 

@@ -344,7 +344,7 @@
                                                     <li>
                                                         <div class="d-flex">
                                                             <div class="flex-shrink-0 avatar-xs">
-                                                                <div class="avatar-title rounded bg-light text-dark border">
+                                                                <div class="avatar-title rounded bg-secondary-subtle text-body border">
                                                                     <i class="ri-information-line"></i>
                                                                 </div>
                                                             </div>
@@ -423,7 +423,7 @@
                                                         </td>
                                                         <td>{{ $joinedAt }}</td>
                                                         <td>
-                                                            <a href="{{ route('admin.groups.show', $group->id) }}" class="btn btn-sm btn-soft-info" data-bs-toggle="tooltip" title="Voir le groupe">
+                                                            <a href="{{ route('admin.groups.show', $group) }}" class="btn btn-sm btn-soft-info" data-bs-toggle="tooltip" title="Voir le groupe">
                                                                 <i class="ri-eye-fill"></i>
                                                             </a>
                                                         </td>
