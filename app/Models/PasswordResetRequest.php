@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 use App\Traits\HasHashid;
 
 class PasswordResetRequest extends Model
 {
-    use HasFactory, HasHashid;
+    use HasFactory;
+    use HasHashid;
 
     protected $fillable = [
         'user_id',

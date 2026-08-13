@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 use App\Traits\HasHashid;
 
 class Remittance extends Model
 {
-    use HasFactory, HasHashid;
+    use HasFactory;
+    use HasHashid;
 
     protected $fillable = [
         'group_id',

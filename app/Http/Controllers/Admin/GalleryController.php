@@ -63,7 +63,7 @@ class GalleryController extends Controller
     {
         if ($request->has('gallery_ids')) {
             $request->merge([
-                'gallery_ids' => array_map(function($id) {
+                'gallery_ids' => array_map(function ($id) {
                     return decode_id($id);
                 }, (array) $request->gallery_ids)
             ]);

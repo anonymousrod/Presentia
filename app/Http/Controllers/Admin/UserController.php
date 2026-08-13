@@ -216,7 +216,7 @@ class UserController extends Controller
 
         if ($request->has('user_ids')) {
             $request->merge([
-                'user_ids' => array_map(function($id) {
+                'user_ids' => array_map(function ($id) {
                     return decode_id($id);
                 }, (array) $request->user_ids)
             ]);
