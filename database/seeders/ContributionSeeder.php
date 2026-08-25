@@ -6,7 +6,6 @@ use App\Models\Contribution;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-
 use App\Models\Remittance;
 use Illuminate\Support\Facades\Schema;
 

@@ -60,7 +60,7 @@ class AuditLogController extends Controller
             'App\Models\ScheduledNotification' => 'Notifications programmées',
         ];
 
-        $userNames = User::all()->mapWithKeys(fn($u) => [$u->id => trim($u->first_name . ' ' . $u->name)]);
+        $userNames = User::all()->mapWithKeys(fn ($u) => [$u->id => trim($u->first_name . ' ' . $u->name)]);
         $groupNames = \App\Models\Group::all()->pluck('name', 'id');
 
         return view('admin.audit-logs.index', compact('logs', 'users', 'auditableTypes', 'userNames', 'groupNames'));
