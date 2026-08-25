@@ -37,7 +37,18 @@ class SendPasswordResetWhatsApp implements ShouldQueue
             return;
         }
 
-        $message = "Votre mot de passe a été réinitialisé par l'administrateur. Votre nouveau mot de passe temporaire est : {$this->temporaryPassword}. Veuillez le changer dès votre première connexion.";
+        $appName = config('app.name', 'Presentia');
+        $name = $this->user->first_name ?? $this->user->name ?? 'Membre';
+
+        $message = "👋 *Bonjour {$name},*
+
+🔐 *{$appName} — Mot de passe temporaire*
+
+Votre mot de passe a été réinitialisé suite à votre demande sur la plateforme {$appName}.
+
+🔑 *Nouveau mot de passe temporaire :* {$this->temporaryPassword}
+
+👉 Connectez-vous sur la plateforme et modifiez ce mot de passe dès votre première connexion pour sécuriser votre compte.";
 
         try {
             $response = $whatsApp->send($this->user->phone, $message);
@@ -56,7 +67,7 @@ class SendPasswordResetWhatsApp implements ShouldQueue
                 'provider_response' => ['error' => $e->getMessage()],
             ]);
 
-            throw $e;
+            Log::error("SendPasswordResetWhatsApp Error: " . $e->getMessage());
         }
     }
 }

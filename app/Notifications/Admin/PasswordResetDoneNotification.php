@@ -9,33 +9,23 @@ class PasswordResetDoneNotification extends Notification
 {
     use Queueable;
 
+    /**
+     * Canal de notification : uniquement en base de données pour la cloche de notifications en interne.
+     * Le message WhatsApp est déjà expédié directement avec le mot de passe temporaire.
+     */
     public function via($notifiable): array
     {
-        $channels = ['database'];
-        if (method_exists($notifiable, 'hasPhone') && $notifiable->hasPhone()) {
-            $channels[] = \App\Channels\WhatsAppChannel::class;
-        }
-        return $channels;
-    }
-
-    public function toWhatsApp($notifiable): string
-    {
-        $data = $this->toArray($notifiable);
-        $title = $data['title'] ?? 'Notification ' . config('app.name');
-        $message = $data['message'] ?? '';
-        return "👋 Bonjour,
-
-*{$title}*
-{$message}";
+        return ['database'];
     }
 
     public function toArray($notifiable): array
     {
+        $appName = config('app.name', 'Presentia');
         return [
             'icon'    => 'mdi mdi-lock-check-outline',
             'color'   => 'success',
             'title'   => 'Mot de passe réinitialisé',
-            'message' => "Votre mot de passe a été réinitialisé par un administrateur. Connectez-vous avec votre nouveau mot de passe.",
+            'message' => "Votre demande de réinitialisation de mot de passe a été traitée avec succès sur {$appName}. Connectez-vous avec votre nouveau mot de passe.",
             'url'     => route('login'),
         ];
     }

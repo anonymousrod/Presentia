@@ -53,68 +53,87 @@
 {{-- =================== FILTRES =================== --}}
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body p-3 p-md-4">
-        <form action="{{ route('activities.index') }}" method="GET" class="row g-3 align-items-end" id="filter-form">
+        <form action="{{ route('activities.index') }}" method="GET" id="filter-form">
             @if(request('manageable'))
                 <input type="hidden" name="manageable" value="{{ request('manageable') }}">
             @endif
 
-            {{-- Recherche --}}
-            <div class="col-md-4">
-                <label class="form-label fw-semibold text-muted mb-1" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                    <i class="mdi mdi-magnify me-1"></i>Recherche
-                </label>
-                <div style="position: relative;">
-                    <i class="mdi mdi-magnify" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color: var(--vz-secondary-color); pointer-events:none; font-size: 1rem;"></i>
-                    <input type="text" name="search"
-                           class="form-control ps-4"
-                           value="{{ request('search') }}"
-                           placeholder="Rechercher par titre..."
-                           style="border-radius: 0.5rem; padding-left: 2rem;">
+            <div class="row g-3 align-items-end">
+                {{-- Recherche (Toujours visible) --}}
+                <div class="col-12 col-md-4">
+                    <div class="d-flex align-items-center justify-content-between mb-2 d-md-none">
+                        <label class="form-label fw-semibold text-muted mb-0 fs-11 uppercase tracking-wider">
+                            <i class="mdi mdi-magnify me-1"></i>Recherche
+                        </label>
+                        <button type="button" class="btn btn-sm btn-soft-primary rounded-pill px-3 py-1 fs-12 d-flex align-items-center gap-1" data-bs-toggle="collapse" data-bs-target="#mobileFilterCollapse" aria-expanded="{{ (request('type') || request('status_filter')) ? 'true' : 'false' }}">
+                            <i class="mdi mdi-filter-variant"></i>
+                            <span>Filtres</span>
+                            @if(request('type') || (request('status_filter') && request('status_filter') !== 'upcoming'))
+                                <span class="badge bg-primary rounded-circle p-1"></span>
+                            @endif
+                        </button>
+                    </div>
+                    <label class="form-label fw-semibold text-muted mb-1 d-none d-md-block" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                        <i class="mdi mdi-magnify me-1"></i>Recherche
+                    </label>
+                    <div style="position: relative;">
+                        <i class="mdi mdi-magnify" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color: var(--vz-secondary-color); pointer-events:none; font-size: 1rem;"></i>
+                        <input type="text" name="search"
+                               class="form-control ps-4"
+                               value="{{ request('search') }}"
+                               placeholder="Rechercher par titre..."
+                               style="border-radius: 0.5rem; padding-left: 2rem;">
+                    </div>
                 </div>
-            </div>
 
-            {{-- Type --}}
-            <div class="col-md-3">
-                <label class="form-label fw-semibold text-muted mb-1" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                    <i class="mdi mdi-tag-outline me-1"></i>Type d'activité
-                </label>
-                <select name="type" class="form-select" style="border-radius: 0.5rem;">
-                    <option value="">Tous les types</option>
-                    @foreach($activityTypes as $type)
-                        <option value="{{ encode_id($type->id) }}" {{ request('type') == encode_id($type->id) ? 'selected' : '' }}>
-                            {{ $type->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+                {{-- Filtres optionnels : Repliables sur Mobile, toujours visibles en Desktop --}}
+                <div class="col-12 col-md-8 collapse d-md-block {{ (request('type') || (request('status_filter') && request('status_filter') !== 'upcoming')) ? 'show' : '' }}" id="mobileFilterCollapse">
+                    <div class="row g-3 align-items-end">
+                        {{-- Type --}}
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <label class="form-label fw-semibold text-muted mb-1" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                <i class="mdi mdi-tag-outline me-1"></i>Type d'activité
+                            </label>
+                            <select name="type" class="form-select" style="border-radius: 0.5rem;">
+                                <option value="">Tous les types</option>
+                                @foreach($activityTypes as $type)
+                                    <option value="{{ encode_id($type->id) }}" {{ request('type') == encode_id($type->id) ? 'selected' : '' }}>
+                                        {{ $type->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-            {{-- Statut --}}
-            <div class="col-md-3">
-                <label class="form-label fw-semibold text-muted mb-1" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                    <i class="mdi mdi-clock-outline me-1"></i>Statut temporel
-                </label>
-                @php
-                    $statusFilter = request()->has('status_filter') ? request('status_filter') : 'upcoming';
-                @endphp
-                <select name="status_filter" class="form-select" style="border-radius: 0.5rem;">
-                    <option value="all" {{ $statusFilter === 'all' || $statusFilter === null || $statusFilter === '' ? 'selected' : '' }}>Tous les statuts</option>
-                    <option value="upcoming"  {{ $statusFilter === 'upcoming'  ? 'selected' : '' }}>🕐 À venir</option>
-                    <option value="ongoing"   {{ $statusFilter === 'ongoing'   ? 'selected' : '' }}>🟢 En cours</option>
-                    <option value="finished"  {{ $statusFilter === 'finished'  ? 'selected' : '' }}>✅ Terminée</option>
-                </select>
-            </div>
+                        {{-- Statut --}}
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <label class="form-label fw-semibold text-muted mb-1" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                <i class="mdi mdi-clock-outline me-1"></i>Statut temporel
+                            </label>
+                            @php
+                                $statusFilter = request()->has('status_filter') ? request('status_filter') : 'upcoming';
+                            @endphp
+                            <select name="status_filter" class="form-select" style="border-radius: 0.5rem;">
+                                <option value="all" {{ $statusFilter === 'all' || $statusFilter === null || $statusFilter === '' ? 'selected' : '' }}>Tous les statuts</option>
+                                <option value="upcoming"  {{ $statusFilter === 'upcoming'  ? 'selected' : '' }}>🕐 À venir</option>
+                                <option value="ongoing"   {{ $statusFilter === 'ongoing'   ? 'selected' : '' }}>🟢 En cours</option>
+                                <option value="finished"  {{ $statusFilter === 'finished'  ? 'selected' : '' }}>✅ Terminée</option>
+                            </select>
+                        </div>
 
-            {{-- Actions --}}
-            <div class="col-12 col-md-2 d-flex gap-2 mt-3 mt-md-0">
-                <button type="submit" class="btn btn-primary flex-grow-1" style="border-radius: 0.5rem;">
-                    <i class="mdi mdi-filter-outline me-1"></i>Filtrer
-                </button>
-                <button type="button" id="btn-reset"
-                        class="btn btn-icon flex-shrink-0"
-                        title="Réinitialiser les filtres"
-                        style="border-radius: 0.5rem; width:42px; height:42px; background: rgba(var(--vz-secondary-rgb), 0.12); color: var(--vz-secondary-color); border: 1px solid rgba(var(--vz-secondary-rgb), 0.2);">
-                    <i class="mdi mdi-refresh fs-16"></i>
-                </button>
+                        {{-- Actions --}}
+                        <div class="col-12 col-md-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary flex-grow-1" style="border-radius: 0.5rem;">
+                                <i class="mdi mdi-filter-outline me-1"></i>Filtrer
+                            </button>
+                            <button type="button" id="btn-reset"
+                                    class="btn btn-icon flex-shrink-0"
+                                    title="Réinitialiser les filtres"
+                                    style="border-radius: 0.5rem; width:42px; height:42px; background: rgba(var(--vz-secondary-rgb), 0.12); color: var(--vz-secondary-color); border: 1px solid rgba(var(--vz-secondary-rgb), 0.2);">
+                                <i class="mdi mdi-refresh fs-16"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
     </div>

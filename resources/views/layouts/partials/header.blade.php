@@ -57,7 +57,7 @@
             <div class="d-flex align-items-center">
 
                 <div class="dropdown d-md-none topbar-head-dropdown header-item">
-                    <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle shadow-none"
+                    <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle shadow-none position-relative"
                         id="page-header-search-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
                         aria-expanded="false">
                         <i class="bx bx-search fs-22"></i>
@@ -78,7 +78,7 @@
                 </div>
 
                 <div class="ms-1 header-item d-none d-sm-flex">
-                    <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle shadow-none"
+                    <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle shadow-none position-relative"
                         data-toggle="fullscreen">
                         <i class='bx bx-fullscreen fs-22'></i>
                     </button>
@@ -96,12 +96,12 @@
                         $headerNotifications = auth()->user()->unreadNotifications()->latest()->take(15)->get();
                         $unreadCount = auth()->user()->unreadNotifications()->count();
                     @endphp
-                    <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle shadow-none"
+                    <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle shadow-none position-relative"
                         id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside"
                         aria-haspopup="true" aria-expanded="false">
                         <i class='bx bx-bell fs-22'></i>
                         @if($unreadCount > 0)
-                        <span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">
+                        <span class="position-absolute badge rounded-pill bg-danger" style="top: 3px; right: 3px; font-size: 10px; padding: 0.25em 0.45em; transform: translate(25%, -25%);">
                             {{ $unreadCount > 99 ? '99+' : $unreadCount }}
                             <span class="visually-hidden">notifications non lues</span>
                         </span>

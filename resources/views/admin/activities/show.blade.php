@@ -3,25 +3,25 @@
 @section('content')
 <div class="container py-4">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
-        <a href="{{ route('admin.activities.index') }}" class="btn btn-outline-secondary btn-sm align-self-start align-self-md-auto">
-            <i class="mdi mdi-arrow-left"></i> Retour à la liste
+        <a href="{{ route('admin.activities.index') }}" class="btn btn-soft-secondary btn-sm rounded-pill px-3 align-self-start align-self-md-auto">
+            <i class="mdi mdi-arrow-left me-1"></i> Retour à la liste
         </a>
         <div class="d-flex flex-wrap gap-2">
-            <a href="{{ route('admin.activities.download-registrations', $activity) }}" class="btn btn-outline-primary btn-sm">
-                <i class="mdi mdi-file-pdf-box"></i> Inscriptions (PDF)
+            <a href="{{ route('admin.activities.download-registrations', $activity) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                <i class="mdi mdi-file-pdf-box me-1"></i> Inscriptions (PDF)
             </a>
-            <a href="{{ route('admin.activities.download-attendance', $activity) }}" class="btn btn-outline-success btn-sm">
-                <i class="mdi mdi-file-pdf-box"></i> Présence (PDF)
+            <a href="{{ route('admin.activities.download-attendance', $activity) }}" class="btn btn-outline-success btn-sm rounded-pill px-3">
+                <i class="mdi mdi-file-pdf-box me-1"></i> Présence (PDF)
             </a>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row g-4">
         <!-- Main details -->
-        <div class="col-md-8">
-            <div class="card mb-4 border-0 shadow-sm overflow-hidden">
+        <div class="col-lg-8">
+            <div class="card mb-4 border-0 shadow-sm overflow-hidden rounded-3">
                 @if($activity->image_path)
-                    <div class="position-relative bg-dark" style="height: 400px; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    <div class="position-relative bg-dark activity-poster-banner" style="height: 240px; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center;">
                         <!-- Blurred background for aspect-ratio preservation -->
                         <div class="position-absolute w-100 h-100" style="background-image: url('{{ asset('storage/' . $activity->image_path) }}'); background-size: cover; background-position: center; filter: blur(20px) brightness(0.5); transform: scale(1.1);"></div>
                         
@@ -29,14 +29,14 @@
                         <img src="{{ asset('storage/' . $activity->image_path) }}" alt="{{ $activity->title }}" style="max-width: 100%; max-height: 90%; object-fit: contain; position: relative; z-index: 1; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
                         
                         <!-- Title overlay -->
-                        <div class="position-absolute bottom-0 start-0 w-100 p-4" style="background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); z-index: 2;">
-                            <h2 class="text-white mb-0 fw-bold">{{ $activity->title }}</h2>
+                        <div class="position-absolute bottom-0 start-0 w-100 p-3 p-md-4" style="background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); z-index: 2;">
+                            <h2 class="text-white mb-0 fw-bold fs-18 fs-md-24">{{ $activity->title }}</h2>
                         </div>
                     </div>
                 @endif
                 <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 {{ $activity->image_path ? 'border-0' : '' }}">
                     @if(!$activity->image_path)
-                        <h4 class="mb-0 fw-bold">{{ $activity->title }}</h4>
+                        <h4 class="mb-0 fw-bold fs-18 fs-md-22">{{ $activity->title }}</h4>
                     @else
                         <div></div> <!-- empty div to keep flex space-between working -->
                     @endif
@@ -46,37 +46,37 @@
                         'CANCELLED' => 'danger',
                         'ARCHIVED' => 'secondary',
                         default => 'primary'
-                    } }}">{{ $activity->status?->label() ?? 'N/A' }}</span>
+                    } }} fs-12 px-3 py-2 rounded-pill">{{ $activity->status?->label() ?? 'N/A' }}</span>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-3 p-md-4">
                     <div class="mb-4">
-                        <h6>Description</h6>
-                        <p class="text-muted">{!! nl2br(e($activity->description)) ?: '<em>Aucune description fournie</em>' !!}</p>
+                        <h6 class="fw-bold fs-14 text-uppercase tracking-wider text-muted">Description</h6>
+                        <p class="text-muted mb-0">{!! nl2br(e($activity->description)) ?: '<em>Aucune description fournie</em>' !!}</p>
                     </div>
 
                     @if($activity->status?->value === 'CANCELLED' && $activity->cancellation_reason)
-                        <div class="alert alert-danger">
-                            <h6><i class="mdi mdi-alert-circle"></i> Motif d'annulation :</h6>
+                        <div class="alert alert-danger rounded-3">
+                            <h6 class="fw-bold"><i class="mdi mdi-alert-circle me-1"></i> Motif d'annulation :</h6>
                             <p class="mb-0">{{ $activity->cancellation_reason }}</p>
                         </div>
                     @endif
 
-                    <div class="row mt-4">
-                        <div class="col-md-6 mb-3">
-                            <strong>Date de début :</strong>
-                            <p class="text-muted">{{ $activity->start_time->format('d/m/Y H:i') }}</p>
+                    <div class="row g-3 mt-2 p-3 bg-light rounded-3">
+                        <div class="col-6 col-md-6">
+                            <span class="text-muted fs-12 d-block text-uppercase fw-semibold">Date de début</span>
+                            <span class="fw-semibold fs-13 text-body">{{ $activity->start_time->format('d/m/Y H:i') }}</span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Date de fin :</strong>
-                            <p class="text-muted">{{ $activity->end_time->format('d/m/Y H:i') }}</p>
+                        <div class="col-6 col-md-6">
+                            <span class="text-muted fs-12 d-block text-uppercase fw-semibold">Date de fin</span>
+                            <span class="fw-semibold fs-13 text-body">{{ $activity->end_time->format('d/m/Y H:i') }}</span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Lieu :</strong>
-                            <p class="text-muted"><i class="mdi mdi-map-marker"></i> {{ $activity->location ?: 'Non spécifié' }}</p>
+                        <div class="col-6 col-md-6">
+                            <span class="text-muted fs-12 d-block text-uppercase fw-semibold">Lieu</span>
+                            <span class="fw-semibold fs-13 text-body"><i class="mdi mdi-map-marker text-success me-1"></i>{{ $activity->location ?: 'Non spécifié' }}</span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Capacité :</strong>
-                            <p class="text-muted">{{ $activity->capacity ? $activity->capacity . ' personnes max.' : 'Illimitée' }}</p>
+                        <div class="col-6 col-md-6">
+                            <span class="text-muted fs-12 d-block text-uppercase fw-semibold">Capacité</span>
+                            <span class="fw-semibold fs-13 text-body"><i class="mdi mdi-account-group text-primary me-1"></i>{{ $activity->capacity ? $activity->capacity . ' max.' : 'Illimitée' }}</span>
                         </div>
                     </div>
                 </div>
@@ -124,37 +124,50 @@
                 </div>
                 <div class="card-body">
                     <!-- Filters row -->
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-{{ isset($listType) && $listType === 'Globale' ? '5' : '8' }}">
-                            <div class="search-box position-relative">
-                                <input type="text" x-model="search" class="form-control bg-light border-light" placeholder="Rechercher un membre...">
+                    <div class="row g-2 mb-3 align-items-center">
+                        <div class="col-12 col-md-{{ isset($listType) && $listType === 'Globale' ? '5' : '7' }}">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="search-box position-relative flex-grow-1">
+                                    <input type="text" x-model="search" class="form-control bg-light border-light" placeholder="Rechercher un membre...">
+                                </div>
+                                <button type="button" class="btn btn-soft-primary rounded-pill px-3 py-2 fs-12 d-flex align-items-center gap-1 d-md-none flex-shrink-0" data-bs-toggle="collapse" data-bs-target="#registrationsFilterCollapse" aria-expanded="false">
+                                    <i class="mdi mdi-filter-variant"></i>
+                                    <span>Filtres</span>
+                                    <template x-if="statusFilter || groupFilter">
+                                        <span class="badge bg-primary rounded-circle p-1 ms-1"></span>
+                                    </template>
+                                </button>
                             </div>
                         </div>
-                        @if(isset($listType) && $listType === 'Globale')
-                        <div class="col-6 col-md-3">
-                            <select x-model="groupFilter" class="form-select bg-light border-light">
-                                <option value="">Tous les groupes</option>
-                                @foreach($allGroups as $g)
-                                    <option value="{{ $g->id }}">{{ $g->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        @endif
-                        <div class="col-6 col-md-2">
-                            <select x-model="statusFilter" class="form-select bg-light border-light">
-                                <option value="">Tous les statuts</option>
-                                <option value="inscrit">Inscrit</option>
-                                <option value="incertain">Incertain</option>
-                                @if($activity->capacity)
-                                    <option value="attente">Liste d'attente</option>
+                        <div class="col-12 col-md-{{ isset($listType) && $listType === 'Globale' ? '7' : '5' }} collapse d-md-block" id="registrationsFilterCollapse">
+                            <div class="row g-2 align-items-center">
+                                @if(isset($listType) && $listType === 'Globale')
+                                <div class="col-6 col-md-5">
+                                    <select x-model="groupFilter" class="form-select bg-light border-light">
+                                        <option value="">Tous les groupes</option>
+                                        @foreach($allGroups as $g)
+                                            <option value="{{ $g->id }}">{{ $g->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                                 @endif
-                                <option value="desinscrit">Désinscrit</option>
-                            </select>
-                        </div>
-                        <div class="col-6 col-md-2">
-                            <button type="button" class="btn btn-soft-secondary w-100" @click="search = ''; statusFilter = ''; groupFilter = '';">
-                                Reset
-                            </button>
+                                <div class="col-6 col-md-{{ isset($listType) && $listType === 'Globale' ? '4' : '8' }}">
+                                    <select x-model="statusFilter" class="form-select bg-light border-light">
+                                        <option value="">Tous les statuts</option>
+                                        <option value="inscrit">Inscrit</option>
+                                        <option value="incertain">Incertain</option>
+                                        @if($activity->capacity)
+                                            <option value="attente">Liste d'attente</option>
+                                        @endif
+                                        <option value="desinscrit">Désinscrit</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-{{ isset($listType) && $listType === 'Globale' ? '3' : '4' }}">
+                                    <button type="button" class="btn btn-soft-secondary w-100" @click="search = ''; statusFilter = ''; groupFilter = '';">
+                                        <i class="mdi mdi-refresh me-1"></i>Reset
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -290,35 +303,48 @@
                 </div>
                 <div class="card-body">
                     <!-- Filters row -->
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-{{ isset($listType) && $listType === 'Globale' ? '5' : '8' }}">
-                            <div class="search-box position-relative">
-                                <input type="text" x-model="search" class="form-control bg-light border-light" placeholder="Rechercher un présent...">
+                    <div class="row g-2 mb-3 align-items-center">
+                        <div class="col-12 col-md-{{ isset($listType) && $listType === 'Globale' ? '5' : '7' }}">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="search-box position-relative flex-grow-1">
+                                    <input type="text" x-model="search" class="form-control bg-light border-light" placeholder="Rechercher un présent...">
+                                </div>
+                                <button type="button" class="btn btn-soft-primary rounded-pill px-3 py-2 fs-12 d-flex align-items-center gap-1 d-md-none flex-shrink-0" data-bs-toggle="collapse" data-bs-target="#attendancesFilterCollapse" aria-expanded="false">
+                                    <i class="mdi mdi-filter-variant"></i>
+                                    <span>Filtres</span>
+                                    <template x-if="statusFilter || groupFilter">
+                                        <span class="badge bg-primary rounded-circle p-1 ms-1"></span>
+                                    </template>
+                                </button>
                             </div>
                         </div>
-                        @if(isset($listType) && $listType === 'Globale')
-                        <div class="col-6 col-md-3">
-                            <select x-model="groupFilter" class="form-select bg-light border-light">
-                                <option value="">Tous les groupes</option>
-                                @foreach($allGroups as $g)
-                                    <option value="{{ $g->id }}">{{ $g->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        @endif
-                        <div class="col-6 col-md-2">
-                            <select x-model="statusFilter" class="form-select bg-light border-light">
-                                <option value="">Tous les statuts</option>
-                                <option value="PRESENT">Présent</option>
-                                <option value="LATE">En retard</option>
-                                <option value="ABSENT">Absent</option>
-                                <option value="EXCUSED">Excusé</option>
-                            </select>
-                        </div>
-                        <div class="col-6 col-md-2">
-                            <button type="button" class="btn btn-soft-secondary w-100" @click="search = ''; statusFilter = ''; groupFilter = '';">
-                                Reset
-                            </button>
+                        <div class="col-12 col-md-{{ isset($listType) && $listType === 'Globale' ? '7' : '5' }} collapse d-md-block" id="attendancesFilterCollapse">
+                            <div class="row g-2 align-items-center">
+                                @if(isset($listType) && $listType === 'Globale')
+                                <div class="col-6 col-md-5">
+                                    <select x-model="groupFilter" class="form-select bg-light border-light">
+                                        <option value="">Tous les groupes</option>
+                                        @foreach($allGroups as $g)
+                                            <option value="{{ $g->id }}">{{ $g->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @endif
+                                <div class="col-6 col-md-{{ isset($listType) && $listType === 'Globale' ? '4' : '8' }}">
+                                    <select x-model="statusFilter" class="form-select bg-light border-light">
+                                        <option value="">Tous les statuts</option>
+                                        <option value="PRESENT">Présent</option>
+                                        <option value="LATE">En retard</option>
+                                        <option value="ABSENT">Absent</option>
+                                        <option value="EXCUSED">Excusé</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-{{ isset($listType) && $listType === 'Globale' ? '3' : '4' }}">
+                                    <button type="button" class="btn btn-soft-secondary w-100" @click="search = ''; statusFilter = ''; groupFilter = '';">
+                                        <i class="mdi mdi-refresh me-1"></i>Reset
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -425,7 +451,7 @@
         </div>
 
         <!-- Sidebar details -->
-        <div class="col-md-4">
+        <div class="col-lg-4">
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Informations complémentaires</h5>

@@ -56,7 +56,7 @@ class D7NetworksWhatsAppService implements WhatsAppServiceInterface
         ];
 
         try {
-            $response = Http::withHeaders([
+            $response = Http::timeout(5)->withHeaders([
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
             ])

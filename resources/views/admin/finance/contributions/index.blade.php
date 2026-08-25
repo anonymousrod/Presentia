@@ -3,418 +3,440 @@
 @section('title', 'Suivi des contributions - ' . $group->name)
 
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-            <h4 class="mb-sm-0">Contributions - {{ $group->name }}</h4>
+<div class="container-fluid max-w-1200 py-3 py-md-4">
+    {{-- =================== EN-TÊTE =================== --}}
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-3">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-muted">Tableau de bord</a></li>
+                    <li class="breadcrumb-item"><a href="#" class="text-muted">Finances</a></li>
+                    <li class="breadcrumb-item active fw-medium" aria-current="page">Contributions</li>
+                </ol>
+            </nav>
+            <h3 class="fw-bold mb-0 fs-20 fs-md-24">Contributions - {{ $group->name }}</h3>
+            <p class="text-muted mb-0 fs-13 mt-1">Gérez le suivi financier et les versements de ce groupe.</p>
         </div>
-    </div>
-</div>
-
-@if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
-@endif
-@if(session('error'))
-    <div class="alert alert-danger">{{ session('error') }}</div>
-@endif
-
-<style>
-    .toolbar-pro {
-        border-radius: 14px;
-        background: var(--bs-body-bg);
-        border: 1px solid var(--bs-border-color);
-        position: relative;
-        overflow: hidden;
-    }
-    .toolbar-pro::before {
-        content: "";
-        position: absolute;
-        top: 0; left: 0; bottom: 0;
-        width: 4px;
-        background: linear-gradient(180deg, #405189, #0dcaf0);
-    }
-    .toolbar-pro .toolbar-label {
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: .04em;
-        color: var(--bs-secondary-color);
-        text-transform: uppercase;
-        margin-bottom: 2px;
-    }
-    .toolbar-pro select.form-select-sm {
-        font-size: 13px;
-        border-color: var(--bs-border-color);
-        background-color: var(--bs-body-bg);
-    }
-    .toolbar-divider {
-        width: 1px;
-        background: var(--bs-border-color);
-        align-self: stretch;
-    }
-    .due-panel {
-        background: linear-gradient(135deg, rgba(13,202,240,0.10), rgba(64,81,137,0.08));
-        border-radius: 10px;
-        padding: 8px 14px;
-    }
-    .due-panel .due-amount {
-        font-size: 17px;
-        font-weight: 700;
-        color: var(--bs-info-text);
-    }
-    .kebab-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--bs-border-color);
-        background: var(--bs-tertiary-bg);
-        color: var(--bs-body-color);
-    }
-    .kebab-btn:active, .kebab-btn:focus {
-        background: var(--bs-secondary-bg);
-    }
-</style>
-
-<!-- Barre d'outils : Filtres + Versement (au-dessus des cartes récapitulatives) -->
-<div class="toolbar-pro shadow-sm mb-3 p-3">
-
-    {{-- En-tête mobile : montant à verser + bouton Verser + menu 3 points --}}
-    <div class="d-flex d-md-none align-items-center justify-content-between gap-2">
-        <div class="due-panel flex-grow-1 d-flex align-items-center justify-content-between">
-            <div>
-                <p class="toolbar-label mb-0">À verser</p>
-                <span class="due-amount">{{ number_format($pendingAmount, 0, ',', ' ') }} <small class="fs-11 text-body-secondary">FCFA</small></span>
+        
+        <div class="d-flex d-md-none align-items-center gap-2">
+            <div class="bg-primary bg-opacity-10 rounded-pill px-3 py-2 d-flex align-items-center gap-2 border border-primary-subtle">
+                <span class="fs-12 fw-medium text-primary text-uppercase tracking-wider">À verser</span>
+                <span class="fs-15 fw-bold text-primary">{{ number_format($pendingAmount, 0, ',', ' ') }} <small class="fs-10">F</small></span>
             </div>
             @if($pendingAmount > 0)
                 @can('remittance.create')
-                <button type="button" class="btn btn-success btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#remittanceModal">
-                    <i class="mdi mdi-cash-fast me-1"></i>Verser
+                <button type="button" class="btn btn-success rounded-circle shadow-sm" data-bs-toggle="modal" data-bs-target="#remittanceModal" style="width:40px; height:40px;">
+                    <i class="mdi mdi-cash-fast fs-18"></i>
                 </button>
                 @endcan
             @endif
         </div>
-        <button type="button" class="kebab-btn flex-shrink-0" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
-            <i class="ri-more-2-fill fs-18"></i>
-        </button>
     </div>
 
-    {{-- Filtres : repliables sur mobile (via le bouton 3 points), toujours visibles en desktop --}}
-    <div class="collapse d-md-block mt-3 mt-md-0" id="filterCollapse">
-        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+    {{-- Alertes --}}
+    @if(session('success'))
+        <div class="alert border-0 mb-4 d-flex align-items-center gap-3 p-3 shadow-sm rounded-3"
+             style="background: rgba(var(--vz-success-rgb), 0.12); border-left: 4px solid var(--vz-success) !important;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                 style="width:40px; height:40px; background: rgba(var(--vz-success-rgb), 0.2);">
+                <i class="mdi mdi-check-circle fs-20" style="color: var(--vz-success);"></i>
+            </div>
+            <div class="flex-grow-1">
+                <h6 class="mb-0 fw-bold text-success">Succès !</h6>
+                <span class="fs-13 text-body">{{ session('success') }}</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert border-0 mb-4 d-flex align-items-center gap-3 p-3 shadow-sm rounded-3"
+             style="background: rgba(var(--vz-danger-rgb), 0.12); border-left: 4px solid var(--vz-danger) !important;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                 style="width:40px; height:40px; background: rgba(var(--vz-danger-rgb), 0.2);">
+                <i class="mdi mdi-alert-circle fs-20" style="color: var(--vz-danger);"></i>
+            </div>
+            <div class="flex-grow-1">
+                <h6 class="mb-0 fw-bold text-danger">Erreur !</h6>
+                <span class="fs-13 text-body">{{ session('error') }}</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
-            <form action="{{ route('admin.finance.contributions.index') }}" method="GET" class="d-flex flex-wrap align-items-end gap-2 gap-md-3">
-                @if(auth()->user()->can('finance.view_all') && isset($allGroups))
-                    <div>
-                        <p class="toolbar-label mb-1"><i class="ri-team-line me-1"></i>Groupe</p>
-                        <select name="group_id" class="form-select form-select-sm" onchange="this.form.submit()" style="min-width: 160px;">
-                            @foreach($allGroups as $g)
-                                <option value="{{ encode_id($g->id) }}" {{ $g->id == $group->id ? 'selected' : '' }}>{{ $g->name }}</option>
-                            @endforeach
-                        </select>
+    {{-- =================== FILTRES & BARRE D'OUTILS =================== --}}
+    <div class="card border-0 shadow-sm mb-4 rounded-3 overflow-hidden">
+        <div class="card-header border-0 bg-light bg-opacity-50 py-3 px-4 d-md-none" data-bs-toggle="collapse" data-bs-target="#filterCollapse" style="cursor: pointer;">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded p-1 bg-white shadow-sm d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="mdi mdi-filter-variant text-primary fs-18"></i>
                     </div>
-                @endif
-                <div>
-                    <p class="toolbar-label mb-1"><i class="ri-calendar-2-line me-1"></i>Année</p>
-                    <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
-                        @for($y = date('Y') - 1; $y <= date('Y') + 1; $y++)
-                            <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
-                        @endfor
-                    </select>
+                    <h6 class="mb-0 fw-semibold">Filtres et Options</h6>
                 </div>
-                <div>
-                    <p class="toolbar-label mb-1"><i class="ri-calendar-event-line me-1"></i>Mois</p>
-                    <select name="month" class="form-select form-select-sm" onchange="this.form.submit()">
-                        @foreach(range(2, 11) as $m)
-                            @php $mStr = str_pad($m, 2, '0', STR_PAD_LEFT); @endphp
-                            <option value="{{ $mStr }}" {{ $month == $mStr ? 'selected' : '' }}>
-                                {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary d-none">Filtrer</button>
-            </form>
-
-            {{-- Bloc versement : visible seulement en desktop ici (déjà affiché en haut sur mobile) --}}
-            <div class="d-none d-md-flex align-items-center gap-3">
-                <div class="toolbar-divider d-none d-md-block" style="height: 40px;"></div>
-                <div class="due-panel d-flex align-items-center gap-3">
-                    <div>
-                        <p class="toolbar-label mb-0">À verser</p>
-                        <span class="due-amount">{{ number_format($pendingAmount, 0, ',', ' ') }} <small class="fs-12 text-body-secondary">FCFA</small></span>
-                    </div>
-                    @if($pendingAmount > 0)
-                        @can('remittance.create')
-                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#remittanceModal">
-                            <i class="mdi mdi-cash-fast me-1"></i>Verser
-                        </button>
-                        @endcan
-                    @endif
-                </div>
+                <i class="mdi mdi-chevron-down fs-20 text-muted"></i>
             </div>
         </div>
-    </div>
-</div>
-
-<!-- Cartes récapitulatives -->
-{{-- Mobile: single card with 2x2 grid --}}
-<div class="d-md-none mb-3">
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-3">
-            <div class="row g-2">
-                <div class="col-6">
-                    <div class="p-2 rounded" style="background: rgba(13,110,253,0.08);">
-                        <p class="text-body-secondary fs-11 mb-0 text-truncate">
-                            <span class="d-inline-block rounded-circle me-1" style="width:6px;height:6px;background:#0d6efd;"></span>
-                            Attendu ce mois
-                        </p>
-                        <p class="fw-bold fs-16 mb-0 text-primary">{{ number_format($monthlyExpectedTotal, 0, ',', ' ') }} <span class="fs-10 text-body-secondary fw-medium">F</span></p>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="p-2 rounded" style="background: rgba(13,202,240,0.08);">
-                        <p class="text-body-secondary fs-11 mb-0 text-truncate">
-                            <span class="d-inline-block rounded-circle me-1" style="width:6px;height:6px;background:#0dcaf0;"></span>
-                            Attendu (année)
-                        </p>
-                        <p class="fw-bold fs-16 mb-0 text-info">{{ number_format($yearlyExpectedTotal, 0, ',', ' ') }} <span class="fs-10 text-body-secondary fw-medium">F</span></p>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="p-2 rounded" style="background: rgba(25,135,84,0.08);">
-                        <p class="text-body-secondary fs-11 mb-0 text-truncate">
-                            <span class="d-inline-block rounded-circle me-1" style="width:6px;height:6px;background:#198754;"></span>
-                            Collecté (année)
-                        </p>
-                        <p class="fw-bold fs-16 mb-0 text-success">{{ number_format($yearlyCollectedTotal, 0, ',', ' ') }} <span class="fs-10 text-body-secondary fw-medium">F</span></p>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="p-2 rounded" style="background: rgba(255,193,7,0.08);">
-                        <p class="text-body-secondary fs-11 mb-0 text-truncate">
-                            <span class="d-inline-block rounded-circle me-1" style="width:6px;height:6px;background:#ffc107;"></span>
-                            Progression
-                        </p>
-                        <p class="fw-bold fs-16 mb-1 text-warning">{{ $yearlyProgressPercent }}<span class="fs-11 text-body-secondary fw-medium">%</span></p>
-                        <div class="progress" style="height:3px;">
-                            <div class="progress-bar bg-warning" role="progressbar"
-                                 style="width: {{ $yearlyProgressPercent }}%"
-                                 aria-valuenow="{{ $yearlyProgressPercent }}" aria-valuemin="0" aria-valuemax="100">
+        
+        <div id="filterCollapse" class="collapse d-md-block">
+            <div class="card-body p-3 p-md-4 border-top border-light-subtle">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
+                    <form action="{{ route('admin.finance.contributions.index') }}" method="GET" class="d-flex flex-wrap align-items-end gap-3 flex-grow-1">
+                        @if(auth()->user()->can('finance.view_all') && isset($allGroups))
+                            <div>
+                                <label class="form-label fs-12 fw-semibold text-muted text-uppercase tracking-wider mb-1"><i class="mdi mdi-account-group-outline me-1"></i>Groupe</label>
+                                <select name="group_id" class="form-select bg-light border-light-subtle" onchange="this.form.submit()" style="min-width: 180px;">
+                                    @foreach($allGroups as $g)
+                                        <option value="{{ encode_id($g->id) }}" {{ $g->id == $group->id ? 'selected' : '' }}>{{ $g->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+                        <div>
+                            <label class="form-label fs-12 fw-semibold text-muted text-uppercase tracking-wider mb-1"><i class="mdi mdi-calendar-blank-outline me-1"></i>Année</label>
+                            <div class="form-control bg-light border-light-subtle text-muted fw-bold d-flex align-items-center justify-content-center" style="min-width: 90px; user-select: none;">
+                                {{ $year }}
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                        <div>
+                            <label class="form-label fs-12 fw-semibold text-muted text-uppercase tracking-wider mb-1"><i class="mdi mdi-calendar-month-outline me-1"></i>Mois</label>
+                            <select name="month" class="form-select bg-light border-light-subtle" onchange="this.form.submit()">
+                                @foreach(range(2, 11) as $m)
+                                    @php $mStr = str_pad($m, 2, '0', STR_PAD_LEFT); @endphp
+                                    <option value="{{ $mStr }}" {{ $month == $mStr ? 'selected' : '' }}>
+                                        {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </form>
 
-{{-- Desktop/tablet: 4 separate cards --}}
-<div class="row mb-4 g-3 d-none d-md-flex">
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 border-start border-4 border-primary shadow-sm mb-0 h-100">
-            <div class="card-body p-2 p-sm-3">
-                <div class="d-flex flex-row align-items-center text-start">
-                    <div class="flex-shrink-0 me-3">
-                        <div class="avatar-sm bg-primary bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center">
-                            <i class="ri-calendar-check-line text-primary fs-20"></i>
+                    {{-- Bloc versement Desktop --}}
+                    <div class="d-none d-md-flex align-items-center gap-3 border-start ps-4">
+                        <div class="d-flex flex-column text-end">
+                            <span class="fs-12 fw-semibold text-muted text-uppercase tracking-wider mb-1">Montant à verser</span>
+                            <span class="fs-20 fw-bold text-primary" style="line-height: 1;">{{ number_format($pendingAmount, 0, ',', ' ') }} <small class="fs-12 text-muted fw-normal">FCFA</small></span>
                         </div>
-                    </div>
-                    <div class="flex-grow-1 min-width-0">
-                        <p class="text-body-secondary fs-13 text-truncate mb-0">Attendu ce mois</p>
-                        <h4 class="mb-0 fw-bold text-body fs-20">{{ number_format($monthlyExpectedTotal, 0, ',', ' ') }} <span class="fs-12 fw-medium text-body-secondary">F</span></h4>
+                        @if($pendingAmount > 0)
+                            @can('remittance.create')
+                            <button type="button" class="btn btn-success btn-lg rounded-pill shadow-sm px-4 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#remittanceModal">
+                                <i class="mdi mdi-cash-fast fs-18"></i>
+                                <span class="fw-medium">Verser à la trésorerie</span>
+                            </button>
+                            @endcan
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 border-start border-4 border-info shadow-sm mb-0 h-100">
-            <div class="card-body p-2 p-sm-3">
-                <div class="d-flex flex-row align-items-center text-start">
-                    <div class="flex-shrink-0 me-3">
-                        <div class="avatar-sm bg-info bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center">
-                            <i class="ri-funds-box-line text-info fs-20"></i>
-                        </div>
-                    </div>
-                    <div class="flex-grow-1 min-width-0">
-                        <p class="text-body-secondary fs-13 text-truncate mb-0">Attendu (année)</p>
-                        <h4 class="mb-0 fw-bold text-body fs-20">{{ number_format($yearlyExpectedTotal, 0, ',', ' ') }} <span class="fs-12 fw-medium text-body-secondary">F</span></h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 border-start border-4 border-success shadow-sm mb-0 h-100">
-            <div class="card-body p-2 p-sm-3">
-                <div class="d-flex flex-row align-items-center text-start">
-                    <div class="flex-shrink-0 me-3">
-                        <div class="avatar-sm bg-success bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center">
-                            <i class="ri-wallet-3-line text-success fs-20"></i>
-                        </div>
-                    </div>
-                    <div class="flex-grow-1 min-width-0">
-                        <p class="text-body-secondary fs-13 text-truncate mb-0">Collecté (année)</p>
-                        <h4 class="mb-0 fw-bold text-body fs-20">{{ number_format($yearlyCollectedTotal, 0, ',', ' ') }} <span class="fs-12 fw-medium text-body-secondary">F</span></h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 border-start border-4 border-warning shadow-sm mb-0 h-100">
-            <div class="card-body p-2 p-sm-3">
-                <div class="d-flex flex-row align-items-center text-start mb-2">
-                    <div class="flex-shrink-0 me-3">
-                        <div class="avatar-sm bg-warning bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center">
-                            <i class="ri-pie-chart-2-line text-warning fs-20"></i>
-                        </div>
-                    </div>
-                    <div class="flex-grow-1 min-width-0">
-                        <p class="text-body-secondary fs-13 text-truncate mb-0">Progression</p>
-                        <h4 class="mb-0 fw-bold text-body fs-20">{{ $yearlyProgressPercent }}<span class="fs-13 fw-medium text-body-secondary">%</span></h4>
-                    </div>
-                </div>
-                <div class="progress" style="height: 4px; margin-left: 55px;">
-                    <div class="progress-bar bg-warning" role="progressbar"
-                         style="width: {{ $yearlyProgressPercent }}%"
-                         aria-valuenow="{{ $yearlyProgressPercent }}" aria-valuemin="0" aria-valuemax="100">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Grille de saisie - {{ \Carbon\Carbon::create()->month((int)$month)->translatedFormat('F') }} {{ $year }}</h5>
+    {{-- =================== STATISTIQUES =================== --}}
+    {{-- Vue Mobile --}}
+    <div class="d-md-none mb-4">
+        <div class="row g-3">
+            <div class="col-6">
+                <div class="card border-0 shadow-sm h-100 rounded-3 mb-0">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="avatar-xs bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="mdi mdi-calendar-check fs-14"></i>
+                            </div>
+                            <span class="fs-11 text-muted text-truncate">Attendu (mois)</span>
+                        </div>
+                        <h5 class="fw-bold mb-1 text-primary">{{ number_format($monthlyExpectedTotal, 0, ',', ' ') }} <small class="fs-10 text-muted">F</small></h5>
+                        <div class="progress" style="height:4px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $monthlyProgressPercent }}%"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <form action="{{ route('admin.finance.contributions.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="group_id" value="{{ encode_id($group->id) }}">
-                    <div class="table-responsive">
-                        <table class="table table-bordered align-middle table-nowrap mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>N°</th>
-                                    <th>Nom et prénoms</th>
-                                    <th>Bilan Annuel</th>
+            <div class="col-6">
+                <div class="card border-0 shadow-sm h-100 rounded-3 mb-0">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="avatar-xs bg-info-subtle text-info rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="mdi mdi-finance fs-14"></i>
+                            </div>
+                            <span class="fs-11 text-muted text-truncate">Attendu (année)</span>
+                        </div>
+                        <h5 class="fw-bold mb-1 text-info">{{ number_format($yearlyExpectedTotal, 0, ',', ' ') }} <small class="fs-10 text-muted">F</small></h5>
+                        <div class="progress" style="height:4px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ $yearlyProgressPercent }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card border-0 shadow-sm h-100 rounded-3 mb-0">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="avatar-xs bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="mdi mdi-wallet-plus fs-14"></i>
+                            </div>
+                            <span class="fs-11 text-muted text-truncate">Collecté (année)</span>
+                        </div>
+                        <h5 class="fw-bold mb-0 text-success">{{ number_format($yearlyCollectedTotal, 0, ',', ' ') }} <small class="fs-10 text-muted">F</small></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card border-0 shadow-sm h-100 rounded-3 mb-0">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="avatar-xs bg-warning-subtle text-warning rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="mdi mdi-chart-donut fs-14"></i>
+                            </div>
+                            <span class="fs-11 text-muted text-truncate">Progression</span>
+                        </div>
+                        <h5 class="fw-bold mb-1 text-warning">{{ $yearlyProgressPercent }}<small class="fs-10 text-muted">%</small></h5>
+                        <div class="progress" style="height:4px;">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $yearlyProgressPercent }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Vue Desktop --}}
+    <div class="row g-4 mb-4 d-none d-md-flex">
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 border-bottom border-3 border-primary shadow-sm h-100 rounded-3 overflow-hidden">
+                <div class="card-body p-4 d-flex align-items-center gap-3">
+                    <div class="avatar-sm flex-shrink-0">
+                        <span class="avatar-title bg-primary-subtle text-primary rounded-3 fs-24">
+                            <i class="mdi mdi-calendar-check"></i>
+                        </span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <p class="text-uppercase fw-semibold fs-12 text-muted mb-1 tracking-wider">Attendu ce mois</p>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h4 class="mb-0 fw-bold fs-22">{{ number_format($monthlyExpectedTotal, 0, ',', ' ') }} <span class="fs-14 text-muted fw-normal">FCFA</span></h4>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $monthlyProgressPercent }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 border-bottom border-3 border-info shadow-sm h-100 rounded-3 overflow-hidden">
+                <div class="card-body p-4 d-flex align-items-center gap-3">
+                    <div class="avatar-sm flex-shrink-0">
+                        <span class="avatar-title bg-info-subtle text-info rounded-3 fs-24">
+                            <i class="mdi mdi-finance"></i>
+                        </span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <p class="text-uppercase fw-semibold fs-12 text-muted mb-1 tracking-wider">Attendu (année)</p>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h4 class="mb-0 fw-bold fs-22">{{ number_format($yearlyExpectedTotal, 0, ',', ' ') }} <span class="fs-14 text-muted fw-normal">FCFA</span></h4>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ $yearlyProgressPercent }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 border-bottom border-3 border-success shadow-sm h-100 rounded-3 overflow-hidden">
+                <div class="card-body p-4 d-flex align-items-center gap-3">
+                    <div class="avatar-sm flex-shrink-0">
+                        <span class="avatar-title bg-success-subtle text-success rounded-3 fs-24">
+                            <i class="mdi mdi-wallet-plus"></i>
+                        </span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <p class="text-uppercase fw-semibold fs-12 text-muted mb-1 tracking-wider">Collecté (année)</p>
+                        <h4 class="mb-0 fw-bold fs-22">{{ number_format($yearlyCollectedTotal, 0, ',', ' ') }} <span class="fs-14 text-muted fw-normal">FCFA</span></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 border-bottom border-3 border-warning shadow-sm h-100 rounded-3 overflow-hidden">
+                <div class="card-body p-4 d-flex align-items-center gap-3">
+                    <div class="avatar-sm flex-shrink-0">
+                        <span class="avatar-title bg-warning-subtle text-warning rounded-3 fs-24">
+                            <i class="mdi mdi-chart-donut"></i>
+                        </span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <p class="text-uppercase fw-semibold fs-12 text-muted mb-1 tracking-wider">Progression (année)</p>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h4 class="mb-0 fw-bold fs-22">{{ $yearlyProgressPercent }}<span class="fs-14 text-muted fw-normal">%</span></h4>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $yearlyProgressPercent }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- =================== GRILLE DE SAISIE =================== --}}
+    <div class="card border-0 shadow-sm mb-4 rounded-3">
+        <div class="card-header border-0 py-3 px-4 d-flex align-items-center justify-content-between" style="background: rgba(var(--vz-primary-rgb), 0.03); border-bottom: 1px solid rgba(var(--vz-primary-rgb), 0.1) !important;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="mdi mdi-format-list-checks fs-20 text-primary"></i>
+                <h5 class="mb-0 fw-bold fs-15 text-primary text-uppercase tracking-wider">Saisie - {{ \Carbon\Carbon::create()->month((int)$month)->translatedFormat('F') }} {{ $year }}</h5>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <form action="{{ route('admin.finance.contributions.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="group_id" value="{{ encode_id($group->id) }}">
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover table-nowrap mb-0">
+                        <thead style="background: rgba(var(--vz-light-rgb), 0.5);">
+                            <tr>
+                                <th class="ps-4 fw-semibold text-muted fs-12 text-uppercase tracking-wider py-3" style="width: 50px;">N°</th>
+                                <th class="fw-semibold text-muted fs-12 text-uppercase tracking-wider py-3">Membre</th>
+                                <th class="fw-semibold text-muted fs-12 text-uppercase tracking-wider py-3" style="width: 200px;">Bilan Annuel</th>
+                                @foreach($sundays as $sunday)
+                                    <th class="text-center fw-semibold text-muted fs-12 text-uppercase tracking-wider py-3" style="width: 100px;">
+                                        <div class="d-flex flex-column">
+                                            <span class="fs-10 text-primary">{{ $sunday->translatedFormat('D') }}</span>
+                                            <span>{{ $sunday->format('d/m') }}</span>
+                                        </div>
+                                    </th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($members as $index => $member)
+                                <tr class="border-bottom">
+                                    <td class="ps-4 text-muted fw-medium">{{ $index + 1 }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            @if($member->photo)
+                                                <img src="{{ asset('storage/' . $member->photo) }}" class="rounded-circle shadow-sm border" width="36" height="36" style="object-fit: cover;">
+                                            @else
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm flex-shrink-0" 
+                                                     style="width: 36px; height: 36px; background: rgba(var(--vz-primary-rgb), 0.1); color: var(--vz-primary); font-size: 0.85rem;">
+                                                    {{ strtoupper(substr($member->first_name, 0, 1) . substr($member->name, 0, 1)) }}
+                                                </div>
+                                            @endif
+                                            <div>
+                                                <h6 class="mb-0 fw-semibold fs-14">{{ $member->first_name }} {{ $member->name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if($member->weekly_contribution)
+                                            @php
+                                                $expected = $member->weekly_contribution * $totalSundaysInYear;
+                                                $paid = $yearlyContributions->get($member->id, 0);
+                                                $percent = $expected > 0 ? min(100, round(($paid / $expected) * 100)) : 0;
+                                                $color = $percent >= 100 ? 'success' : ($percent >= 50 ? 'warning' : 'danger');
+                                            @endphp
+                                            <div class="d-flex flex-column justify-content-center h-100">
+                                                <div class="d-flex justify-content-between align-items-end mb-1">
+                                                    <span class="fs-12 fw-bold text-{{ $color }}">{{ number_format($paid, 0, ',', ' ') }}</span>
+                                                    <span class="fs-10 text-muted">/ {{ number_format($expected, 0, ',', ' ') }}</span>
+                                                </div>
+                                                <div class="progress" style="height: 5px;">
+                                                    <div class="progress-bar bg-{{ $color }}" role="progressbar" style="width: {{ $percent }}%"></div>
+                                                </div>
+                                                <span class="fs-10 text-muted mt-1">Cotis: {{ number_format($member->weekly_contribution, 0, ',', ' ') }} F/sem</span>
+                                            </div>
+                                        @else
+                                            <span class="badge bg-light text-muted fw-normal border">Non définie</span>
+                                        @endif
+                                    </td>
                                     @foreach($sundays as $sunday)
-                                        <th class="text-center" style="width: 100px;">{{ $sunday->format('d/m') }}</th>
+                                        @php
+                                            $dateStr = $sunday->format('Y-m-d');
+                                            $memberContributions = $contributions->get($member->id);
+                                            $contrib = $memberContributions ? $memberContributions->firstWhere('date', clone $sunday) : null;
+                                            $amount = $contrib ? $contrib->amount : '';
+                                            $isVersed = $contrib && $contrib->remittance_id;
+                                            $isDisabled = !$member->weekly_contribution;
+                                        @endphp
+                                        <td class="text-center p-2">
+                                            <div class="position-relative">
+                                                <input type="number" 
+                                                    name="contributions[{{ $member->id }}][{{ $dateStr }}]" 
+                                                    class="form-control form-control-sm text-center {{ $isVersed ? 'bg-light border-light-subtle text-muted' : 'border-primary-subtle' }}" 
+                                                    style="border-radius: 6px; font-weight: 500;"
+                                                    value="{{ $amount }}" 
+                                                    min="0"
+                                                    step="50"
+                                                    placeholder="{{ $member->weekly_contribution ?? '-' }}"
+                                                    {{ $isVersed ? 'readonly' : '' }}
+                                                    {{ $isDisabled ? 'disabled' : '' }}>
+                                                @if($isVersed)
+                                                    <i class="mdi mdi-check-decagram text-success position-absolute" style="top: -6px; right: -4px; font-size: 14px;" title="Déjà versé à la trésorerie"></i>
+                                                @endif
+                                            </div>
+                                        </td>
                                     @endforeach
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($members as $index => $member)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $member->first_name }} {{ $member->name }}</td>
-                                        <td>
-                                            @if($member->weekly_contribution)
-                                                @php
-                                                    $expected = $member->weekly_contribution * $totalSundaysInYear;
-                                                    $paid = $yearlyContributions->get($member->id, 0);
-                                                    $percent = $expected > 0 ? min(100, round(($paid / $expected) * 100)) : 0;
-                                                    $color = $percent >= 100 ? 'success' : ($percent >= 50 ? 'warning' : 'danger');
-                                                @endphp
-                                                <div class="d-flex flex-column">
-                                                    <span class="fs-12 text-muted mb-1">Hebdo: {{ number_format($member->weekly_contribution, 0, ',', ' ') }} F</span>
-                                                    <div class="d-flex justify-content-between fs-12 mb-1">
-                                                        <span class="fw-bold text-{{ $color }}">{{ number_format($paid, 0, ',', ' ') }}</span>
-                                                        <span class="text-muted">/ {{ number_format($expected, 0, ',', ' ') }} F</span>
-                                                    </div>
-                                                    <div class="progress progress-sm">
-                                                        <div class="progress-bar bg-{{ $color }}" role="progressbar" style="width: {{ $percent }}%"></div>
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <span class="text-muted fst-italic fs-12">Cotisation non définie</span>
-                                            @endif
-                                        </td>
-                                        @foreach($sundays as $sunday)
-                                            @php
-                                                $dateStr = $sunday->format('Y-m-d');
-                                                $memberContributions = $contributions->get($member->id);
-                                                $contrib = $memberContributions ? $memberContributions->firstWhere('date', clone $sunday) : null;
-                                                $amount = $contrib ? $contrib->amount : '';
-                                                $isVersed = $contrib && $contrib->remittance_id;
-                                                $isDisabled = !$member->weekly_contribution;
-                                            @endphp
-                                            <td class="text-center">
-                                                <input type="number" 
-                                                       name="contributions[{{ $member->id }}][{{ $dateStr }}]" 
-                                                       class="form-control form-control-sm text-center {{ $isVersed ? 'bg-light' : '' }}" 
-                                                       value="{{ $amount }}" 
-                                                       min="0"
-                                                       step="50"
-                                                       placeholder="{{ $member->weekly_contribution ?? '-' }}"
-                                                       {{ $isVersed ? 'readonly title="Cotisation déjà versée à la trésorerie"' : '' }}
-                                                       {{ $isDisabled ? 'disabled title="Veuillez définir la cotisation hebdomadaire du membre d\'abord"' : '' }}>
-                                            </td>
-                                        @endforeach
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="mt-3 text-end">
-                        <button type="submit" class="btn btn-primary w-100 w-sm-auto">Enregistrer les modifications</button>
-                    </div>
-                </form>
-            </div>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer bg-transparent border-top border-light-subtle p-3 p-md-4 text-end">
+                    <button type="submit" class="btn btn-primary px-4 rounded-pill shadow-sm">
+                        <i class="mdi mdi-content-save-outline me-1"></i> Enregistrer les cotisations
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
 
-<!-- Graphique d'évolution mensuelle -->
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Évolution des contributions - {{ $year }}</h5>
+    {{-- =================== GRAPHIQUE =================== --}}
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header border-0 py-3 px-4 d-flex align-items-center justify-content-between" style="background: rgba(var(--vz-info-rgb), 0.03); border-bottom: 1px solid rgba(var(--vz-info-rgb), 0.1) !important;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="mdi mdi-chart-bar fs-20 text-info"></i>
+                <h5 class="mb-0 fw-bold fs-15 text-info text-uppercase tracking-wider">Évolution - {{ $year }}</h5>
             </div>
-            <div class="card-body">
-                <div id="evolutionChart"></div>
-            </div>
+        </div>
+        <div class="card-body p-3 p-md-4">
+            <div id="evolutionChart" style="min-height: 300px;"></div>
         </div>
     </div>
 </div>
 
 <!-- Modal de confirmation de versement -->
-<div class="modal fade" id="remittanceModal" tabindex="-1" aria-labelledby="remittanceModalLabel" aria-hidden="true">
+<div class="modal fade" id="remittanceModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="remittanceModalLabel">Confirmer le versement</h5>
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body text-center p-4">
-                <div class="mt-2">
-                    <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f7b84b,secondary:#405189" style="width:130px;height:130px"></lord-icon>
-                    <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                        <h4>Êtes-vous sûr ?</h4>
-                        <p class="text-muted mx-4 mb-0">Vous êtes sur le point de déclarer un versement de <strong>{{ number_format($pendingAmount, 0, ',', ' ') }} FCFA</strong> à la trésorerie générale pour le groupe <strong>{{ $group->name }}</strong>. Confirmez-vous cette action ?</p>
+            <div class="modal-body text-center p-4 pt-0">
+                <div class="mb-4">
+                    <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px;">
+                        <i class="mdi mdi-cash-fast text-success fs-36"></i>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer justify-content-center flex-nowrap flex-sm-wrap">
-                <button type="button" class="btn btn-light w-100 w-sm-auto" data-bs-dismiss="modal">Annuler</button>
-                <form action="{{ route('admin.finance.remittances.store') }}" method="POST" class="d-inline-block w-100 w-sm-auto">
+                <h4 class="fw-bold mb-3">Déclarer un versement</h4>
+                <p class="text-muted fs-14 mb-4">
+                    Vous êtes sur le point de déclarer un versement de <br>
+                    <strong class="fs-20 text-dark">{{ number_format($pendingAmount, 0, ',', ' ') }} FCFA</strong> <br>
+                    à la trésorerie générale pour <strong>{{ $group->name }}</strong> ({{ \Carbon\Carbon::create()->month((int)$month)->translatedFormat('F') }} {{ $year }}).
+                </p>
+                <form action="{{ route('admin.finance.remittances.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="group_id" value="{{ encode_id($group->id) }}">
-                    <button type="submit" class="btn btn-success w-100 w-sm-auto">Oui, déclarer le versement</button>
+                    <input type="hidden" name="year" value="{{ $year }}">
+                    <input type="hidden" name="month" value="{{ $month }}">
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-success rounded-pill px-4 shadow-sm">Confirmer le versement</button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+@endsection
 
 @push('scripts')
 <script src="{{ asset('assets/libs/apexcharts/apexcharts.min.js') }}"></script>
@@ -430,63 +452,59 @@
             chart: {
                 type: 'bar',
                 height: isMobile ? 280 : 350,
-                toolbar: { show: false }
+                toolbar: { show: false },
+                fontFamily: 'inherit'
             },
             series: [
-                {
-                    name: 'Attendu',
-                    data: expected
-                },
-                {
-                    name: 'Collecté',
-                    data: collected
-                }
+                { name: 'Attendu', data: expected },
+                { name: 'Collecté', data: collected }
             ],
             xaxis: {
                 categories: months,
-                title: { text: 'Mois' },
-                labels: { rotate: isMobile ? -45 : 0 }
+                labels: { rotate: isMobile ? -45 : 0, style: { cssClass: 'text-muted fw-medium' } },
+                axisBorder: { show: false },
+                axisTicks: { show: false }
             },
             yaxis: {
-                title: { text: 'Montant (FCFA)' },
                 labels: {
                     formatter: function (val) {
                         return val >= 1000 ? (val / 1000).toFixed(0) + 'k' : val;
-                    }
+                    },
+                    style: { cssClass: 'text-muted fw-medium' }
                 }
             },
-            colors: ['#3B7DD8', '#28a745'],
+            colors: ['var(--vz-primary)', 'var(--vz-success)'],
+            grid: {
+                borderColor: 'var(--vz-border-color)',
+                strokeDashArray: 4,
+                yaxis: { lines: { show: true } }
+            },
             dataLabels: {
                 enabled: !isMobile,
                 formatter: function (val) {
-                    return val >= 1000 ? (val / 1000).toFixed(0) + 'k' : val;
+                    return val >= 1000 ? (val / 1000).toFixed(0) + 'k' : (val > 0 ? val : '');
                 },
-                style: { fontSize: '10px' }
+                style: { fontSize: '10px', fontWeight: 600 }
             },
             plotOptions: {
                 bar: {
-                    columnWidth: isMobile ? '80%' : '60%',
+                    columnWidth: isMobile ? '70%' : '45%',
                     borderRadius: 4
                 }
             },
             legend: {
-                position: isMobile ? 'bottom' : 'top'
+                position: isMobile ? 'bottom' : 'top',
+                horizontalAlign: isMobile ? 'center' : 'right',
+                markers: { radius: 12 }
             },
             tooltip: {
+                theme: 'light',
                 y: {
                     formatter: function (val) {
                         return val.toLocaleString('fr-FR') + ' FCFA';
                     }
                 }
-            },
-            responsive: [{
-                breakpoint: 768,
-                options: {
-                    chart: { height: 280 },
-                    dataLabels: { enabled: false },
-                    legend: { position: 'bottom' }
-                }
-            }]
+            }
         };
 
         var chart = new ApexCharts(document.querySelector('#evolutionChart'), options);
@@ -494,5 +512,3 @@
     });
 </script>
 @endpush
-
-@endsection

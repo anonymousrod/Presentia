@@ -141,7 +141,7 @@
             </div>
 
             <div class="card-body p-0">
-                <div class="table-responsive">
+                <div class="table-responsive d-none d-md-block">
                     <table class="table align-middle mb-0">
                         <thead style="background: rgba(var(--vz-primary-rgb), 0.06);">
                             <tr>
@@ -244,6 +244,75 @@
                         </tbody>
                     </table>
                 </div>
+                
+                {{-- Mobile View: Cards --}}
+                <div class="d-md-none px-3 py-2">
+                    @forelse($activeMembers as $member)
+                    <div class="card shadow-none border border-light-subtle rounded-3 mb-2">
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                @if($member->photo)
+                                    <img src="{{ asset('storage/' . $member->photo) }}"
+                                         alt="Photo" class="rounded-circle"
+                                         width="48" height="48" style="object-fit: cover; flex-shrink:0;">
+                                @else
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold flex-shrink-0"
+                                         style="width:48px; height:48px; font-size:1.1rem;
+                                                background: rgba(var(--vz-primary-rgb), 0.15);
+                                                color: var(--vz-primary);">
+                                        {{ strtoupper(substr($member->first_name, 0, 1) . substr($member->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold text-body fs-15">{{ $member->first_name }} {{ $member->name }}</div>
+                                    <div class="d-flex flex-wrap gap-1 mt-1">
+                                        @if($group->leader_id === $member->id)
+                                            <span class="badge rounded-pill" style="background: rgba(var(--vz-warning-rgb), 0.2); color: var(--vz-warning); font-size: 0.7rem;"><i class="mdi mdi-crown me-1"></i>Chef</span>
+                                        @endif
+                                        @if($group->collector_id === $member->id)
+                                            <span class="badge rounded-pill" style="background: rgba(var(--vz-info-rgb), 0.2); color: var(--vz-info); font-size: 0.7rem;"><i class="mdi mdi-wallet me-1"></i>Collecte</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                @can('assignMember', $group)
+                                <div class="flex-shrink-0">
+                                    <form action="{{ route('admin.groups.members.remove', [$group, $member]) }}"
+                                          method="POST"
+                                          class="d-inline confirm-remove-member"
+                                          data-member-name="{{ $member->first_name }} {{ $member->name }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                                class="btn btn-sm btn-icon border-0"
+                                                title="Retirer du groupe"
+                                                style="width:36px; height:36px; border-radius:50%; background: rgba(var(--vz-danger-rgb), 0.1); color: var(--vz-danger);">
+                                            <i class="mdi mdi-account-minus fs-18"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                                @endcan
+                            </div>
+                            <div class="d-flex flex-column gap-1 bg-light rounded-2 p-2 fs-13 text-muted">
+                                @if($member->email)
+                                    <div><i class="mdi mdi-email-outline me-1"></i>{{ $member->email }}</div>
+                                @endif
+                                @if($member->phone)
+                                    <div><i class="mdi mdi-phone-outline me-1"></i>{{ $member->phone }}</div>
+                                @endif
+                                <div><i class="mdi mdi-calendar-check me-1"></i>Rejoint: {{ $member->pivot->joined_at ? \Carbon\Carbon::parse($member->pivot->joined_at)->format('d/m/Y') : '—' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-4">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2"
+                             style="width:50px; height:50px; background: rgba(var(--vz-secondary-rgb), 0.1);">
+                            <i class="mdi mdi-account-off-outline fs-24 text-muted"></i>
+                        </div>
+                        <p class="text-muted fs-13 mb-0">Aucun membre actif dans ce groupe.</p>
+                    </div>
+                    @endforelse
+                </div>
             </div>
         </div>
 
@@ -261,7 +330,7 @@
                 </div>
             </div>
             <div class="card-body p-0">
-                <div class="table-responsive">
+                <div class="table-responsive d-none d-md-block">
                     <table class="table align-middle mb-0">
                         <thead style="background: rgba(var(--vz-secondary-rgb), 0.06);">
                             <tr>
@@ -310,6 +379,47 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                {{-- Mobile View: History Cards --}}
+                <div class="d-md-none px-3 py-2">
+                    @forelse($allMembers as $pastMember)
+                    <div class="card shadow-none border border-light-subtle rounded-3 mb-2">
+                        <div class="card-body p-3">
+                            <div class="fw-bold text-body fs-15 mb-2">{{ $pastMember->first_name }} {{ $pastMember->name }}</div>
+                            <div class="d-flex flex-column gap-2 fs-13">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted"><i class="mdi mdi-calendar-check me-1"></i>Rejoint:</span>
+                                    <span class="fw-medium">{{ $pastMember->pivot->joined_at ? \Carbon\Carbon::parse($pastMember->pivot->joined_at)->format('d/m/Y') : '—' }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted"><i class="mdi mdi-logout text-danger me-1"></i>Quitté:</span>
+                                    @if($pastMember->pivot->left_at)
+                                        <span class="fw-medium text-danger">{{ \Carbon\Carbon::parse($pastMember->pivot->left_at)->format('d/m/Y') }}</span>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </div>
+                                @if($pastMember->pivot->joined_at && $pastMember->pivot->left_at)
+                                <div class="mt-1 pt-2 border-top border-light-subtle d-flex justify-content-between">
+                                    <span class="text-muted fs-12">Durée</span>
+                                    <span class="text-muted fs-12">
+                                        @php
+                                            $joined = \Carbon\Carbon::parse($pastMember->pivot->joined_at);
+                                            $left = \Carbon\Carbon::parse($pastMember->pivot->left_at);
+                                        @endphp
+                                        {{ $joined->diffForHumans($left, true, false, 2) }}
+                                    </span>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-4 text-muted fs-13">
+                        Aucun historique d'ancien membre.
+                    </div>
+                    @endforelse
                 </div>
             </div>
         </div>

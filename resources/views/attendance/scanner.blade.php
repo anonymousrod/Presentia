@@ -3,24 +3,34 @@
 @section('content')
 <div class="row justify-content-center mx-0 mx-md-auto">
     <div class="col-12 col-md-8 col-lg-6 px-0 px-md-3">
-        <div class="card overflow-hidden border-0 shadow-sm" style="border-radius: 0; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+        <div class="card overflow-hidden border-0 shadow-lg rounded-4 my-2 my-md-4">
             <div class="card-header bg-primary text-white text-center py-3">
-                <h4 class="mb-0 text-white"><i class="mdi mdi-qrcode-scan me-2"></i>Scanner de Présence</h4>
+                <h4 class="mb-0 text-white fs-18 fs-md-20 fw-bold"><i class="mdi mdi-qrcode-scan me-2"></i>Scanner de Présence</h4>
             </div>
-            <div class="card-body p-4 text-center">
+            <div class="card-body p-3 p-md-4 text-center">
                 <div id="scanner-view">
-                    <p class="text-muted mb-4">Placez le QR Code de l'activité dans le cadre ci-dessous pour valider votre présence.</p>
+                    <p class="text-muted mb-3 fs-13 fs-md-14">Placez le QR Code de l'activité dans le cadre ci-dessous pour valider votre présence.</p>
                     
-                    <div id="reader-container" class="position-relative mb-4">
-                        <div id="reader" style="width: 100%; max-width: 500px; margin: 0 auto; border-radius: 8px; overflow: hidden; border: 1px solid #eff2f7;"></div>
-                        <div id="scan-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none" style="background: rgba(255,255,255,0.7); z-index: 10; display: flex; align-items: center; justify-content: center;">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Validation...</span>
+                    <div id="reader-container" class="position-relative mb-4 mx-auto rounded-4 overflow-hidden shadow-sm" style="max-width: 450px;">
+                        <div id="reader" style="width: 100%; border-radius: 16px; overflow: hidden; border: 2px solid var(--vz-primary-subtle, #eff2f7);"></div>
+                        
+                        <!-- Mobile Viewfinder Corner Reticle -->
+                        <div class="viewfinder-corner top-left"></div>
+                        <div class="viewfinder-corner top-right"></div>
+                        <div class="viewfinder-corner bottom-left"></div>
+                        <div class="viewfinder-corner bottom-right"></div>
+
+                        <div id="scan-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none" style="background: rgba(255,255,255,0.85); z-index: 10; display: flex; align-items: center; justify-content: center;">
+                            <div class="text-center">
+                                <div class="spinner-border text-primary mb-2" role="status">
+                                    <span class="visually-hidden">Validation...</span>
+                                </div>
+                                <div class="fw-semibold text-primary fs-14">Validation en cours...</div>
                             </div>
                         </div>
                     </div>
 
-                    <div id="scanning-status" class="mt-3">
+                    <div id="scanning-status" class="mt-2">
                         <span class="badge rounded-pill bg-info-subtle text-info p-2 px-3 fs-13">
                             <i class="mdi mdi-camera me-1"></i>Initialisation de la caméra...
                         </span>
@@ -34,16 +44,16 @@
                         </div>
                     </div>
                     
-                    <h4 class="mb-3" id="result-title">Succès !</h4>
-                    <div id="result-details" class="bg-light p-3 rounded-3 mb-4 text-start">
+                    <h4 class="mb-3 fw-bold" id="result-title">Succès !</h4>
+                    <div id="result-details" class="bg-light p-3 rounded-3 mb-4 text-start fs-14">
                         <!-- Details will be injected here -->
                     </div>
 
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('dashboard') }}" class="btn btn-primary">
+                    <div class="d-grid gap-2 col-12 col-md-10 mx-auto">
+                        <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg rounded-pill shadow-sm">
                             <i class="mdi mdi-view-dashboard-outline me-1"></i>Retour au tableau de bord
                         </a>
-                        <button onclick="window.location.reload()" class="btn btn-outline-secondary" id="btn-retry">
+                        <button onclick="window.location.reload()" class="btn btn-outline-secondary btn-lg rounded-pill" id="btn-retry">
                             <i class="mdi mdi-refresh me-1"></i>Scanner à nouveau
                         </button>
                     </div>
@@ -52,6 +62,23 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Viewfinder Corner Accents for Native App Feel */
+    .viewfinder-corner {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border-color: var(--vz-primary, #405189);
+        border-style: solid;
+        z-index: 5;
+        pointer-events: none;
+    }
+    .viewfinder-corner.top-left { top: 12px; left: 12px; border-width: 3px 0 0 3px; border-top-left-radius: 6px; }
+    .viewfinder-corner.top-right { top: 12px; right: 12px; border-width: 3px 3px 0 0; border-top-right-radius: 6px; }
+    .viewfinder-corner.bottom-left { bottom: 12px; left: 12px; border-width: 0 0 3px 3px; border-bottom-left-radius: 6px; }
+    .viewfinder-corner.bottom-right { bottom: 12px; right: 12px; border-width: 0 3px 3px 0; border-bottom-right-radius: 6px; }
+</style>
 @endsection
 
 @push('scripts')

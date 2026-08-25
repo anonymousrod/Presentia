@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tableau de Bord')
+@section('title', 'Tableau de Bord Administrateur')
 
 @push('css')
 <style>
@@ -10,7 +10,7 @@
         background-image: 
             radial-gradient(circle at 0% 0%, rgba(var(--vz-primary-rgb), 0.25) 0%, transparent 50%),
             radial-gradient(circle at 100% 100%, rgba(var(--vz-info-rgb), 0.2) 0%, transparent 50%);
-        padding: 4rem 0 6rem 0;
+        padding: 3rem 0 4rem 0;
         position: relative;
         overflow: hidden;
         margin: -1.5rem -1.5rem 2rem -1.5rem;
@@ -62,37 +62,24 @@
         z-index: 5;
     }
 
-    .hero-icon-container {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 130px;
-        height: 130px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 2.5rem;
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        transform: rotate(12deg);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.05);
-        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .hero-icon-container:hover {
-        transform: rotate(0deg) scale(1.05);
-    }
-    .hero-icon-container i {
-        font-size: 4.5rem;
-        background: linear-gradient(135deg, #ffffff, rgba(255,255,255,0.4));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
-    }
-
     .hero-badge {
         background: rgba(var(--vz-primary-rgb), 0.15);
         border: 1px solid rgba(var(--vz-primary-rgb), 0.3);
         color: #fff;
         backdrop-filter: blur(5px);
+    }
+
+    /* Premium Custom Cards */
+    .premium-card {
+        border-radius: 1.25rem;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .premium-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
 
     /* Scan Button */
@@ -121,6 +108,22 @@
     .scan-btn i {
         font-size: 1.5rem;
     }
+    
+    /* Table Styling */
+    .table-premium th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        color: var(--vz-gray-600);
+        background-color: var(--vz-light);
+        padding: 15px;
+    }
+    
+    .table-premium td {
+        padding: 15px;
+        vertical-align: middle;
+    }
 
     @media (max-width: 991.98px) {
         .activity-hero {
@@ -136,226 +139,254 @@
 @endpush
 
 @section('content')
-    <div class="row">
-        <div class="col">
 
-            <div class="h-100">
-                <div class="activity-hero px-4">
-                    <div class="hero-grid"></div>
-                    <div class="hero-orb orb-1"></div>
-                    <div class="hero-orb orb-2"></div>
-                    
-                    <div class="container-fluid max-w-1200 hero-content">
-                        <div class="row align-items-center">
-                            <div class="col-lg-7">
-                                <div class="mb-4 d-flex justify-content-center justify-content-lg-start">
-                                    <span class="badge hero-badge px-3 py-2 rounded-pill shadow-sm mb-3" style="font-size: 0.75rem; letter-spacing: 1px;"><i class="mdi mdi-view-dashboard text-warning me-1"></i> TABLEAU DE BORD</span>
-                                </div>
-                                <h1 class="text-white fw-bold display-4 mb-2 text-center text-lg-start" style="letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); line-height: 1.2;">Bonjour, <span style="color: var(--vz-primary); filter: brightness(1.3);">{{ auth()->user()->first_name }} !</span></h1>
-                                <p class="fs-16 mb-0 d-none d-lg-block" style="max-width: 550px; line-height: 1.6; color: rgba(255,255,255,0.7);">
-                                    Voici un résumé complet de l'activité sur {{ config('app.name') }} aujourd'hui.
-                                </p>
-                                <p class="fs-15 mb-0 d-lg-none text-center" style="color: rgba(255,255,255,0.7);">
-                                    Scannez le code QR à l'église pour marquer votre présence.
-                                </p>
+<div class="row">
+    <div class="col">
+        <div class="h-100">
+            <!-- Hero Section -->
+            <div class="activity-hero px-4">
+                <div class="hero-grid"></div>
+                <div class="hero-orb orb-1"></div>
+                <div class="hero-orb orb-2"></div>
+                
+                <div class="container-fluid max-w-1200 hero-content">
+                    <div class="row align-items-center">
+                        <div class="col-lg-7">
+                            <div class="mb-4 d-flex justify-content-center justify-content-lg-start">
+                                <span class="badge hero-badge px-3 py-2 rounded-pill shadow-sm mb-3" style="font-size: 0.75rem; letter-spacing: 1px;">
+                                    <i class="ri-shield-user-line me-1"></i> ESPACE ADMINISTRATEUR
+                                </span>
                             </div>
-                            <div class="col-lg-5 d-flex justify-content-lg-end scan-btn-container">
-                                <div class="text-center">
-                                    <a href="{{ route('attendance.scan') }}" class="scan-btn">
-                                        <i class="ri-qr-scan-2-line"></i> Scanner ma présence
-                                    </a>
-                                    <p class="text-white-50 mt-3 mb-0" style="font-size: 0.85rem;">Activez votre caméra pour badger à l'entrée</p>
+                            <h1 class="display-5 fw-bold text-white mb-2 text-center text-lg-start" style="line-height: 1.2;">
+                                Bonjour, <span style="color: var(--vz-primary); filter: brightness(1.3);">{{ auth()->user()->first_name }} !</span>
+                            </h1>
+                            <p class="fs-16 mb-0 d-none d-lg-block" style="max-width: 550px; line-height: 1.6; color: rgba(255,255,255,0.7);">
+                                Voici un résumé complet de l'activité globale sur {{ config('app.name') }} aujourd'hui.
+                            </p>
+                            <p class="fs-15 mb-0 d-lg-none text-center" style="color: rgba(255,255,255,0.7);">
+                                Scannez le code QR à l'église pour marquer votre présence.
+                            </p>
+                        </div>
+
+                        <div class="col-lg-5 d-flex justify-content-lg-end scan-btn-container">
+                            <div class="text-center">
+                                <a href="{{ route('attendance.scan') }}" class="scan-btn">
+                                    <i class="ri-qr-scan-2-line"></i> Scanner ma présence
+                                </a>
+                                <p class="text-white-50 mt-3 mb-0" style="font-size: 0.85rem;">Activez votre caméra pour badger à l'entrée</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="row g-2 g-md-3" style="margin-top: -5rem; position: relative; z-index: 10;">
+                <!-- Total Membres -->
+                <div class="col-6 col-md-6 col-xl-3">
+                    <div class="card premium-card overflow-hidden h-100">
+                        <div class="card-body p-2 p-sm-3 p-md-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-semibold text-muted text-truncate mb-0 fs-10 fs-md-12" style="letter-spacing: 0.5px;">Membres</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-2 mt-md-4">
+                                <div>
+                                    <h4 class="fs-18 fs-md-24 fw-bold ff-secondary mb-1 mb-md-3"><span class="counter-value" data-target="{{ $stats['total_users'] }}">0</span></h4>
+                                    <a href="{{ route('admin.users.index') }}" class="text-primary text-decoration-underline fw-medium fs-11 fs-md-14 d-none d-sm-inline">Voir membres</a>
+                                </div>
+                                <div class="avatar-xs avatar-sm-md flex-shrink-0">
+                                    <span class="avatar-title bg-primary-subtle text-primary rounded fs-16 fs-md-20 shadow-sm">
+                                        <i class="ri-team-line"></i>
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="row" style="margin-top: -5rem; position: relative; z-index: 10;">
-                    <div class="col-12 col-md-6 col-xl-3">
-                        <!-- card -->
-                        <div class="card card-animate">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Total Membres</p>
-                                    </div>
+                <!-- Total Activités -->
+                <div class="col-6 col-md-6 col-xl-3">
+                    <div class="card premium-card overflow-hidden h-100">
+                        <div class="card-body p-2 p-sm-3 p-md-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-semibold text-muted text-truncate mb-0 fs-10 fs-md-12" style="letter-spacing: 0.5px;">Activités</p>
                                 </div>
-                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                    <div>
-                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="{{ $stats['total_users'] }}">0</span></h4>
-                                        <a href="{{ route('admin.users.index') }}" class="text-decoration-underline">Voir les membres</a>
-                                    </div>
-                                    <div class="avatar-sm flex-shrink-0">
-                                        <span class="avatar-title bg-success-subtle text-success rounded fs-3">
-                                            <i class="bx bx-user-circle"></i>
-                                        </span>
-                                    </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-2 mt-md-4">
+                                <div>
+                                    <h4 class="fs-18 fs-md-24 fw-bold ff-secondary mb-1 mb-md-3"><span class="counter-value" data-target="{{ $stats['total_activities'] }}">0</span></h4>
+                                    <a href="{{ route('activities.index') }}" class="text-info text-decoration-underline fw-medium fs-11 fs-md-14 d-none d-sm-inline">Toutes activités</a>
                                 </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
+                                <div class="avatar-xs avatar-sm-md flex-shrink-0">
+                                    <span class="avatar-title bg-info-subtle text-info rounded fs-16 fs-md-20 shadow-sm">
+                                        <i class="ri-calendar-event-line"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    <div class="col-12 col-md-6 col-xl-3">
-                        <!-- card -->
-                        <div class="card card-animate">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Total Activités</p>
-                                    </div>
+                <!-- Activités à venir -->
+                <div class="col-6 col-md-6 col-xl-3">
+                    <div class="card premium-card overflow-hidden h-100">
+                        <div class="card-body p-2 p-sm-3 p-md-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-semibold text-muted text-truncate mb-0 fs-10 fs-md-12" style="letter-spacing: 0.5px;">À venir</p>
                                 </div>
-                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                    <div>
-                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="{{ $stats['total_activities'] }}">0</span></h4>
-                                        <a href="{{ route('activities.index') }}" class="text-decoration-underline">Toutes les activités</a>
-                                    </div>
-                                    <div class="avatar-sm flex-shrink-0">
-                                        <span class="avatar-title bg-info-subtle text-info rounded fs-3">
-                                            <i class="bx bx-calendar"></i>
-                                        </span>
-                                    </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-2 mt-md-4">
+                                <div>
+                                    <h4 class="fs-18 fs-md-24 fw-bold ff-secondary mb-1 mb-md-3"><span class="counter-value" data-target="{{ $stats['upcoming_activities'] }}">0</span></h4>
+                                    <a href="{{ route('activities.index', ['status_filter' => 'upcoming']) }}" class="text-warning text-decoration-underline fw-medium fs-11 fs-md-14 d-none d-sm-inline">Voir à venir</a>
                                 </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
+                                <div class="avatar-xs avatar-sm-md flex-shrink-0">
+                                    <span class="avatar-title bg-warning-subtle text-warning rounded fs-16 fs-md-20 shadow-sm">
+                                        <i class="ri-time-line"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    <div class="col-12 col-md-6 col-xl-3">
-                        <!-- card -->
-                        <div class="card card-animate">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Activités à venir</p>
-                                    </div>
+                <!-- Total Groupes -->
+                <div class="col-6 col-md-6 col-xl-3">
+                    <div class="card premium-card overflow-hidden h-100">
+                        <div class="card-body p-2 p-sm-3 p-md-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-semibold text-muted text-truncate mb-0 fs-10 fs-md-12" style="letter-spacing: 0.5px;">Groupes</p>
                                 </div>
-                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                    <div>
-                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="{{ $stats['upcoming_activities'] }}">0</span></h4>
-                                        <a href="{{ route('activities.index', ['status_filter' => 'upcoming']) }}" class="text-decoration-underline">Voir à venir</a>
-                                    </div>
-                                    <div class="avatar-sm flex-shrink-0">
-                                        <span class="avatar-title bg-warning-subtle text-warning rounded fs-3">
-                                            <i class="bx bx-time-five"></i>
-                                        </span>
-                                    </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-2 mt-md-4">
+                                <div>
+                                    <h4 class="fs-18 fs-md-24 fw-bold ff-secondary mb-1 mb-md-3"><span class="counter-value" data-target="{{ $stats['total_groups'] }}">0</span></h4>
+                                    <a href="{{ route('admin.groups.index') }}" class="text-success text-decoration-underline fw-medium fs-11 fs-md-14 d-none d-sm-inline">Gérer les groupes</a>
                                 </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
+                                <div class="avatar-xs avatar-sm-md flex-shrink-0">
+                                    <span class="avatar-title bg-success-subtle text-success rounded fs-16 fs-md-20 shadow-sm">
+                                        <i class="ri-group-line"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                    <div class="col-12 col-md-6 col-xl-3">
-                        <!-- card -->
-                        <div class="card card-animate">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Groupes</p>
-                                    </div>
+            <!-- Activités Récentes Section -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card premium-card overflow-hidden">
+                        <div class="card-header border-0 bg-transparent py-3 px-3 px-md-4 border-bottom border-light-subtle d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar-xs bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="ri-history-line fs-16"></i>
                                 </div>
-                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                    <div>
-                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="{{ $stats['total_groups'] }}">0</span></h4>
-                                        <a href="{{ route('admin.groups.index') }}" class="text-decoration-underline">Gérer les groupes</a>
-                                    </div>
-                                    <div class="avatar-sm flex-shrink-0">
-                                        <span class="avatar-title bg-primary-subtle text-primary rounded fs-3">
-                                            <i class="bx bx-group"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-                </div> <!-- end row-->
+                                <h5 class="card-title mb-0 fw-bold fs-15 text-body">Activités Récentes</h5>
+                            </div>
+                            <a href="{{ route('activities.index') }}" class="btn btn-sm btn-soft-primary rounded-pill fs-12 px-3">
+                                Tout voir <i class="ri-arrow-right-line ms-1"></i>
+                            </a>
+                        </div>
 
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header align-items-center d-flex">
-                                <h4 class="card-title mb-0 flex-grow-1">Activités Récentes</h4>
-                            </div><!-- end card header -->
-
-                            <div class="card-body">
-                                <!-- Mobile View (Cards) -->
-                                <div class="d-md-none">
+                        <div class="card-body p-0">
+                            <!-- Mobile View (Cards) -->
+                            <div class="d-block d-md-none p-3">
+                                <div class="d-flex flex-column gap-2">
                                     @forelse($recent_activities as $activity)
-                                        <div class="card border mb-3 shadow-none">
-                                            <div class="card-body p-3">
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <h5 class="fs-14 mb-0 text-truncate">{{ $activity->title }}</h5>
-                                                    <span class="badge {{ $activity->status === 'En cours' ? 'bg-success' : ($activity->status === 'Terminée' ? 'bg-secondary' : 'bg-warning') }}">
-                                                        {{ $activity->status }}
-                                                    </span>
-                                                </div>
-                                                <div class="mb-2 text-muted fs-12">
-                                                    <i class="ri-calendar-event-line align-bottom me-1"></i> 
+                                    <div class="card border border-light-subtle rounded-3 shadow-none mb-1 p-3">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h6 class="fs-14 fw-bold mb-1">
+                                                    <a href="{{ route('activities.show', $activity) }}" class="text-body">{{ $activity->title }}</a>
+                                                </h6>
+                                                <span class="text-muted fs-11">
+                                                    <i class="ri-calendar-event-line me-1"></i>
                                                     {{ \Carbon\Carbon::parse($activity->start_time)->format('d/m/Y H:i') }}
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                                    <span class="text-muted fs-12"><i class="ri-map-pin-line align-bottom me-1"></i> {{ $activity->location ?? 'Non défini' }}</span>
-                                                    <a href="{{ route('activities.show', $activity) }}" class="btn btn-sm btn-soft-primary">Détails</a>
-                                                </div>
+                                                </span>
                                             </div>
+                                            <span class="badge {{ $activity->status === 'En cours' ? 'bg-success-subtle text-success' : ($activity->status === 'Terminée' ? 'bg-secondary-subtle text-secondary' : 'bg-warning-subtle text-warning') }} rounded-pill px-2 py-1 fs-11">
+                                                {{ $activity->status }}
+                                            </span>
                                         </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top border-light-subtle">
+                                            <span class="text-muted fs-11">
+                                                <i class="ri-map-pin-line me-1"></i> {{ $activity->location ?? 'Non défini' }}
+                                            </span>
+                                            <a href="{{ route('activities.show', $activity) }}" class="btn btn-sm btn-soft-primary rounded-pill px-3 fs-12">
+                                                Détails
+                                            </a>
+                                        </div>
+                                    </div>
                                     @empty
-                                        <div class="text-center py-3 text-muted">Aucune activité récente.</div>
+                                    <div class="text-center py-4 text-muted fs-13">
+                                        Aucune activité récente.
+                                    </div>
                                     @endforelse
                                 </div>
+                            </div>
 
-                                <!-- Desktop View (Table) -->
-                                <div class="table-responsive table-card d-none d-md-block">
-                                    <table class="table table-hover table-centered align-middle table-nowrap mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Titre</th>
-                                                <th>Date de début</th>
-                                                <th>Date de fin</th>
-                                                <th>Lieu</th>
-                                                <th>Statut</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse($recent_activities as $activity)
-                                                <tr>
-                                                    <td>
-                                                        <h5 class="fs-14 my-1"><a href="{{ route('activities.show', $activity) }}" class="text-reset">{{ $activity->title }}</a></h5>
-                                                        <span class="text-muted">{{ Str::limit($activity->description, 30) }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <h5 class="fs-14 my-1 fw-normal">{{ \Carbon\Carbon::parse($activity->start_time)->format('d M Y H:i') }}</h5>
-                                                    </td>
-                                                    <td>
-                                                        <h5 class="fs-14 my-1 fw-normal">{{ \Carbon\Carbon::parse($activity->end_time)->format('d M Y H:i') }}</h5>
-                                                    </td>
-                                                    <td>
-                                                        <h5 class="fs-14 my-1 fw-normal">{{ $activity->location ?? 'Non spécifié' }}</h5>
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge {{ $activity->status === 'En cours' ? 'bg-success' : ($activity->status === 'Terminée' ? 'bg-secondary' : 'bg-warning') }}">
-                                                            {{ $activity->status }}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <a href="{{ route('activities.show', $activity) }}" class="btn btn-sm btn-soft-primary">Voir détails</a>
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="6" class="text-center">Aucune activité récente.</td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <!-- Desktop View (Table) -->
+                            <div class="table-responsive d-none d-md-block">
+                                <table class="table table-hover align-middle table-nowrap mb-0 table-premium">
+                                    <thead class="table-light">
+                                        <tr class="text-uppercase fs-11">
+                                            <th class="ps-4">Titre</th>
+                                            <th>Date de début</th>
+                                            <th>Date de fin</th>
+                                            <th>Lieu</th>
+                                            <th>Statut</th>
+                                            <th class="text-end pe-4">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($recent_activities as $activity)
+                                        <tr>
+                                            <td class="ps-4">
+                                                <h6 class="fs-13 mb-0 fw-bold">
+                                                    <a href="{{ route('activities.show', $activity) }}" class="text-body">{{ $activity->title }}</a>
+                                                </h6>
+                                                <span class="text-muted fs-11">{{ Str::limit($activity->description, 35) }}</span>
+                                            </td>
+                                            <td class="fs-12 text-muted">
+                                                {{ \Carbon\Carbon::parse($activity->start_time)->format('d M Y H:i') }}
+                                            </td>
+                                            <td class="fs-12 text-muted">
+                                                {{ \Carbon\Carbon::parse($activity->end_time)->format('d M Y H:i') }}
+                                            </td>
+                                            <td class="fs-12 text-body">
+                                                <i class="ri-map-pin-line text-muted me-1"></i>{{ $activity->location ?? 'Non spécifié' }}
+                                            </td>
+                                            <td>
+                                                <span class="badge {{ $activity->status === 'En cours' ? 'bg-success-subtle text-success' : ($activity->status === 'Terminée' ? 'bg-secondary-subtle text-secondary' : 'bg-warning-subtle text-warning') }} rounded-pill px-2 py-1">
+                                                    {{ $activity->status }}
+                                                </span>
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <a href="{{ route('activities.show', $activity) }}" class="btn btn-sm btn-soft-primary rounded-pill px-3">Voir détails</a>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="6" class="text-center py-4 text-muted fs-13">Aucune activité récente.</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-            </div> <!-- end .h-100-->
+        </div>
+    </div>
+</div>
 
-        </div> <!-- end col -->
-    </div> <!-- end row -->
 @endsection

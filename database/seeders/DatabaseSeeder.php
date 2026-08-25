@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             ActivityTypeSeeder::class,
             ChartDataSeeder::class, //pas en production
+            ContributionSeeder::class,
             // MemberSeeder::class,
             // ExecutiveSeeder::class,
             // GroupSeeder::class,

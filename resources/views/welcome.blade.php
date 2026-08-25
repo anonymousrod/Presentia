@@ -33,7 +33,7 @@
         .hero-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4));
+            background: linear-gradient(to right, rgba(0,0,0,0.85), rgba(0,0,0,0.5));
         }
         .hero-content {
             position: relative;
@@ -82,7 +82,7 @@
             font-size: 24px;
         }
         .navbar-custom .nav-link {
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
             font-weight: 500;
             padding: 0 15px;
             transition: color 0.3s;
@@ -226,6 +226,111 @@
         .footer-links a:hover {
             color: white;
         }
+
+        /* Responsive Fixes for Small Screens */
+        @media (max-width: 991.98px) {
+            .navbar-custom {
+                background-color: var(--vz-primary) !important;
+                padding: 12px 0;
+                position: fixed;
+                top: 0;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            }
+            .navbar-collapse {
+                background: rgba(33, 37, 41, 0.96);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border-radius: 14px;
+                padding: 16px;
+                margin-top: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            }
+            .navbar-nav .nav-link {
+                padding: 10px 14px;
+                border-radius: 8px;
+                font-size: 1rem;
+            }
+            .navbar-nav .ms-3 {
+                margin-left: 0 !important;
+                margin-top: 12px;
+                width: 100%;
+            }
+            .navbar-nav .btn {
+                width: 100%;
+                text-align: center;
+            }
+            .hero-section {
+                padding: 110px 0 50px;
+            }
+            .hero-text-container {
+                padding: 24px 20px;
+                border-radius: 16px;
+            }
+            .hero-text-container h1 {
+                font-size: 2rem !important;
+                margin-bottom: 16px !important;
+            }
+            .hero-text-container p {
+                font-size: 1rem !important;
+                margin-bottom: 24px !important;
+            }
+            .org-img-wrapper {
+                height: 200px;
+            }
+            .stat-box {
+                padding: 24px 12px;
+                border-radius: 16px;
+            }
+            .stat-box h2 {
+                font-size: 2.25rem;
+                margin-bottom: 8px;
+            }
+            .stat-box p {
+                font-size: 0.8rem;
+                letter-spacing: 0.5px;
+            }
+            .cta-section {
+                padding: 40px 20px;
+                margin: 24px 0;
+                border-radius: 16px;
+            }
+            .cta-section h2 {
+                font-size: 1.75rem;
+            }
+            .gallery-img {
+                height: 180px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .hero-text-container h1 {
+                font-size: 1.65rem !important;
+            }
+            .hero-text-container .btn {
+                width: 100%;
+            }
+            .section-title {
+                font-size: 1.5rem;
+            }
+            .stat-box {
+                padding: 18px 8px;
+            }
+            .stat-box h2 {
+                font-size: 1.85rem;
+            }
+            .stat-box p {
+                font-size: 0.72rem;
+            }
+            .org-img-wrapper {
+                height: 180px;
+            }
+            .phone-contact-pill {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -241,8 +346,8 @@
                 @endif
                 <span class="fs-4">{{ config('app.name') }}</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="ri-menu-line text-white"></i>
+            <button class="navbar-toggler border-0 p-2 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="ri-menu-line fs-22"></i>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
@@ -286,16 +391,16 @@
         </div>
     </section>
 
-    <div class="container mt-5">
+    <div class="container mt-4 mt-md-5 px-3 px-sm-4">
         
         <!-- 2. PRESENTATION DE LA JEUNESSE -->
-        <section id="about" class="py-5">
+        <section id="about" class="py-4 py-md-5">
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     @php
                         $aboutImg = $settings->about_image ? asset('storage/' . $settings->about_image) : asset('assets/images/home/about.jpg');
                     @endphp
-                    <img src="{{ $aboutImg }}" alt="Présentation" class="img-fluid rounded-4 shadow-lg">
+                    <img src="{{ $aboutImg }}" alt="Présentation" class="img-fluid rounded-4 shadow-lg w-100" style="max-height: 380px; object-fit: cover;">
                 </div>
                 <div class="col-lg-6 ps-lg-5">
                     <h2 class="section-title">Qui sommes-nous ?</h2>
@@ -316,28 +421,28 @@
         </section>
 
         <!-- 5. CHIFFRES CLES -->
-        <section class="stats-section rounded-4 my-5 shadow-lg">
+        <section class="stats-section rounded-4 my-4 my-md-5 shadow-lg">
             <div class="container">
-                <div class="row text-center g-4">
-                    <div class="col-lg-3 col-md-6">
+                <div class="row text-center g-2 g-sm-3 g-lg-4">
+                    <div class="col-6 col-lg-3">
                         <div class="stat-box">
                             <h2 class="fw-bold"><span class="counter-value" data-target="{{ $stats['users'] }}">0</span></h2>
                             <p class="mb-0">Jeunes engagés</p>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-6 col-lg-3">
                         <div class="stat-box">
                             <h2 class="fw-bold"><span class="counter-value" data-target="{{ $stats['groups'] }}">0</span></h2>
                             <p class="mb-0">Groupes actifs</p>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-6 col-lg-3">
                         <div class="stat-box">
                             <h2 class="fw-bold"><span class="counter-value" data-target="{{ $stats['events'] }}">0</span></h2>
                             <p class="mb-0">Événements</p>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-6 col-lg-3">
                         <div class="stat-box">
                             <h2 class="fw-bold"><span class="counter-value" data-target="{{ $stats['leaders'] }}">0</span></h2>
                             <p class="mb-0">Responsables</p>
@@ -348,14 +453,14 @@
         </section>
 
         <!-- 3. NOTRE ORGANISATION -->
-        <section id="organization" class="py-5">
-            <div class="text-center mb-5">
+        <section id="organization" class="py-4 py-md-5">
+            <div class="text-center mb-4 mb-md-5">
                 <h2 class="section-title d-inline-block">Notre Organisation</h2>
-                <p class="text-muted mt-3">Découvrez l'équipe dirigeante de notre jeunesse.</p>
+                <p class="text-muted mt-2">Découvrez l'équipe dirigeante de notre jeunesse.</p>
             </div>
-            <div class="row justify-content-center">
+            <div class="row justify-content-center g-3 g-md-4">
                 @foreach($leaders as $leader)
-                    <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <div class="col-6 col-md-4 col-xl-3 mb-3">
                         <div class="card org-card h-100">
                             <div class="org-img-wrapper">
                                 @php
@@ -363,14 +468,14 @@
                                 @endphp
                                 <img src="{{ $photoUrl }}" class="org-img" alt="{{ $leader->name }}">
                             </div>
-                            <div class="card-body text-center p-4">
-                                <h5 class="fw-bold mb-1">{{ $leader->first_name }} {{ $leader->name }}</h5>
+                            <div class="card-body text-center p-3 p-md-4">
+                                <h5 class="fw-bold mb-1 fs-14 fs-md-16">{{ $leader->first_name }} {{ $leader->name }}</h5>
                                 <div class="d-flex flex-wrap justify-content-center gap-1 mb-2">
                                     @foreach($leader->roles as $role)
                                         @if(in_array($role->name, ['Administrateur', 'Président', 'Vice Président', 'Membre du bureau']))
-                                            <span class="badge bg-primary-subtle text-primary mb-2">{{ $role->name == 'Administrateur' ? 'Président' : $role->name }}</span>
+                                            <span class="badge bg-primary-subtle text-primary mb-1 fs-10 fs-md-12">{{ $role->name == 'Administrateur' ? 'Président' : $role->name }}</span>
                                             @if($role->description)
-                                                <p class="text-muted fs-13 mb-0 text-center">{{ $role->description }}</p>
+                                                <p class="text-muted fs-12 fs-md-13 mb-0 text-center">{{ $role->description }}</p>
                                             @endif
                                         @endif
                                     @endforeach
@@ -383,27 +488,27 @@
         </section>
 
         <!-- 4. LES GROUPES -->
-        <section id="groups" class="py-5 bg-light rounded-4 px-4 my-5">
-            <div class="text-center mb-5">
+        <section id="groups" class="py-4 py-md-5 bg-light rounded-4 px-3 px-md-4 my-4 my-md-5">
+            <div class="text-center mb-4 mb-md-5">
                 <h2 class="section-title d-inline-block">Nos Groupes</h2>
-                <p class="text-muted mt-3">Rejoignez un groupe de proximité pour partager et grandir ensemble.</p>
+                <p class="text-muted mt-2">Rejoignez un groupe de proximité pour partager et grandir ensemble.</p>
             </div>
-            <div class="row">
+            <div class="row g-3 g-md-4">
                 @foreach($groups as $index => $group)
-                    <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="col-12 col-md-6 col-lg-4 mb-3 mb-md-0">
                         <div class="card group-card shadow-sm h-100">
                             @if($group->image_path)
-                                <div class="position-relative bg-dark" style="height: 200px; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                <div class="position-relative bg-dark" style="height: 180px; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center;">
                                     <div class="position-absolute w-100 h-100" style="background-image: url('{{ asset('storage/' . $group->image_path) }}'); background-size: cover; background-position: center; filter: blur(10px) brightness(0.6); transform: scale(1.1);"></div>
                                     <img src="{{ asset('storage/' . $group->image_path) }}" alt="{{ $group->name }}" style="max-width: 100%; max-height: 100%; object-fit: contain; position: relative; z-index: 1;">
                                     <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), transparent); z-index: 2;"></div>
                                 </div>
                             @else
-                                <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background: linear-gradient(135deg, {{ $group->color ?? '#405189' }}dd, {{ $group->color ?? '#405189' }});">
-                                    <i class="ri-group-line text-white opacity-75" style="font-size: 5rem;"></i>
+                                <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 180px; background: linear-gradient(135deg, {{ $group->color ?? '#405189' }}dd, {{ $group->color ?? '#405189' }});">
+                                    <i class="ri-group-line text-white opacity-75" style="font-size: 4.5rem;"></i>
                                 </div>
                             @endif
-                            <div class="card-body">
+                            <div class="card-body p-3 p-md-4">
                                 <h5 class="card-title fw-bold" style="color: {{ $group->color ?? '#405189' }}">{{ $group->name }}</h5>
                                 <p class="card-text text-muted small">{{ $group->description ?? 'Aucune description disponible pour ce groupe.' }}</p>
                                 
@@ -427,15 +532,15 @@
         </section>
 
         <!-- 6. GALERIE PHOTOS -->
-        <section id="gallery" class="py-5 bg-light rounded-4 px-4 my-5">
-            <div class="text-center mb-5">
+        <section id="gallery" class="py-4 py-md-5 bg-light rounded-4 px-3 px-md-4 my-4 my-md-5">
+            <div class="text-center mb-4 mb-md-5">
                 <h2 class="section-title d-inline-block">Notre Galerie</h2>
-                <p class="text-muted mt-3">Quelques souvenirs de nos moments passés ensemble.</p>
+                <p class="text-muted mt-2">Quelques souvenirs de nos moments passés ensemble.</p>
             </div>
-            <div class="row">
+            <div class="row g-3">
                 @forelse($galleries as $index => $gallery)
-                    <div class="col-lg-3 col-md-4 col-sm-6">
-                        <div class="gallery-item shadow-sm">
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="gallery-item shadow-sm mb-2 mb-md-3">
                             <a href="{{ asset('storage/' . $gallery->image_path) }}" target="_blank">
                                 <img src="{{ asset('storage/' . $gallery->image_path) }}" alt="{{ $gallery->title }}" class="gallery-img">
                             </a>
@@ -443,9 +548,9 @@
                     </div>
                 @empty
                     <!-- Placeholders si la galerie est vide -->
-                    <div class="col-lg-4 col-md-6"><div class="gallery-item shadow-sm"><img src="{{ asset('assets/images/home/group-1.jpg') }}" class="gallery-img" alt="Gallery 1"></div></div>
-                    <div class="col-lg-4 col-md-6"><div class="gallery-item shadow-sm"><img src="{{ asset('assets/images/home/activity.jpg') }}" class="gallery-img" alt="Gallery 2"></div></div>
-                    <div class="col-lg-4 col-md-6"><div class="gallery-item shadow-sm"><img src="{{ asset('assets/images/home/group-2.jpg') }}" class="gallery-img" alt="Gallery 3"></div></div>
+                    <div class="col-6 col-md-4"><div class="gallery-item shadow-sm"><img src="{{ asset('assets/images/home/group-1.jpg') }}" class="gallery-img" alt="Gallery 1"></div></div>
+                    <div class="col-6 col-md-4"><div class="gallery-item shadow-sm"><img src="{{ asset('assets/images/home/activity.jpg') }}" class="gallery-img" alt="Gallery 2"></div></div>
+                    <div class="col-6 col-md-4"><div class="gallery-item shadow-sm"><img src="{{ asset('assets/images/home/group-2.jpg') }}" class="gallery-img" alt="Gallery 3"></div></div>
                 @endforelse
             </div>
             
@@ -455,18 +560,18 @@
         </section>
 
         <!-- 7. ACTUALITES / EVENEMENTS -->
-        <section id="events" class="py-5">
-            <div class="text-center mb-5">
+        <section id="events" class="py-4 py-md-5">
+            <div class="text-center mb-4 mb-md-5">
                 <h2 class="section-title d-inline-block">Prochains Événements</h2>
-                <p class="text-muted mt-3">Ne manquez pas nos prochaines rencontres.</p>
+                <p class="text-muted mt-2">Ne manquez pas nos prochaines rencontres.</p>
             </div>
             
-            <div class="row">
+            <div class="row g-3 g-md-4">
                 @forelse($activities as $activity)
-                    <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="col-12 col-md-6 col-lg-4 mb-3 mb-md-0">
                         <div class="card h-100 border-0 shadow-sm overflow-hidden">
                             @if($activity->image_path)
-                                <a href="{{ asset('storage/' . $activity->image_path) }}" target="_blank" class="position-relative bg-dark d-flex align-items-center justify-content-center" style="height: 200px; width: 100%; overflow: hidden; text-decoration: none;">
+                                <a href="{{ asset('storage/' . $activity->image_path) }}" target="_blank" class="position-relative bg-dark d-flex align-items-center justify-content-center" style="height: 180px; width: 100%; overflow: hidden; text-decoration: none;">
                                     <div class="position-absolute w-100 h-100" style="background-image: url('{{ asset('storage/' . $activity->image_path) }}'); background-size: cover; background-position: center; filter: blur(10px) brightness(0.6); transform: scale(1.1);"></div>
                                     <img src="{{ asset('storage/' . $activity->image_path) }}" alt="{{ $activity->title }}" style="max-width: 100%; max-height: 100%; object-fit: contain; position: relative; z-index: 1;">
                                     <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), transparent); z-index: 2;"></div>
@@ -481,11 +586,11 @@
                                     ];
                                     $bg = $gradients[$loop->index % 4];
                                 @endphp
-                                <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background: {{ $bg }};">
-                                    <i class="ri-calendar-event-line text-white opacity-75" style="font-size: 5rem;"></i>
+                                <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 180px; background: {{ $bg }};">
+                                    <i class="ri-calendar-event-line text-white opacity-75" style="font-size: 4.5rem;"></i>
                                 </div>
                             @endif
-                            <div class="card-body">
+                            <div class="card-body p-3 p-md-4">
                                 <div class="d-flex justify-content-between mb-2">
                                     <span class="badge bg-primary-subtle text-primary">{{ \Carbon\Carbon::parse($activity->start_time)->format('d M Y') }}</span>
                                     <span class="text-muted small"><i class="ri-map-pin-line"></i> {{ $activity->location ?? 'Non défini' }}</span>
@@ -493,7 +598,7 @@
                                 <h5 class="card-title fw-bold">{{ $activity->title }}</h5>
                                 <p class="card-text text-muted small text-truncate-2">{{ Str::limit(strip_tags($activity->description), 100) }}</p>
                             </div>
-                            <div class="card-footer bg-transparent border-0 pb-3">
+                            <div class="card-footer bg-transparent border-0 pb-3 px-3 px-md-4">
                                 <a href="{{ route('login') }}" class="btn btn-primary w-100">S'inscrire à l'événement</a>
                             </div>
                         </div>
@@ -514,20 +619,20 @@
 
         <!-- 8. APPEL A L'ACTION -->
         <section class="cta-section shadow-lg">
-            <div class="container">
-                <h2 class="display-5 fw-bold mb-4">Rejoignez-nous dès aujourd'hui !</h2>
-                <p class="lead mb-5 mx-auto" style="max-width: 700px;">
+            <div class="container px-3">
+                <h2 class="display-5 fw-bold mb-3 mb-md-4">Rejoignez-nous dès aujourd'hui !</h2>
+                <p class="lead mb-4 mb-md-5 mx-auto fs-15 fs-md-18" style="max-width: 700px;">
                     Vous souhaitez faire partie de notre merveilleuse jeunesse, participer à nos activités et grandir avec nous ?
                 </p>
-                <div class="d-inline-flex align-items-center bg-body-secondary rounded-pill p-2 pe-4 shadow-sm" style="cursor: pointer;" onclick="window.location.href='tel:{{ str_replace(' ', '', $adminPhone) }}'">
-                    <div class="avatar-sm me-3">
+                <div class="d-inline-flex align-items-center bg-body-secondary rounded-pill p-2 pe-3 pe-md-4 shadow-sm phone-contact-pill text-start" style="cursor: pointer; max-width: 100%;" onclick="window.location.href='tel:{{ str_replace(' ', '', $adminPhone) }}'">
+                    <div class="avatar-sm me-2 me-md-3 flex-shrink-0">
                         <div class="avatar-title bg-primary rounded-circle">
-                            <i class="ri-phone-fill fs-20"></i>
+                            <i class="ri-phone-fill fs-18 fs-md-20"></i>
                         </div>
                     </div>
-                    <div class="text-start">
-                        <span class="d-block text-muted small fw-medium">Contactez le Président pour être ajouté :</span>
-                        <span class="d-block text-body fw-bold fs-18">{{ $adminPhone }}</span>
+                    <div class="text-start overflow-hidden">
+                        <span class="d-block text-muted small fw-medium text-truncate">Contactez le Président pour être ajouté :</span>
+                        <span class="d-block text-body fw-bold fs-16 fs-md-18 text-truncate">{{ $adminPhone }}</span>
                     </div>
                 </div>
             </div>

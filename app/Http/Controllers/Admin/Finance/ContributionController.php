@@ -36,8 +36,8 @@ class ContributionController extends Controller
             return redirect()->route('dashboard')->with('error', 'Vous n\'êtes responsable d\'aucun groupe pour la collecte.');
         }
 
-        // Année et Mois
-        $year = $request->input('year', Carbon::now()->format('Y'));
+        // Année (toujours l'année actuelle) et Mois
+        $year = Carbon::now()->format('Y');
         $month = $request->input('month', Carbon::now()->format('m'));
         if ($month < 2) {
             $month = '02';
@@ -70,8 +70,9 @@ class ContributionController extends Controller
             ->get()
             ->groupBy('user_id');
 
-        // Calcul du total en attente de validation
+        // Calcul du total en attente de versement pour le mois sélectionné
         $pendingAmount = Contribution::whereIn('user_id', $members->pluck('id'))
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->whereNull('remittance_id')
             ->sum('amount');
 
@@ -100,6 +101,24 @@ class ContributionController extends Controller
             return $m->weekly_contribution ?? 0;
         });
         $monthlyExpectedTotal = $membersWeeklySum * count($sundays);
+
+        // Collecté et Remis pour le mois sélectionné
+        $monthlyCollectedTotal = Contribution::whereIn('user_id', $members->pluck('id'))
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->sum('amount');
+
+        $monthlyProgressPercent = $monthlyExpectedTotal > 0
+            ? min(100, round(($monthlyCollectedTotal / $monthlyExpectedTotal) * 100))
+            : 0;
+
+        $monthlyRemittedTotal = Contribution::whereIn('user_id', $members->pluck('id'))
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->whereNotNull('remittance_id')
+            ->sum('amount');
+
+        $monthlyRemittedPercent = $monthlyExpectedTotal > 0
+            ? min(100, round(($monthlyRemittedTotal / $monthlyExpectedTotal) * 100))
+            : 0;
 
         // Données pour le graphique d'évolution mensuelle (Février à Novembre)
         $monthlyChartData = [];
@@ -151,6 +170,10 @@ class ContributionController extends Controller
             'totalSundaysInYear',
             'yearlyContributions',
             'monthlyExpectedTotal',
+            'monthlyCollectedTotal',
+            'monthlyProgressPercent',
+            'monthlyRemittedTotal',
+            'monthlyRemittedPercent',
             'monthlyChartData',
             'yearlyExpectedTotal',
             'yearlyCollectedTotal',

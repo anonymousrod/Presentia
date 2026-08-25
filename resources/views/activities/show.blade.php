@@ -41,8 +41,11 @@
 @endif
 
 @php
-    $isLocked = $activity->start_time->subHours(2)->lt(now());
-    $hasStarted = $activity->start_time->lte(now());
+    $now = now();
+    $isLocked = $activity->start_time->copy()->subHours(2)->lt($now);
+    $hasStarted = $activity->start_time->lte($now);
+    $hasFinished = $activity->end_time->lte($now);
+    $isOngoing = $hasStarted && !$hasFinished;
     
     // Determine the route to call
     $formRoute = $myRegistration 
@@ -68,10 +71,12 @@
                         <span class="badge fs-12 uppercase p-2 px-3 rounded-pill" style="background-color: {{ $activity->activityType?->color ?? '#17a2b8' }}; color: white;">{{ $activity->activityType?->name ?? 'N/A' }}</span>
                     </div>
                     <div class="flex-shrink-0">
-                        @if($hasStarted)
-                            <span class="badge bg-soft-secondary text-secondary fs-13 p-2 rounded-pill"><i class="mdi mdi-history me-1"></i> Terminée / Commencée</span>
+                        @if($hasFinished)
+                            <span class="badge bg-soft-danger text-danger fs-13 p-2 rounded-pill"><i class="mdi mdi-check-circle-outline me-1"></i> Terminée</span>
+                        @elseif($isOngoing)
+                            <span class="badge bg-soft-success text-success fs-13 p-2 rounded-pill"><i class="mdi mdi-circle me-1"></i> En cours</span>
                         @elseif($isLocked)
-                            <span class="badge bg-soft-danger text-danger fs-13 p-2 rounded-pill"><i class="mdi mdi-lock-outline me-1"></i> Inscriptions verrouillées</span>
+                            <span class="badge bg-soft-warning text-warning fs-13 p-2 rounded-pill"><i class="mdi mdi-lock-outline me-1"></i> Inscriptions verrouillées</span>
                         @else
                             <span class="badge bg-soft-success text-success fs-13 p-2 rounded-pill"><i class="mdi mdi-clock-outline me-1"></i> Inscriptions ouvertes</span>
                         @endif

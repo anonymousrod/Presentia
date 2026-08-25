@@ -3,214 +3,202 @@
 @section('title', 'Statistiques des Présences')
 
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-            <h4 class="mb-sm-0">Statistiques des Présences</h4>
+<div class="container-fluid p-0">
+    <div class="row align-items-center mb-3 g-2">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between py-2">
+                <h4 class="mb-sm-0 fw-bold fs-18 fs-md-22">Statistiques des Présences</h4>
+            </div>
         </div>
     </div>
-</div>
 
-{{-- KPIs rapides --}}
-<div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <div class="card card-animate">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <p class="text-uppercase fw-medium text-muted mb-2">Jeunes inscrits</p>
-                        <h4 class="fs-22 fw-semibold ff-secondary mb-0">
-                            <span class="counter-value" data-target="{{ $totalMembers }}">{{ $totalMembers }}</span>
-                        </h4>
-                    </div>
-                    <div class="avatar-sm flex-shrink-0">
-                        <span class="avatar-title bg-primary-subtle text-primary rounded fs-3">
-                            <i class="mdi mdi-account-group"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card card-animate">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <p class="text-uppercase fw-medium text-muted mb-2">Groupes</p>
-                        <h4 class="fs-22 fw-semibold ff-secondary mb-0">
-                            <span class="counter-value" data-target="{{ $totalGroups }}">{{ $totalGroups }}</span>
-                        </h4>
-                    </div>
-                    <div class="avatar-sm flex-shrink-0">
-                        <span class="avatar-title bg-success-subtle text-success rounded fs-3">
-                            <i class="mdi mdi-account-multiple-outline"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card card-animate">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <p class="text-uppercase fw-medium text-muted mb-2">Activités publiées</p>
-                        <h4 class="fs-22 fw-semibold ff-secondary mb-0">
-                            <span class="counter-value" data-target="{{ $totalActivities }}">{{ $totalActivities }}</span>
-                        </h4>
-                    </div>
-                    <div class="avatar-sm flex-shrink-0">
-                        <span class="avatar-title bg-info-subtle text-info rounded fs-3">
-                            <i class="mdi mdi-calendar-check"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- Filtres Globaux --}}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card mb-0 shadow-sm border-0">
-            <div class="card-body bg-light-subtle rounded py-3">
-                <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between">
-                    <div class="d-flex align-items-center">
-                        <h6 class="mb-0 fw-bold text-uppercase fs-12 text-muted me-md-3">
-                            <i class="mdi mdi-filter-variant text-primary me-1 fs-15 align-middle"></i> Filtres d'analyse
-                        </h6>
-                    </div>
-                    <div class="d-flex flex-wrap align-items-center gap-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <label class="form-label mb-0 fs-13 text-nowrap">Type :</label>
-                            <select id="global-filter-type" class="form-select form-select-sm" style="min-width: 150px;">
-                                <option value="">Tous les types</option>
-                                @foreach($activityTypes as $type)
-                                    <option value="{{ encode_id($type->id) }}">{{ $type->name }}</option>
-                                @endforeach
-                            </select>
+    {{-- KPIs rapides --}}
+    <div class="row g-2 g-md-3 mb-3 mb-md-4">
+        <div class="col-4">
+            <div class="card card-animate border-0 shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body p-2 p-sm-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fs-10 fs-sm-11 text-uppercase text-muted fw-semibold tracking-wider">Jeunes</span>
+                        <div class="avatar-xs bg-primary-subtle text-primary rounded-circle d-none d-sm-flex align-items-center justify-content-center">
+                            <i class="mdi mdi-account-group fs-14"></i>
                         </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <label class="form-label mb-0 fs-13 text-nowrap">Du :</label>
-                            <input type="date" id="global-filter-date-from" class="form-control form-control-sm">
+                    </div>
+                    <h4 class="fw-bold mb-0 text-primary fs-15 fs-sm-20 fs-md-22">
+                        <span class="counter-value" data-target="{{ $totalMembers }}">{{ $totalMembers }}</span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card card-animate border-0 shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body p-2 p-sm-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fs-10 fs-sm-11 text-uppercase text-muted fw-semibold tracking-wider">Groupes</span>
+                        <div class="avatar-xs bg-success-subtle text-success rounded-circle d-none d-sm-flex align-items-center justify-content-center">
+                            <i class="mdi mdi-account-multiple-outline fs-14"></i>
                         </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <label class="form-label mb-0 fs-13 text-nowrap">Au :</label>
-                            <input type="date" id="global-filter-date-to" class="form-control form-control-sm">
+                    </div>
+                    <h4 class="fw-bold mb-0 text-success fs-15 fs-sm-20 fs-md-22">
+                        <span class="counter-value" data-target="{{ $totalGroups }}">{{ $totalGroups }}</span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card card-animate border-0 shadow-sm rounded-3 h-100 mb-0">
+                <div class="card-body p-2 p-sm-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fs-10 fs-sm-11 text-uppercase text-muted fw-semibold tracking-wider">Activités</span>
+                        <div class="avatar-xs bg-info-subtle text-info rounded-circle d-none d-sm-flex align-items-center justify-content-center">
+                            <i class="mdi mdi-calendar-check fs-14"></i>
                         </div>
-                        <button type="button" class="btn btn-sm btn-primary" id="btn-apply-filters">Appliquer</button>
+                    </div>
+                    <h4 class="fw-bold mb-0 text-info fs-15 fs-sm-20 fs-md-22">
+                        <span class="counter-value" data-target="{{ $totalActivities }}">{{ $totalActivities }}</span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Filtres Globaux --}}
+    <div class="card border-0 shadow-sm mb-3 mb-md-4 rounded-3 overflow-hidden">
+        <div class="card-header border-0 bg-transparent py-3 px-3 px-md-4" data-bs-toggle="collapse" data-bs-target="#globalFilterCollapse" style="cursor: pointer;">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-xs bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="mdi mdi-filter-variant fs-16"></i>
+                    </div>
+                    <h6 class="mb-0 fw-bold fs-13 fs-md-14 text-body">Filtres d'analyse</h6>
+                </div>
+                <i class="mdi mdi-chevron-down fs-20 text-muted"></i>
+            </div>
+        </div>
+        <div id="globalFilterCollapse" class="collapse show">
+            <div class="card-body p-3 border-top border-light-subtle">
+                <div class="row g-2 align-items-end">
+                    <div class="col-12 col-md-4">
+                        <label class="form-label mb-1 fs-12 text-muted fw-semibold text-uppercase tracking-wider">Type d'activité</label>
+                        <select id="global-filter-type" class="form-select form-select-sm">
+                            <option value="">Tous les types</option>
+                            @foreach($activityTypes as $type)
+                                <option value="{{ encode_id($type->id) }}">{{ $type->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label mb-1 fs-12 text-muted fw-semibold text-uppercase tracking-wider">Date début</label>
+                        <input type="date" id="global-filter-date-from" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label mb-1 fs-12 text-muted fw-semibold text-uppercase tracking-wider">Date fin</label>
+                        <input type="date" id="global-filter-date-to" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-12 col-md-2 text-end">
+                        <button type="button" class="btn btn-sm btn-primary w-100 shadow-none" id="btn-apply-filters">
+                            <i class="mdi mdi-magnify me-1"></i> Appliquer
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-{{-- Graphique 1 : Répartition des jeunes par groupe --}}
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header d-flex align-items-center">
-                <h5 class="card-title mb-0 flex-grow-1">
-                    <i class="mdi mdi-chart-bar me-1 text-primary"></i>
-                    Répartition des jeunes par groupe
-                </h5>
-                <button type="button" class="btn btn-sm btn-soft-secondary" id="btn-export-chart1" title="Télécharger l'image">
-                    <i class="mdi mdi-download fs-16"></i>
-                </button>
-            </div>
-            <div class="card-body" data-simplebar>
-                <div id="chart-members-per-group" style="min-height: 350px;"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- Graphique 2 : Évolution des présences par type d'activité --}}
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2">
-                <h5 class="card-title mb-0 flex-grow-1">
-                    <i class="mdi mdi-chart-line me-1 text-info"></i>
-                    Évolution des présences par séance
-                </h5>
-                <div class="d-flex flex-wrap gap-2 align-items-center w-100 w-md-auto justify-content-between justify-content-md-end">
-                    <button type="button" class="btn btn-sm btn-soft-secondary flex-shrink-0" id="btn-export-chart2" title="Télécharger l'image">
-                        <i class="mdi mdi-download fs-16"></i>
+    {{-- Graphique 1 : Répartition des jeunes par groupe --}}
+    <div class="row g-3 mb-3 mb-md-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header border-0 bg-transparent py-3 px-3 px-md-4 d-flex justify-content-between align-items-center border-bottom border-light-subtle">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="mdi mdi-chart-bar text-primary fs-18"></i>
+                        <h5 class="card-title mb-0 fw-bold fs-14 fs-md-15 text-body">Répartition des jeunes par groupe</h5>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-soft-secondary px-2 py-1 rounded-circle" id="btn-export-chart1" title="Télécharger l'image">
+                        <i class="mdi mdi-download fs-14"></i>
                     </button>
                 </div>
-            </div>
-            <div class="card-body" data-simplebar>
-                <div id="chart-presence-evolution" style="min-height: 380px;"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- Graphiques 3 & 4 côte à côte --}}
-<div class="row">
-    {{-- Graphique 3 : Taux de présence par groupe --}}
-    <div class="col-xl-6">
-        <div class="card">
-            <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center mb-0">
-                    <h5 class="card-title mb-0">
-                        <i class="mdi mdi-chart-bar-stacked me-1 text-warning"></i>
-                        Présence par groupe <span class="fs-12 text-muted fw-normal d-none d-sm-inline mt-1 mt-sm-0">(membres présents / effectif)</span>
-                    </h5>
-                    <button type="button" class="btn btn-sm btn-soft-secondary" id="btn-export-chart3" title="Télécharger l'image">
-                        <i class="mdi mdi-download fs-16"></i>
-                    </button>
+                <div class="card-body p-2 p-md-3" data-simplebar style="overflow-x: auto;">
+                    <div id="chart-members-per-group" style="min-height: 350px;"></div>
                 </div>
-            </div>
-            <div class="card-body" data-simplebar style="height: 450px;">
-                <div id="chart-presence-by-group" style="min-height: 400px;"></div>
             </div>
         </div>
     </div>
 
-    {{-- Graphique 4 : Participation individuelle --}}
-    <div class="col-xl-6">
-        <div class="card">
-            <div class="card-header d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2">
-                <h5 class="card-title mb-0 flex-grow-1">
-                    <i class="mdi mdi-account-details me-1 text-danger"></i>
-                    Participation <span id="chart4-subtitle" class="fs-12 text-muted fw-normal d-none d-sm-inline mt-1 mt-sm-0"></span>
-                </h5>
-                <div class="d-flex flex-wrap gap-2 align-items-center w-100 w-md-auto justify-content-between justify-content-md-end mt-2 mt-md-0">
-                    <button type="button" class="btn btn-sm btn-soft-secondary flex-shrink-0" id="btn-export-chart4" title="Télécharger l'image">
-                        <i class="mdi mdi-download fs-16"></i>
+    {{-- Graphique 2 : Évolution des présences par type d'activité --}}
+    <div class="row g-3 mb-3 mb-md-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header border-0 bg-transparent py-3 px-3 px-md-4 d-flex justify-content-between align-items-center border-bottom border-light-subtle">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="mdi mdi-chart-line text-info fs-18"></i>
+                        <h5 class="card-title mb-0 fw-bold fs-14 fs-md-15 text-body">Évolution des présences par séance</h5>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-soft-secondary px-2 py-1 rounded-circle" id="btn-export-chart2" title="Télécharger l'image">
+                        <i class="mdi mdi-download fs-14"></i>
                     </button>
                 </div>
-            </div>
-            <div class="card-body" data-simplebar style="height: 450px;">
-                <div id="chart-individual-participation" style="min-height: 400px;"></div>
+                <div class="card-body p-2 p-md-3" data-simplebar style="overflow-x: auto;">
+                    <div id="chart-presence-evolution" style="min-height: 380px;"></div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-{{-- Graphique 5 : Affluence par activité --}}
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2">
-                <h5 class="card-title mb-0 flex-grow-1">
-                    <i class="mdi mdi-chart-areaspline me-1 text-success"></i>
-                    Affluence par activité
-                </h5>
-                <div class="d-flex flex-wrap gap-2 align-items-center w-100 w-md-auto justify-content-between justify-content-md-end mt-2 mt-md-0">
-                    <button type="button" class="btn btn-sm btn-soft-secondary flex-shrink-0" id="btn-export-chart5" title="Télécharger l'image">
-                        <i class="mdi mdi-download fs-16"></i>
+    {{-- Graphiques 3 & 4 côte à côte --}}
+    <div class="row g-3 mb-3 mb-md-4">
+        {{-- Graphique 3 : Taux de présence par groupe --}}
+        <div class="col-12 col-xl-6">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header border-0 bg-transparent py-3 px-3 px-md-4 d-flex justify-content-between align-items-center border-bottom border-light-subtle">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="mdi mdi-chart-bar-stacked text-warning fs-18"></i>
+                        <h5 class="card-title mb-0 fw-bold fs-14 fs-md-15 text-body">Présence par groupe</h5>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-soft-secondary px-2 py-1 rounded-circle" id="btn-export-chart3" title="Télécharger l'image">
+                        <i class="mdi mdi-download fs-14"></i>
                     </button>
                 </div>
+                <div class="card-body p-2 p-md-3" data-simplebar style="max-height: 450px; overflow-x: auto;">
+                    <div id="chart-presence-by-group" style="min-height: 380px;"></div>
+                </div>
             </div>
-            <div class="card-body" data-simplebar>
-                <div id="chart-affluence" style="min-height: 380px;"></div>
+        </div>
+
+        {{-- Graphique 4 : Participation individuelle --}}
+        <div class="col-12 col-xl-6">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header border-0 bg-transparent py-3 px-3 px-md-4 d-flex justify-content-between align-items-center border-bottom border-light-subtle">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="mdi mdi-account-details text-danger fs-18"></i>
+                        <h5 class="card-title mb-0 fw-bold fs-14 fs-md-15 text-body">Participation <span id="chart4-subtitle" class="fs-12 text-muted fw-normal"></span></h5>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-soft-secondary px-2 py-1 rounded-circle" id="btn-export-chart4" title="Télécharger l'image">
+                        <i class="mdi mdi-download fs-14"></i>
+                    </button>
+                </div>
+                <div class="card-body p-2 p-md-3" data-simplebar style="max-height: 450px; overflow-x: auto;">
+                    <div id="chart-individual-participation" style="min-height: 380px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Graphique 5 : Affluence par activité --}}
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header border-0 bg-transparent py-3 px-3 px-md-4 d-flex justify-content-between align-items-center border-bottom border-light-subtle">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="mdi mdi-chart-areaspline text-success fs-18"></i>
+                        <h5 class="card-title mb-0 fw-bold fs-14 fs-md-15 text-body">Affluence par activité</h5>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-soft-secondary px-2 py-1 rounded-circle" id="btn-export-chart5" title="Télécharger l'image">
+                        <i class="mdi mdi-download fs-14"></i>
+                    </button>
+                </div>
+                <div class="card-body p-2 p-md-3" data-simplebar style="overflow-x: auto;">
+                    <div id="chart-affluence" style="min-height: 380px;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -218,24 +206,21 @@
 @endsection
 
 @push('scripts')
-{{-- ApexCharts (already included in Velzon template, but ensure it's loaded) --}}
 <script src="{{ asset('assets/libs/apexcharts/apexcharts.min.js') }}"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    // ============================================================
-    // Palette de couleurs par groupe (cohérente avec les images)
-    // ============================================================
+    // Palette de couleurs par groupe
     const GROUP_COLORS = {
-        'Béthel':   '#1B2A4A',  // navy foncé
-        'Cana':     '#3B7DD8',  // bleu
-        'Éden':     '#A8C8E8',  // bleu clair
-        'Galilée':  '#8B8B8B',  // gris
-        'Salem':    '#BABABA',  // gris clair
-        'Shalom':   '#D2691E',  // marron/orange
-        'Siloé':    '#E8842C',  // orange vif
-        'Sinaï':    '#B0D4F1',  // bleu pâle
+        'Béthel':   '#1B2A4A',
+        'Cana':     '#3B7DD8',
+        'Éden':     '#A8C8E8',
+        'Galilée':  '#8B8B8B',
+        'Salem':    '#BABABA',
+        'Shalom':   '#D2691E',
+        'Siloé':    '#E8842C',
+        'Sinaï':    '#B0D4F1',
     };
 
     const DEFAULT_COLORS = [
@@ -249,58 +234,79 @@ document.addEventListener('DOMContentLoaded', function() {
         return GROUP_COLORS[name] || DEFAULT_COLORS[index % DEFAULT_COLORS.length];
     }
 
-    // ============================================================
+    function formatDateFr(dateStr) {
+        if (!dateStr) return '';
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            return parts[2] + '/' + parts[1] + '/' + parts[0];
+        }
+        return dateStr;
+    }
+
+    function getFilterSubtitle() {
+        const typeSelect = document.getElementById('global-filter-type');
+        const typeText = typeSelect && typeSelect.selectedIndex > 0 
+            ? typeSelect.options[typeSelect.selectedIndex].text 
+            : 'Tous les types';
+            
+        const dateFrom = document.getElementById('global-filter-date-from').value;
+        const dateTo = document.getElementById('global-filter-date-to').value;
+        
+        let dateText = 'Toutes les dates';
+        if (dateFrom && dateTo) {
+            dateText = 'Du ' + formatDateFr(dateFrom) + ' au ' + formatDateFr(dateTo);
+        } else if (dateFrom) {
+            dateText = 'Depuis le ' + formatDateFr(dateFrom);
+        } else if (dateTo) {
+            dateText = "Jusqu'au " + formatDateFr(dateTo);
+        }
+
+        return 'Type: ' + typeText + '  •  Période: ' + dateText;
+    }
+
     // Graphique 1 : Répartition des jeunes par groupe
-    // ============================================================
     let chart1;
     function loadChart1() {
         fetch('{{ route("admin.statistics.chart.members-per-group") }}')
             .then(r => r.json())
             .then(data => {
+                const totalMembers = data.reduce((sum, item) => sum + item.count, 0);
                 const options = {
-                    chart: {
-                        type: 'bar',
-                        height: 350,
-                        toolbar: { show: false },
+                    chart: { type: 'bar', height: 350, toolbar: { show: false } },
+                    title: {
+                        text: 'Répartition des jeunes par groupe',
+                        align: 'center',
+                        style: { fontSize: '15px', fontWeight: 'bold', color: 'var(--vz-body-color)' }
+                    },
+                    subtitle: {
+                        text: 'Effectif total recensé : ' + totalMembers + ' membres',
+                        align: 'center',
+                        style: { fontSize: '11px', color: '#878a99' }
                     },
                     plotOptions: {
-                        bar: {
-                            columnWidth: '55%',
-                            distributed: true,
-                            borderRadius: 4,
-                            dataLabels: { position: 'top' },
-                        }
+                        bar: { columnWidth: '55%', distributed: true, borderRadius: 4, dataLabels: { position: 'top' } }
                     },
                     colors: data.map((d, i) => getGroupColor(d.name, i, d.color)),
                     dataLabels: {
                         enabled: true,
                         offsetY: -20,
-                        style: { fontSize: '14px', fontWeight: 'bold', colors: ['#304758'] },
+                        style: { fontSize: '13px', fontWeight: 'bold', colors: ['var(--vz-body-color)'] },
                     },
-                    series: [{
-                        name: 'Membres',
-                        data: data.map(d => d.count),
-                    }],
+                    series: [{ name: 'Membres', data: data.map(d => d.count) }],
                     xaxis: {
                         categories: data.map(d => d.name),
-                        labels: { style: { fontSize: '12px', fontWeight: 600 } },
+                        labels: { style: { fontSize: '11px', fontWeight: 600 } },
                     },
-                    yaxis: {
-                        title: { text: 'Nombre de membres' },
-                    },
-                    title: {
-                        text: 'Répartition des jeunes par groupe',
-                        align: 'center',
-                        style: { fontSize: '16px', fontWeight: 'bold', color: '#1B2A4A' },
-                    },
+                    yaxis: { title: { text: 'Nombre de membres' } },
                     legend: { show: false },
-                    tooltip: {
-                        y: { formatter: val => val + ' membre(s)' }
-                    },
+                    tooltip: { y: { formatter: val => val + ' membre(s)' } },
                 };
 
                 const container = document.querySelector('#chart-members-per-group');
-                container.style.minWidth = Math.max(100, data.length * 60) + 'px';
+                const parentWidth = container.parentElement.clientWidth || 800;
+                const itemsToDisplay = window.innerWidth < 768 ? 5 : 15;
+                const itemWidth = parentWidth / itemsToDisplay;
+                container.style.minWidth = Math.max(parentWidth, data.length * itemWidth) + 'px';
 
                 if (chart1) chart1.destroy();
                 chart1 = new ApexCharts(container, options);
@@ -308,9 +314,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // ============================================================
-    // Graphique 2 : Évolution des présences (ligne temporelle)
-    // ============================================================
+    // Graphique 2 : Évolution des présences
     let chart2;
     function loadChart2() {
         const typeId = document.getElementById('global-filter-type').value;
@@ -328,56 +332,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 const avg = result.average;
 
                 const options = {
-                    chart: {
-                        type: 'line',
-                        height: 380,
-                        toolbar: { show: false },
-                        zoom: { enabled: false },
+                    chart: { type: 'line', height: 380, toolbar: { show: false }, zoom: { enabled: false } },
+                    title: {
+                        text: 'Évolution des présences par séance (' + result.total_sessions + ' séances)',
+                        align: 'center',
+                        style: { fontSize: '15px', fontWeight: 'bold', color: 'var(--vz-body-color)' }
                     },
-                    stroke: {
-                        width: [3, 2],
-                        curve: 'straight',
-                        dashArray: [0, 8],
+                    subtitle: {
+                        text: getFilterSubtitle(),
+                        align: 'center',
+                        style: { fontSize: '11px', color: '#878a99' }
                     },
-                    colors: ['#1B2A4A', '#E8842C'],
+                    stroke: { width: [3, 2], curve: 'straight', dashArray: [0, 8] },
+                    colors: ['#3B7DD8', '#E8842C'],
                     series: [
-                        {
-                            name: 'Présences',
-                            type: 'line',
-                            data: series.map(d => d.count),
-                        },
-                        {
-                            name: 'Moyenne (' + avg + ')',
-                            type: 'line',
-                            data: series.map(() => avg),
-                        }
+                        { name: 'Présences', type: 'line', data: series.map(d => d.count) },
+                        { name: 'Moyenne (' + avg + ')', type: 'line', data: series.map(() => avg) }
                     ],
-                    markers: {
-                        size: [6, 0],
-                        colors: ['#1B2A4A'],
-                        strokeColors: '#fff',
-                        strokeWidth: 2,
-                        hover: { sizeOffset: 3 },
-                    },
+                    markers: { size: [5, 0], colors: ['#3B7DD8'], strokeColors: '#fff', strokeWidth: 2, hover: { sizeOffset: 3 } },
                     dataLabels: {
                         enabled: true,
                         enabledOnSeries: [0],
                         offsetY: -10,
-                        style: { fontSize: '13px', fontWeight: 'bold', colors: ['#1B2A4A'] },
+                        style: { fontSize: '12px', fontWeight: 'bold', colors: ['var(--vz-body-color)'] },
                     },
-                    xaxis: {
-                        categories: series.map(d => d.date),
-                        labels: { style: { fontSize: '12px' } },
-                    },
-                    yaxis: {
-                        title: { text: 'Présences totales' },
-                        min: 0,
-                    },
-                    title: {
-                        text: 'Évolution des présences par séance (' + result.total_sessions + ' séances)',
-                        align: 'center',
-                        style: { fontSize: '15px', fontWeight: 'bold', color: '#1B2A4A' },
-                    },
+                    xaxis: { categories: series.map(d => d.date), labels: { style: { fontSize: '11px' } } },
+                    yaxis: { title: { text: 'Présences totales' }, min: 0 },
                     tooltip: {
                         shared: true,
                         custom: function({ series, seriesIndex, dataPointIndex, w }) {
@@ -400,10 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         }]
                     },
-                    legend: {
-                        show: true,
-                        position: 'top',
-                    },
+                    legend: { show: true, position: 'top' },
                 };
 
                 const container = document.querySelector('#chart-presence-evolution');
@@ -418,11 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-
-
-    // ============================================================
-    // Graphique 3 : Présence par groupe (barres horizontales, nombre)
-    // ============================================================
+    // Graphique 3 : Présence par groupe
     let chart3;
     function loadChart3() {
         const typeId = document.getElementById('global-filter-type').value;
@@ -438,48 +411,37 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(r => r.json())
             .then(data => {
                 const options = {
-                    chart: {
-                        type: 'bar',
-                        height: Math.max(300, data.length * 50),
-                        toolbar: { show: false },
+                    chart: { type: 'bar', height: Math.max(300, data.length * 45), toolbar: { show: false } },
+                    title: {
+                        text: 'Présence par groupe',
+                        align: 'center',
+                        style: { fontSize: '15px', fontWeight: 'bold', color: 'var(--vz-body-color)' }
+                    },
+                    subtitle: {
+                        text: getFilterSubtitle(),
+                        align: 'center',
+                        style: { fontSize: '11px', color: '#878a99' }
                     },
                     plotOptions: {
-                        bar: {
-                            horizontal: true,
-                            barHeight: '40%',
-                            distributed: true,
-                            borderRadius: 0,
-                            dataLabels: { position: 'top' },
-                        }
+                        bar: { horizontal: true, barHeight: '40%', distributed: true, borderRadius: 0, dataLabels: { position: 'top' } }
                     },
-                    stroke: {
-                        show: false,
-                        width: 0
-                    },
+                    stroke: { show: false, width: 0 },
                     colors: data.map((d, i) => getGroupColor(d.name, i, d.color)),
                     dataLabels: {
                         enabled: true,
                         textAnchor: 'start',
-                        formatter: function(val, opt) {
-                            const item = data[opt.dataPointIndex];
-                            return item.label;
-                        },
+                        formatter: function(val, opt) { return data[opt.dataPointIndex].label; },
                         offsetX: 10,
-                        style: { fontSize: '13px', fontWeight: 'bold', colors: ['#304758'] },
+                        style: { fontSize: '11px', fontWeight: 'bold', colors: ['var(--vz-body-color)'] },
                     },
-                    series: [{
-                        name: 'Présents',
-                        data: data.map(d => d.presents),
-                    }],
+                    series: [{ name: 'Présents', data: data.map(d => d.presents) }],
                     labels: data.map(d => d.name),
                     xaxis: {
                         title: { text: 'Nombre de présents' },
                         max: data.length > 0 ? Math.max(...data.map(d => d.effectif)) + 2 : 10,
                         min: 0,
                     },
-                    yaxis: {
-                        labels: { style: { fontSize: '13px', fontWeight: 600 } },
-                    },
+                    yaxis: { labels: { style: { fontSize: '12px', fontWeight: 600 } } },
                     legend: { show: false },
                     tooltip: {
                         y: {
@@ -491,17 +453,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                 };
 
+                const container = document.querySelector('#chart-presence-by-group');
+                const parentWidth = container.parentElement.clientWidth || 800;
+                const itemsToDisplay = window.innerWidth < 768 ? 5 : 15;
+                const itemWidth = parentWidth / itemsToDisplay;
+                container.style.minWidth = Math.max(parentWidth, data.length * itemWidth) + 'px';
+
                 if (chart3) chart3.destroy();
-                chart3 = new ApexCharts(document.querySelector('#chart-presence-by-group'), options);
+                chart3 = new ApexCharts(container, options);
                 chart3.render();
             });
     }
 
-
-
-    // ============================================================
-    // Graphique 4 : Participation individuelle (barres horizontales)
-    // ============================================================
+    // Graphique 4 : Participation individuelle
     let chart4;
     function loadChart4() {
         const typeId = document.getElementById('global-filter-type').value;
@@ -518,56 +482,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = result.data;
                 const totalSessions = result.total_sessions;
 
-                document.getElementById('chart4-subtitle').innerText = '(sur ' + totalSessions + ' séances)';
-
-                // Afficher toutes les données et ajuster la hauteur dynamiquement
                 const displayData = data;
 
                 const options = {
-                    chart: {
-                        type: 'bar',
-                        height: Math.max(400, displayData.length * 30),
-                        toolbar: { show: false },
+                    chart: { type: 'bar', height: Math.max(350, displayData.length * 30), toolbar: { show: false } },
+                    title: {
+                        text: 'Participation individuelle',
+                        align: 'center',
+                        style: { fontSize: '15px', fontWeight: 'bold', color: 'var(--vz-body-color)' }
+                    },
+                    subtitle: {
+                        text: getFilterSubtitle() + ' (' + totalSessions + ' séances)',
+                        align: 'center',
+                        style: { fontSize: '11px', color: '#878a99' }
                     },
                     plotOptions: {
-                        bar: {
-                            horizontal: true,
-                            barHeight: '40%',
-                            distributed: true,
-                            borderRadius: 0,
-                            dataLabels: { position: 'top' },
-                        }
+                        bar: { horizontal: true, barHeight: '40%', distributed: true, borderRadius: 0, dataLabels: { position: 'top' } }
                     },
-                    stroke: {
-                        show: false,
-                        width: 0
-                    },
+                    stroke: { show: false, width: 0 },
                     colors: displayData.map((d, i) => getGroupColor(d.group_name, i, d.group_color)),
                     dataLabels: {
                         enabled: true,
                         textAnchor: 'start',
                         offsetX: 10,
-                        style: { fontSize: '11px', fontWeight: 'bold', colors: ['#304758'] },
+                        style: { fontSize: '11px', fontWeight: 'bold', colors: ['var(--vz-body-color)'] },
                     },
-                    series: [{
-                        name: 'Présences',
-                        data: displayData.map(d => d.count),
-                    }],
+                    series: [{ name: 'Présences', data: displayData.map(d => d.count) }],
                     labels: displayData.map(d => d.full_name + ' (' + d.group_name.replace('Groupe ', '') + ')'),
                     xaxis: {
                         title: { text: 'Nombre de présences (sur ' + totalSessions + ' séances)' },
                         max: totalSessions > 0 ? totalSessions + 1 : 10,
                         min: 0,
-                        labels: {
-                            formatter: function(val) { return Math.floor(val); }
-                        }
+                        labels: { formatter: function(val) { return Math.floor(val); } }
                     },
-                    yaxis: {
-                        labels: {
-                            style: { fontSize: '11px' },
-                            maxWidth: 200,
-                        },
-                    },
+                    yaxis: { labels: { style: { fontSize: '11px' }, maxWidth: 200 } },
                     legend: { show: false },
                     tooltip: {
                         followCursor: true,
@@ -581,16 +529,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                 };
 
+                const container = document.querySelector('#chart-individual-participation');
+                const parentWidth = container.parentElement.clientWidth || 800;
+                const itemsToDisplay = window.innerWidth < 768 ? 5 : 15;
+                const itemWidth = parentWidth / itemsToDisplay;
+                container.style.minWidth = Math.max(parentWidth, displayData.length * itemWidth) + 'px';
+
                 if (chart4) chart4.destroy();
-                chart4 = new ApexCharts(document.querySelector('#chart-individual-participation'), options);
+                chart4 = new ApexCharts(container, options);
                 chart4.render();
             });
     }
 
-
-    // ============================================================
-    // Graphique 5 : Affluence par activité (ligne de zone temporelle)
-    // ============================================================
+    // Graphique 5 : Affluence par activité
     let chart5;
     function loadChart5() {
         const typeId = document.getElementById('global-filter-type').value;
@@ -605,61 +556,37 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(r => r.json())
             .then(data => {
                 const options = {
-                    chart: {
-                        type: 'bar',
-                        height: 380,
-                        stacked: true,
-                        toolbar: { show: false },
-                    },
-                    plotOptions: {
-                        bar: {
-                            columnWidth: '55%',
-                            borderRadius: 4,
-                            dataLabels: { position: 'center' },
-                        }
-                    },
-                    colors: ['#3B7DD8', '#E8842C'],
-                    dataLabels: {
-                        enabled: true,
-                        style: { fontSize: '12px', fontWeight: 'bold' },
-                        formatter: function(val) { return val > 0 ? val : ''; },
-                    },
-                    series: [
-                        {
-                            name: 'Membres recensés',
-                            data: data.map(d => d.membres_recenses),
-                        },
-                        {
-                            name: 'Hors répertoire',
-                            data: data.map(d => d.hors_repertoire),
-                        }
-                    ],
-                    xaxis: {
-                        categories: data.map(d => d.full_label),
-                        labels: {
-                            rotate: -45,
-                            style: { fontSize: '11px' },
-                            maxHeight: 120,
-                        },
-                    },
-                    yaxis: {
-                        title: { text: 'Nombre de présents' },
-                    },
+                    chart: { type: 'bar', height: 380, stacked: true, toolbar: { show: false } },
                     title: {
                         text: 'Affluence par activité',
                         align: 'center',
-                        style: { fontSize: '16px', fontWeight: 'bold', color: '#1B2A4A' },
+                        style: { fontSize: '15px', fontWeight: 'bold', color: 'var(--vz-body-color)' }
                     },
-                    legend: {
-                        show: true,
-                        position: 'top',
+                    subtitle: {
+                        text: getFilterSubtitle(),
+                        align: 'center',
+                        style: { fontSize: '11px', color: '#878a99' }
                     },
-                    tooltip: {
-                        y: { formatter: val => val + ' personne(s)' },
+                    plotOptions: { bar: { columnWidth: '55%', borderRadius: 4, dataLabels: { position: 'center' } } },
+                    colors: ['#3B7DD8', '#E8842C'],
+                    dataLabels: {
+                        enabled: true,
+                        style: { fontSize: '11px', fontWeight: 'bold' },
+                        formatter: function(val) { return val > 0 ? val : ''; },
                     },
+                    series: [
+                        { name: 'Membres recensés', data: data.map(d => d.membres_recenses) },
+                        { name: 'Hors répertoire', data: data.map(d => d.hors_repertoire) }
+                    ],
+                    xaxis: {
+                        categories: data.map(d => d.full_label),
+                        labels: { rotate: -45, style: { fontSize: '11px' }, maxHeight: 120 },
+                    },
+                    yaxis: { title: { text: 'Nombre de présents' } },
+                    legend: { show: true, position: 'top' },
+                    tooltip: { y: { formatter: val => val + ' personne(s)' } },
                 };
 
-                // Ajouter les totaux en annotation
                 if (data.length > 0) {
                     options.annotations = {
                         points: data.map((d, i) => ({
@@ -669,7 +596,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             label: {
                                 text: String(d.total),
                                 offsetY: -5,
-                                style: { fontSize: '13px', fontWeight: 'bold', color: '#1B2A4A', background: 'transparent' },
+                                style: { fontSize: '12px', fontWeight: 'bold', color: 'var(--vz-body-color)', background: 'transparent' },
                             }
                         }))
                     };
@@ -687,11 +614,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-
-
-    // ============================================================
-    // Charger tous les graphiques au démarrage et sur filtre
-    // ============================================================
     function loadAllFilteredCharts() {
         loadChart2();
         loadChart3();
@@ -704,9 +626,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadChart1();
     loadAllFilteredCharts();
 
-    // ============================================================
-    // Export des graphiques (Boutons personnalisés)
-    // ============================================================
+    // Export des graphiques
     function exportChart(chart, filename) {
         if (chart) {
             chart.dataURI().then(({ imgURI }) => {

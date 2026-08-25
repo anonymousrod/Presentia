@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use App\Traits\Auditable;
 
 class ScheduledNotification extends Model
 {
+    use Auditable;
     protected $fillable = [
         'sender_id',
         'target_type',

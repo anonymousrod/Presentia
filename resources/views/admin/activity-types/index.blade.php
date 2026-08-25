@@ -35,18 +35,18 @@
             </div>
         @endif
 
-        <div class="card" id="activityTypeList">
-            <div class="card-header border-0">
-                <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
-                    <h5 class="card-title mb-0 flex-grow-1">Liste des Types d'Activités</h5>
+        <div class="card border-0 shadow-sm rounded-3" id="activityTypeList">
+            <div class="card-header border-0 bg-transparent p-3 p-md-4">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <h5 class="card-title mb-0 fw-bold fs-16 fs-md-18">Liste des Types d'Activités</h5>
                     <div class="flex-shrink-0">
-                        <a href="{{ route('admin.activity-types.create') }}" class="btn btn-success add-btn">
-                            <i class="ri-add-line align-bottom me-1"></i> Nouveau type
+                        <a href="{{ route('admin.activity-types.create') }}" class="btn btn-success rounded-pill px-3 shadow-sm add-btn">
+                            <i class="ri-add-line align-bottom me-1"></i> <span class="d-none d-sm-inline">Nouveau type</span><span class="d-inline d-sm-none">Créer</span>
                         </a>
                     </div>
                 </div>
             </div>
-            <div class="card-body pt-0">
+            <div class="card-body pt-0 px-3 px-md-4">
                 {{-- VUE DESKTOP --}}
                 <div class="table-responsive table-card mb-1 d-none d-md-block">
                     <table class="table align-middle table-nowrap mb-0">
@@ -80,7 +80,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-info-subtle text-info fs-12">
+                                        <span class="badge bg-info-subtle text-info fs-12 rounded-pill px-3 py-1">
                                             <i class="ri-calendar-event-line me-1 align-middle"></i>{{ $type->activities_count }} activité{{ $type->activities_count > 1 ? 's' : '' }}
                                         </span>
                                     </td>
@@ -118,12 +118,12 @@
                 </div>
 
                 {{-- VUE MOBILE (Cartes) --}}
-                <div class="d-md-none mt-3">
+                <div class="d-md-none pb-2">
                     <div class="d-flex flex-column gap-3">
                         @forelse($types as $type)
-                            <div class="card border border-light shadow-sm mb-0">
+                            <div class="card border border-light-subtle shadow-none mb-0 rounded-3">
                                 <div class="card-body p-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
                                         <div class="d-flex align-items-center gap-2">
                                             <div class="avatar-sm flex-shrink-0">
                                                 <div class="avatar-title rounded-circle bg-primary-subtle text-primary fs-16">
@@ -131,32 +131,32 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <h6 class="fw-bold mb-1">{{ $type->name }}</h6>
+                                                <h6 class="fw-bold mb-0 fs-15">{{ $type->name }}</h6>
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    <div class="mb-3 d-flex justify-content-between border-top border-bottom py-2">
-                                        <div class="text-center w-50 border-end">
-                                            <small class="text-muted d-block mb-1">Couleur</small>
+                                    <div class="mb-3 d-flex justify-content-between bg-light rounded-3 p-2">
+                                        <div class="text-center w-50 border-end border-2 border-white">
+                                            <small class="text-muted d-block mb-1 fs-11">Couleur</small>
                                             <div class="d-flex align-items-center justify-content-center gap-1">
                                                 <span class="d-inline-block rounded-circle" style="width: 12px; height: 12px; background-color: {{ $type->color }}; border: 1px solid rgba(0,0,0,0.1);"></span>
                                                 <code class="text-muted fs-11">{{ $type->color }}</code>
                                             </div>
                                         </div>
                                         <div class="text-center w-50">
-                                            <small class="text-muted d-block mb-1">Activités</small>
-                                            <span class="badge bg-info-subtle text-info fs-11">
+                                            <small class="text-muted d-block mb-1 fs-11">Activités</small>
+                                            <span class="badge bg-info-subtle text-info rounded-pill px-2 py-1 fs-11">
                                                 <i class="ri-calendar-event-line me-1"></i>{{ $type->activities_count }}
                                             </span>
                                         </div>
                                     </div>
 
                                     <div class="d-flex gap-2 flex-wrap">
-                                        <a href="{{ route('admin.activity-types.edit', $type) }}" class="btn btn-sm btn-primary flex-grow-1" title="Modifier">
+                                        <a href="{{ route('admin.activity-types.edit', $type) }}" class="btn btn-sm btn-soft-primary rounded-pill flex-grow-1" title="Modifier">
                                             <i class="ri-pencil-fill me-1"></i>Modifier
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-danger flex-grow-1" 
+                                        <button type="button" class="btn btn-sm btn-soft-danger rounded-pill flex-grow-1" 
                                                 onclick="confirmDelete({{ $type->id }})" 
                                                 {{ $type->activities_count > 0 ? 'disabled' : '' }} title="Supprimer">
                                             <i class="ri-delete-bin-5-fill me-1"></i>Supprimer

@@ -183,22 +183,22 @@
             </div>
 
             <!-- Stats Row (Overlapping the Hero) -->
-            <div class="row" style="margin-top: -5rem; position: relative; z-index: 10;">
-                <div class="col-xl-4 col-md-6">
-                    <div class="card premium-card overflow-hidden">
-                        <div class="card-body">
+            <div class="row g-2 g-md-3" style="margin-top: -5rem; position: relative; z-index: 10;">
+                <div class="col-4 col-md-6 col-xl-4">
+                    <div class="card premium-card overflow-hidden h-100">
+                        <div class="card-body p-2 p-sm-3 p-md-4">
                             <div class="d-flex align-items-center">
                                 <div class="flex-grow-1 overflow-hidden">
-                                    <p class="text-uppercase fw-semibold text-muted text-truncate mb-0" style="letter-spacing: 0.5px;">Activités à venir</p>
+                                    <p class="text-uppercase fw-semibold text-muted text-truncate mb-0 fs-10 fs-md-12" style="letter-spacing: 0.5px;">À venir</p>
                                 </div>
                             </div>
-                            <div class="d-flex align-items-end justify-content-between mt-4">
+                            <div class="d-flex align-items-end justify-content-between mt-2 mt-md-4">
                                 <div>
-                                    <h4 class="fs-24 fw-bold ff-secondary mb-3"><span class="counter-value" data-target="{{ $stats['upcoming_activities'] }}">0</span></h4>
-                                    <a href="{{ route('activities.index') }}" class="text-primary text-decoration-underline fw-medium">Voir le calendrier</a>
+                                    <h4 class="fs-18 fs-md-24 fw-bold ff-secondary mb-1 mb-md-3"><span class="counter-value" data-target="{{ $stats['upcoming_activities'] }}">0</span></h4>
+                                    <a href="{{ route('activities.index') }}" class="text-primary text-decoration-underline fw-medium fs-11 fs-md-14 d-none d-sm-inline">Voir le calendrier</a>
                                 </div>
-                                <div class="avatar-sm flex-shrink-0">
-                                    <span class="avatar-title bg-primary-subtle text-primary rounded fs-3 shadow-sm">
+                                <div class="avatar-xs avatar-sm-md flex-shrink-0">
+                                    <span class="avatar-title bg-primary-subtle text-primary rounded fs-16 fs-md-20 shadow-sm">
                                         <i class="ri-calendar-event-line"></i>
                                     </span>
                                 </div>
@@ -207,21 +207,21 @@
                     </div>
                 </div>
                 
-                <div class="col-xl-4 col-md-6">
-                    <div class="card premium-card overflow-hidden">
-                        <div class="card-body">
+                <div class="col-4 col-md-6 col-xl-4">
+                    <div class="card premium-card overflow-hidden h-100">
+                        <div class="card-body p-2 p-sm-3 p-md-4">
                             <div class="d-flex align-items-center">
                                 <div class="flex-grow-1 overflow-hidden">
-                                    <p class="text-uppercase fw-semibold text-muted text-truncate mb-0" style="letter-spacing: 0.5px;">Présences validées</p>
+                                    <p class="text-uppercase fw-semibold text-muted text-truncate mb-0 fs-10 fs-md-12" style="letter-spacing: 0.5px;">Présences</p>
                                 </div>
                             </div>
-                            <div class="d-flex align-items-end justify-content-between mt-4">
+                            <div class="d-flex align-items-end justify-content-between mt-2 mt-md-4">
                                 <div>
-                                    <h4 class="fs-24 fw-bold ff-secondary mb-3"><span class="counter-value" data-target="{{ $stats['attended_activities'] }}">0</span></h4>
-                                    <span class="text-muted fw-medium">Participations globales</span>
+                                    <h4 class="fs-18 fs-md-24 fw-bold ff-secondary mb-1 mb-md-3"><span class="counter-value" data-target="{{ $stats['attended_activities'] }}">0</span></h4>
+                                    <span class="text-muted fw-medium fs-11 fs-md-14 d-none d-sm-inline">Participations</span>
                                 </div>
-                                <div class="avatar-sm flex-shrink-0">
-                                    <span class="avatar-title bg-success-subtle text-success rounded fs-3 shadow-sm">
+                                <div class="avatar-xs avatar-sm-md flex-shrink-0">
+                                    <span class="avatar-title bg-success-subtle text-success rounded fs-16 fs-md-20 shadow-sm">
                                         <i class="ri-check-double-line"></i>
                                     </span>
                                 </div>
@@ -230,21 +230,21 @@
                     </div>
                 </div>
                 
-                <div class="col-xl-4 col-md-6">
-                    <div class="card premium-card overflow-hidden">
-                        <div class="card-body">
+                <div class="col-4 col-md-6 col-xl-4">
+                    <div class="card premium-card overflow-hidden h-100">
+                        <div class="card-body p-2 p-sm-3 p-md-4">
                             <div class="d-flex align-items-center">
                                 <div class="flex-grow-1 overflow-hidden">
-                                    <p class="text-uppercase fw-semibold text-muted text-truncate mb-0" style="letter-spacing: 0.5px;">Total Cotisations</p>
+                                    <p class="text-uppercase fw-semibold text-muted text-truncate mb-0 fs-10 fs-md-12" style="letter-spacing: 0.5px;">Cotisations</p>
                                 </div>
                             </div>
-                            <div class="d-flex align-items-end justify-content-between mt-4">
+                            <div class="d-flex align-items-end justify-content-between mt-2 mt-md-4">
                                 <div>
-                                    <h4 class="fs-24 fw-bold ff-secondary mb-3"><span class="counter-value" data-target="{{ $stats['my_contributions_amount'] }}">0</span> FCFA</h4>
-                                    <span class="text-muted fw-medium">Mes versements</span>
+                                    <h4 class="fs-14 fs-sm-18 fs-md-24 fw-bold ff-secondary mb-1 mb-md-3"><span class="counter-value" data-target="{{ $stats['my_contributions_amount'] }}">0</span> <small class="fs-10 fs-md-14">FCFA</small></h4>
+                                    <span class="text-muted fw-medium fs-11 fs-md-14 d-none d-sm-inline">Versements</span>
                                 </div>
-                                <div class="avatar-sm flex-shrink-0">
-                                    <span class="avatar-title bg-warning-subtle text-warning rounded fs-3 shadow-sm">
+                                <div class="avatar-xs avatar-sm-md flex-shrink-0">
+                                    <span class="avatar-title bg-warning-subtle text-warning rounded fs-16 fs-md-20 shadow-sm">
                                         <i class="ri-wallet-3-line"></i>
                                     </span>
                                 </div>
@@ -258,16 +258,17 @@
             <div class="row mt-3">
                 <div class="col-lg-12">
                     <div class="card premium-card">
-                        <div class="card-header align-items-center d-flex border-bottom-dashed py-4 px-4">
-                            <h4 class="card-title mb-0 flex-grow-1 fs-16 fw-semibold"><i class="ri-history-line text-primary me-1"></i> Mes prochaines activités</h4>
+                        <div class="card-header align-items-center d-flex border-bottom-dashed py-3 py-md-4 px-3 px-md-4">
+                            <h4 class="card-title mb-0 flex-grow-1 fs-15 fs-md-16 fw-semibold"><i class="ri-history-line text-primary me-1"></i> Mes prochaines activités</h4>
                             <div class="flex-shrink-0">
                                 <a href="{{ route('activities.index') }}" class="btn btn-soft-primary btn-sm rounded-pill px-3">
                                     Tout voir
                                 </a>
                             </div>
                         </div>
-                        <div class="card-body p-4">
-                            <div class="table-responsive">
+                        <div class="card-body p-3 p-md-4">
+                            <!-- Desktop Table View -->
+                            <div class="table-responsive d-none d-md-block">
                                 <table class="table table-borderless table-centered table-premium align-middle table-nowrap mb-0">
                                     <thead>
                                         <tr>
@@ -324,6 +325,43 @@
                                         @endforelse
                                     </tbody>
                                 </table>
+                            </div>
+
+                            <!-- Mobile Native App Touchable Card List View -->
+                            <div class="d-block d-md-none vstack gap-2">
+                                @forelse($upcoming_activities as $activity)
+                                    <a href="{{ route('activities.show', $activity) }}" class="card border border-light-subtle shadow-none mb-0 text-body text-decoration-none rounded-3 p-3 transition-300">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center gap-3 overflow-hidden">
+                                                <div class="avatar-sm flex-shrink-0">
+                                                    <div class="avatar-title bg-info-subtle text-info rounded-circle fs-18">
+                                                        <i class="ri-calendar-event-fill"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="overflow-hidden">
+                                                    <h6 class="fs-14 fw-semibold mb-1 text-truncate">{{ $activity->title }}</h6>
+                                                    <div class="d-flex align-items-center gap-2 fs-12 text-muted">
+                                                        <span><i class="ri-time-line align-middle me-1"></i>{{ \Carbon\Carbon::parse($activity->start_time)->translatedFormat('d M H:i') }}</span>
+                                                        @if($activity->location)
+                                                            <span class="text-truncate" style="max-width: 120px;"><i class="ri-map-pin-line align-middle me-1"></i>{{ $activity->location }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <i class="ri-arrow-right-s-line fs-20 text-muted flex-shrink-0 ms-2"></i>
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="text-center py-4">
+                                        <div class="avatar-sm mx-auto mb-2">
+                                            <div class="avatar-title bg-soft-light text-muted rounded-circle fs-20">
+                                                <i class="ri-calendar-2-line"></i>
+                                            </div>
+                                        </div>
+                                        <h6 class="fs-14 mb-1">Aucune activité prévue</h6>
+                                        <p class="text-muted small mb-0">Revenez plus tard pour voir le programme.</p>
+                                    </div>
+                                @endforelse
                             </div>
                         </div>
                     </div>

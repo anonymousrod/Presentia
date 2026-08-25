@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Traits\OptimizesImages;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {

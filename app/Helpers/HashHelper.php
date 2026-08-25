@@ -20,21 +20,23 @@ if (!function_exists('encode_id')) {
 
 if (!function_exists('decode_id')) {
     /**
-     * Décode un hash string en ID entier.
+     * Décode un hash string ou un entier en ID entier.
      * Renvoie null si le hash est invalide.
      *
-     * @param string|null $hash
+     * @param string|int|null $hash
      * @return int|null
      */
-    function decode_id(?string $hash): ?int
+    function decode_id($hash): ?int
     {
         if (empty($hash)) {
             return null;
         }
 
-        // Hashids::decode renvoie un tableau d'entiers.
-        // Comme on encode toujours un seul ID, on prend le premier élément.
-        $decoded = Hashids::decode($hash);
+        if (is_numeric($hash)) {
+            return (int) $hash;
+        }
+
+        $decoded = Hashids::decode((string) $hash);
 
         return !empty($decoded) ? $decoded[0] : null;
     }

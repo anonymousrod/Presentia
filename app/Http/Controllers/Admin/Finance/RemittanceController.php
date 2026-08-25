@@ -15,12 +15,21 @@ class RemittanceController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Remittance::with(['collector', 'group']);
+        $query = Remittance::with(['collector', 'group', 'treasurer']);
 
-        if ($request->filled('group_id')) {
-            $groupId = decode_id($request->group_id);
-            if ($groupId) {
-                $query->where('group_id', $groupId);
+        $groupId = $request->filled('group_id') ? decode_id($request->group_id) : null;
+
+        $contributionsQuery = Contribution::query();
+        $remittancesQuery = Remittance::query();
+
+        if ($groupId) {
+            $query->where('group_id', $groupId);
+            $remittancesQuery->where('group_id', $groupId);
+
+            $group = Group::find($groupId);
+            if ($group) {
+                $memberIds = $group->members()->pluck('users.id')->toArray();
+                $contributionsQuery->whereIn('user_id', $memberIds);
             }
         }
 
@@ -32,12 +41,13 @@ class RemittanceController extends Controller
 
         $groups = Group::orderBy('name')->get();
 
-        // Sommes globales
-        $totalCollected = Contribution::sum('amount');
-        $totalValidated = Remittance::where('status', 'validated')->sum('amount');
-        $totalPending = Remittance::where('status', 'pending')->sum('amount');
+        // Sommes financières
+        $totalCollected  = (clone $contributionsQuery)->sum('amount');
+        $totalValidated  = (clone $remittancesQuery)->where('status', 'validated')->sum('amount');
+        $totalPending    = (clone $remittancesQuery)->where('status', 'pending')->sum('amount');
+        $totalUnremitted = (clone $contributionsQuery)->whereNull('remittance_id')->sum('amount');
 
-        return view('admin.finance.treasury.index', compact('remittances', 'totalCollected', 'totalValidated', 'totalPending', 'groups'));
+        return view('admin.finance.treasury.index', compact('remittances', 'totalCollected', 'totalValidated', 'totalPending', 'totalUnremitted', 'groups'));
     }
 
     public function store(Request $request)
@@ -57,9 +67,19 @@ class RemittanceController extends Controller
 
         $memberIds = $group->members()->pluck('users.id')->toArray();
 
-        $contributions = Contribution::whereIn('user_id', $memberIds)
-            ->whereNull('remittance_id')
-            ->get();
+        $query = Contribution::whereIn('user_id', $memberIds)
+            ->whereNull('remittance_id');
+
+        if ($request->filled('month')) {
+            $year = $request->input('year', \Carbon\Carbon::now()->format('Y'));
+            $month = str_pad($request->input('month'), 2, '0', STR_PAD_LEFT);
+            $startOfMonth = \Carbon\Carbon::parse("$year-$month-01")->startOfMonth();
+            $endOfMonth = \Carbon\Carbon::parse("$year-$month-01")->endOfMonth();
+
+            $query->whereBetween('date', [$startOfMonth, $endOfMonth]);
+        }
+
+        $contributions = $query->get();
 
         if ($contributions->isEmpty()) {
             return redirect()->back()->with('error', 'Aucune cotisation en attente de validation.');
@@ -90,10 +110,14 @@ class RemittanceController extends Controller
 
     public function validateRemittance(Request $request, Remittance $remittance)
     {
+        $oldValues = $remittance->getAttributes();
+
         $remittance->status = 'validated';
         $remittance->treasurer_id = auth()->id();
         $remittance->validated_at = now();
         $remittance->save();
+
+        \App\Services\AuditService::log('validated', $remittance, $oldValues, $remittance->getAttributes());
 
         // Notifier le collecteur
         if ($remittance->collector) {

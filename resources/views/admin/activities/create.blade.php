@@ -249,7 +249,7 @@
             </div>
 
             <!-- Right Column: Settings & Configuration -->
-            <div class="col-lg-4">
+            <div class="col-lg-4 pb-5 pb-lg-0 mb-4 mb-lg-0">
                 
                 <div class="card border-0 shadow-sm mb-4" style="border-radius: 1rem; position: sticky; top: 20px;">
                     <div class="card-body p-4">
@@ -328,7 +328,7 @@
                             @enderror
                         </div>
 
-                        <div class="d-grid mt-4 pt-2">
+                        <div class="d-grid mt-4 pt-2 d-none d-lg-grid">
                             <button type="submit" class="btn btn-primary btn-save">
                                 <i class="mdi mdi-check-all me-1"></i> Créer l'activité
                             </button>
@@ -338,8 +338,36 @@
 
             </div>
         </div>
+
+        {{-- 📱 MOBILE APP STICKY SAVE BAR --}}
+        <div class="mobile-save-bar d-lg-none fixed-bottom p-3 shadow-lg">
+            <div class="d-flex align-items-center justify-content-between gap-3">
+                <a href="{{ route('admin.activities.index') }}" class="btn btn-soft-secondary rounded-pill px-3">
+                    Annuler
+                </a>
+                <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold flex-grow-1">
+                    <i class="mdi mdi-check-all me-1"></i> Créer l'activité
+                </button>
+            </div>
+        </div>
     </form>
 </div>
+
+<style>
+    .mobile-save-bar {
+        background: var(--vz-card-bg, #ffffff);
+        border-top: 1px solid var(--vz-border-color);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        z-index: 1040;
+        box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.08) !important;
+    }
+    
+    [data-bs-theme="dark"] .mobile-save-bar {
+        background: rgba(33, 37, 41, 0.95);
+        border-top-color: var(--vz-border-color);
+    }
+</style>
 
 @endsection
 

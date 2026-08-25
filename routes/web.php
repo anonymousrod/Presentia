@@ -100,12 +100,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::resource('activities', App\Http\Controllers\Admin\ActivityController::class);
     });
 
-    // Password Requests (WhatsApp)
-    Route::middleware(['can:manage-users'])->group(function () {
-        Route::get('password-requests', [App\Http\Controllers\Admin\PasswordRequestController::class, 'index'])->name('password-requests.index');
-        Route::post('password-requests/{passwordResetRequest}/validate', [App\Http\Controllers\Admin\PasswordRequestController::class, 'validateRequest'])->name('password-requests.validate');
-    });
-
     // Roles & Permissions CRUD
     Route::middleware(['can:role.manage'])->group(function () {
         Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);

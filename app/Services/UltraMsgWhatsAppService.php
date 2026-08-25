@@ -43,7 +43,7 @@ class UltraMsgWhatsAppService implements WhatsAppServiceInterface
 
         $url = "{$this->baseUrl}/{$this->instanceId}/messages/chat";
 
-        $response = Http::withoutVerifying()->asForm()->post($url, [
+        $response = Http::timeout(5)->withoutVerifying()->asForm()->post($url, [
             'token' => $this->token,
             'to' => $cleanPhone,
             'body' => $message,

@@ -224,12 +224,12 @@
                         </li>
                         @endcanany
 
-                        {{-- Statistiques & Rapports --}}
+                        {{-- Statistiques --}}
                         @canany(['stats.view_global', 'stats.view_own_group'])
                         <li class="nav-item">
                             <a class="nav-link menu-link {{ request()->routeIs('admin.statistics.*') ? 'active' : '' }}" href="#sidebarStats" data-bs-toggle="collapse"
                                 role="button" aria-expanded="{{ request()->routeIs('admin.statistics.*') ? 'true' : 'false' }}" aria-controls="sidebarStats">
-                                <i class="mdi mdi-chart-bar"></i> <span>Statistiques & Rapports</span>
+                                <i class="mdi mdi-chart-bar"></i> <span>Statistiques</span>
                             </a>
                             <div class="collapse menu-dropdown {{ request()->routeIs('admin.statistics.*') ? 'show' : '' }}" id="sidebarStats">
                                 <ul class="nav nav-sm flex-column">
@@ -249,13 +249,13 @@
                         @endcanany
 
                         {{-- Administration --}}
-                        @canany(['role.manage', 'permission.manage', 'audit.view', 'member.edit'])
+                        @canany(['role.manage', 'permission.manage', 'audit.view'])
                         <li class="nav-item">
-                            <a class="nav-link menu-link {{ request()->routeIs('admin.roles.*', 'admin.password-requests.*', 'admin.audit-logs.*') ? 'active' : '' }}" href="#sidebarAdmin" data-bs-toggle="collapse"
-                                role="button" aria-expanded="{{ request()->routeIs('admin.roles.*', 'admin.password-requests.*', 'admin.audit-logs.*') ? 'true' : 'false' }}" aria-controls="sidebarAdmin">
+                            <a class="nav-link menu-link {{ request()->routeIs('admin.roles.*', 'admin.audit-logs.*') ? 'active' : '' }}" href="#sidebarAdmin" data-bs-toggle="collapse"
+                                role="button" aria-expanded="{{ request()->routeIs('admin.roles.*', 'admin.audit-logs.*') ? 'true' : 'false' }}" aria-controls="sidebarAdmin">
                                 <i class="mdi mdi-account-cog-outline"></i> <span data-key="t-admin">Administration</span>
                             </a>
-                            <div class="collapse menu-dropdown {{ request()->routeIs('admin.roles.*', 'admin.password-requests.*', 'admin.audit-logs.*') ? 'show' : '' }}" id="sidebarAdmin">
+                            <div class="collapse menu-dropdown {{ request()->routeIs('admin.roles.*', 'admin.audit-logs.*') ? 'show' : '' }}" id="sidebarAdmin">
                                 <ul class="nav nav-sm flex-column">
                                     @canany(['role.manage', 'permission.manage'])
                                     <li class="nav-item">
@@ -264,13 +264,6 @@
                                         </a>
                                     </li>
                                     @endcanany
-                                    @can('member.edit')
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.password-requests.index') }}" class="nav-link {{ request()->routeIs('admin.password-requests.*') ? 'active' : '' }}">
-                                            Demandes de Reset
-                                        </a>
-                                    </li>
-                                    @endcan
                                     @can('audit.view')
                                     <li class="nav-item">
                                         <a href="{{ route('admin.audit-logs.index') }}" class="nav-link {{ request()->routeIs('admin.audit-logs.*') ? 'active' : '' }}">

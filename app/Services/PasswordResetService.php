@@ -4,9 +4,12 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\PasswordResetRequest;
-use App\Notifications\AdminPasswordResetAlert;
+use App\Enums\UserStatus;
+use App\Notifications\Admin\PasswordResetDoneNotification;
+use App\Jobs\SendPasswordResetWhatsApp;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -21,11 +24,9 @@ class PasswordResetService
      */
     public function sendResetRequest(string $identifier): array
     {
-        // Rate limiting: 3 demandes max par heure par identifiant
+        // Rate limiting: 3 demandes max par heure par identifiant (10 en environnement local)
         $throttleKey = 'password-reset:' . $identifier;
-        // Règle: max 3 demandes acceptées par heure par identifiant.
-        // On bloque la 4e.
-        $maxAttempts = 3;
+        $maxAttempts = app()->environment('local') ? 10 : 3;
 
         if (RateLimiter::tooManyAttempts($throttleKey, $maxAttempts)) {
             return [
@@ -34,7 +35,6 @@ class PasswordResetService
                 'channel' => null,
             ];
         }
-
 
         $user = $this->findUser($identifier);
 
@@ -50,12 +50,23 @@ class PasswordResetService
 
         RateLimiter::hit($throttleKey, 3600);
 
-        if ($user->hasEmail()) {
-            return $this->sendEmailReset($user);
-        }
+        $isEmailInput = filter_var($identifier, FILTER_VALIDATE_EMAIL) !== false;
 
-        if ($user->hasPhone()) {
-            return $this->sendWhatsAppReset($user);
+        if ($isEmailInput) {
+            if ($user->hasEmail()) {
+                return $this->sendEmailReset($user);
+            }
+            if ($user->hasPhone()) {
+                return $this->sendWhatsAppReset($user);
+            }
+        } else {
+            // L'utilisateur a saisi un numéro de téléphone !
+            if ($user->hasPhone()) {
+                return $this->sendWhatsAppReset($user);
+            }
+            if ($user->hasEmail()) {
+                return $this->sendEmailReset($user);
+            }
         }
 
         return [
@@ -98,33 +109,37 @@ class PasswordResetService
     }
 
     /**
-     * Crée une demande WhatsApp et notifie l'admin.
+     * Réinitialisation WhatsApp 100% automatique et instantanée.
      */
     private function sendWhatsAppReset(User $user): array
     {
-        // Création de la requête en DB
-        $request = PasswordResetRequest::create([
-            'user_id' => $user->id,
-            'code' => Str::random(10), // Code interne ou mdp temporaire futur ? Le ticket dit "Admin valide -> génère mdp temporaire"
-            'status' => 'PENDING',
-            'expires_at' => Carbon::now()->addHours(24),
-        ]);
+        $tempPassword = Str::random(10);
 
-        // Notifier les administrateurs
-        $admins = User::role('Administrateur')->get();
-        if ($admins->isEmpty()) {
-            // Fallback si pas de rôle Administrateur défini par Spatie (on cherche par permission ou id 1?)
-            // Selon Rolesandpermissionsseeder, il devrait y avoir des admins.
-            $admins = User::whereHas('roles', function ($q) {
-                $q->where('name', 'Administrateur');
-            })->get();
-        }
+        DB::transaction(function () use ($user, $tempPassword) {
+            // 1. Mettre à jour le mot de passe et basculer le statut en PENDING (changement obligatoire)
+            $user->update([
+                'password' => Hash::make($tempPassword),
+                'status'   => UserStatus::PENDING,
+            ]);
 
-        Notification::send($admins, new AdminPasswordResetAlert($request));
+            // 2. Enregistrer la demande comme traitée immédiatement
+            PasswordResetRequest::create([
+                'user_id'    => $user->id,
+                'code'       => 'AUTO',
+                'status'     => 'DONE',
+                'expires_at' => Carbon::now()->addHours(24),
+            ]);
+
+            // 3. Expédier le mot de passe temporaire directement par WhatsApp
+            dispatch(new SendPasswordResetWhatsApp($user, $tempPassword));
+
+            // 4. Notification système
+            $user->notify(new PasswordResetDoneNotification());
+        });
 
         return [
             'success' => true,
-            'message' => 'Votre demande a été envoyée à l\'administrateur. Vous recevrez un nouveau mot de passe par WhatsApp après validation.',
+            'message' => 'Un mot de passe temporaire vient de vous être envoyé par WhatsApp.',
             'channel' => 'whatsapp'
         ];
     }
