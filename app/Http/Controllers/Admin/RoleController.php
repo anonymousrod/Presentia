@@ -39,10 +39,10 @@ class RoleController extends Controller
         // (church_id = $churchId), plus le rôle Super Admin global (church_id IS NULL)
         // uniquement si l'utilisateur est Super Admin et n'est PAS en mode support
         $roles = Role::where(function ($q) use ($churchId) {
-                if ($churchId) {
-                    $q->where('church_id', $churchId);
-                }
-            })
+            if ($churchId) {
+                $q->where('church_id', $churchId);
+            }
+        })
             ->withCount('users', 'permissions')
             ->orderByRaw("CASE WHEN code = 'admin' THEN 1 ELSE 2 END")
             ->orderBy('is_system', 'desc')

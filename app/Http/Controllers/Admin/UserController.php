@@ -112,7 +112,7 @@ class UserController extends Controller
         $churchId = session('tenant_church_id') ?? auth()->user()?->church_id ?? null;
         if (\Spatie\Permission\Models\Role::where('name', 'Administrateur')->where('church_id', $churchId)->exists()) {
             User::role('Administrateur')
-                ->when($churchId, fn($q) => $q->where('church_id', $churchId))
+                ->when($churchId, fn ($q) => $q->where('church_id', $churchId))
                 ->each(fn ($admin) => $admin->notify(new NewMemberCreatedNotification($user)));
         }
 
@@ -255,7 +255,7 @@ class UserController extends Controller
         $churchId = session('tenant_church_id') ?? auth()->user()?->church_id ?? null;
 
         $query = User::with('roles', 'groups')
-            ->when($churchId, fn($q) => $q->where('church_id', $churchId))
+            ->when($churchId, fn ($q) => $q->where('church_id', $churchId))
             ->orderBy('name');
 
         $statusFilter = null;
@@ -315,7 +315,9 @@ class UserController extends Controller
 
     private function getLogoBase64(?string $path): string
     {
-        if (!$path) return '';
+        if (!$path) {
+            return '';
+        }
 
         $fullPath = null;
         if (file_exists(public_path($path))) {

@@ -96,7 +96,9 @@ class QrCodeController extends Controller
 
     private function getLogoBase64(?string $path): string
     {
-        if (!$path) return '';
+        if (!$path) {
+            return '';
+        }
 
         $fullPath = null;
         if (file_exists(public_path($path))) {

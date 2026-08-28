@@ -40,7 +40,7 @@ class RemittanceController extends Controller
 
         $remittances = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
 
-        $groups = Group::when($churchId, fn($q) => $q->where('church_id', $churchId))
+        $groups = Group::when($churchId, fn ($q) => $q->where('church_id', $churchId))
             ->orderBy('name')->get();
 
         // Sommes financières
@@ -60,7 +60,7 @@ class RemittanceController extends Controller
         if ($user->can('finance.view_all')) {
             $groupIdHash = $request->input('group_id');
             $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
-            $group = Group::find($groupId) ?? Group::when($churchId, fn($q) => $q->where('church_id', $churchId))->first();
+            $group = Group::find($groupId) ?? Group::when($churchId, fn ($q) => $q->where('church_id', $churchId))->first();
         } else {
             $group = $user->collectedGroups()->first() ?? $user->ledGroups()->first() ?? $user->groups()->first();
         }
@@ -107,7 +107,7 @@ class RemittanceController extends Controller
         $collector = auth()->user();
         if (\Spatie\Permission\Models\Role::where('name', 'Trésorier Général')->where('church_id', $churchId)->exists()) {
             User::role('Trésorier Général')
-                ->when($churchId, fn($q) => $q->where('church_id', $churchId))
+                ->when($churchId, fn ($q) => $q->where('church_id', $churchId))
                 ->each(fn ($treasurer) => $treasurer->notify(new RemittanceSubmittedNotification($collector, $group, (int) $totalAmount)));
         }
 

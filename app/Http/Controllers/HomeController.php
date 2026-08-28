@@ -96,7 +96,7 @@ class HomeController extends Controller
 
         // 6. Numéro de téléphone de contact
         $admin = $leaders->first(function ($user) {
-            return $user->roles->contains(fn($r) => in_array($r->name, ['Administrateur', 'Super Admin', 'Président']));
+            return $user->roles->contains(fn ($r) => in_array($r->name, ['Administrateur', 'Super Admin', 'Président']));
         });
         $adminPhone = $admin?->phone ?: ($settings->church_phone ?? '+229 00 00 00 00');
 

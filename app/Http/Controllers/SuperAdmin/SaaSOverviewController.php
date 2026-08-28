@@ -7,7 +7,6 @@ use App\Models\Church;
 use App\Models\Subscription;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class SaaSOverviewController extends Controller
 {

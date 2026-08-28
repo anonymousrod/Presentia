@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -27,7 +26,8 @@ return new class extends Migration
                 Schema::table('roles', function (Blueprint $table) {
                     $table->dropUnique('roles_code_unique');
                 });
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
 
             Schema::table('roles', function (Blueprint $table) use ($teamForeignKey) {
                 $table->unique([$teamForeignKey, 'name', 'guard_name'], 'roles_church_id_name_guard_unique');
@@ -39,8 +39,9 @@ return new class extends Migration
             Schema::table('model_has_roles', function (Blueprint $table) use ($teamForeignKey) {
                 try {
                     $table->dropForeign(['role_id']);
-                } catch (\Exception $e) {}
-                
+                } catch (\Exception $e) {
+                }
+
                 $table->dropPrimary();
                 $table->unsignedBigInteger($teamForeignKey)->default(0)->first();
                 $table->index($teamForeignKey, 'model_has_roles_church_id_index');
@@ -54,8 +55,9 @@ return new class extends Migration
             Schema::table('model_has_permissions', function (Blueprint $table) use ($teamForeignKey) {
                 try {
                     $table->dropForeign(['permission_id']);
-                } catch (\Exception $e) {}
-                
+                } catch (\Exception $e) {
+                }
+
                 $table->dropPrimary();
                 $table->unsignedBigInteger($teamForeignKey)->default(0)->first();
                 $table->index($teamForeignKey, 'model_has_permissions_church_id_index');

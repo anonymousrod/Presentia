@@ -62,7 +62,7 @@ class GroupController extends Controller
         $this->authorize('create', Group::class);
 
         $churchId = $this->getActiveChurchId();
-        $users = User::when($churchId, fn($q) => $q->where('church_id', $churchId))
+        $users = User::when($churchId, fn ($q) => $q->where('church_id', $churchId))
             ->orderBy('name')
             ->get();
 
@@ -125,7 +125,7 @@ class GroupController extends Controller
         $churchId = $this->getActiveChurchId();
         $activeMemberIds = $activeMembers->pluck('id');
         $availableUsers = User::whereNotIn('id', $activeMemberIds)
-            ->when($churchId, fn($q) => $q->where('church_id', $churchId))
+            ->when($churchId, fn ($q) => $q->where('church_id', $churchId))
             ->orderBy('name')
             ->get();
 
@@ -137,7 +137,7 @@ class GroupController extends Controller
         $this->authorize('update', $group);
 
         $churchId = $this->getActiveChurchId();
-        $users = User::when($churchId, fn($q) => $q->where('church_id', $churchId))
+        $users = User::when($churchId, fn ($q) => $q->where('church_id', $churchId))
             ->orderBy('name')
             ->get();
 

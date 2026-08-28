@@ -23,7 +23,7 @@ class NotificationController extends Controller
         ]);
 
         $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
-        $users = User::when($churchId, fn($q) => $q->where('church_id', $churchId))->get();
+        $users = User::when($churchId, fn ($q) => $q->where('church_id', $churchId))->get();
         $this->dispatchNotifications($users, $data['title'], $data['message']);
 
         return redirect()->route('admin.notifications.send-all')
@@ -33,7 +33,7 @@ class NotificationController extends Controller
     public function showSendGroupForm()
     {
         $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
-        $groups = Group::when($churchId, fn($q) => $q->where('church_id', $churchId))->orderBy('name')->get();
+        $groups = Group::when($churchId, fn ($q) => $q->where('church_id', $churchId))->orderBy('name')->get();
         return view('admin.notifications.send-group', compact('groups'));
     }
 
@@ -62,7 +62,7 @@ class NotificationController extends Controller
     public function showSendRoleForm()
     {
         $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
-        $roles = Role::when($churchId, fn($q) => $q->where('church_id', $churchId))->orderBy('name')->get();
+        $roles = Role::when($churchId, fn ($q) => $q->where('church_id', $churchId))->orderBy('name')->get();
         return view('admin.notifications.send-role', compact('roles'));
     }
 
@@ -80,7 +80,7 @@ class NotificationController extends Controller
 
         $role = Role::findOrFail($data['role_id']);
         $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
-        $users = User::role($role->name)->when($churchId, fn($q) => $q->where('church_id', $churchId))->get();
+        $users = User::role($role->name)->when($churchId, fn ($q) => $q->where('church_id', $churchId))->get();
 
         $this->dispatchNotifications($users, $data['title'], $data['message']);
 

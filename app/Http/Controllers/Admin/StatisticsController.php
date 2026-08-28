@@ -33,7 +33,7 @@ class StatisticsController extends Controller
         $totalMembers = DB::table('group_members')
             ->join('groups', 'group_members.group_id', '=', 'groups.id')
             ->whereNull('group_members.left_at')
-            ->when($churchId, fn($q) => $q->where('groups.church_id', $churchId))
+            ->when($churchId, fn ($q) => $q->where('groups.church_id', $churchId))
             ->distinct('group_members.user_id')
             ->count('group_members.user_id');
 
@@ -223,12 +223,12 @@ class StatisticsController extends Controller
         }
 
         $data = $dataQuery->select(
-                'users.id',
-                DB::raw("CONCAT(UPPER(users.name), ' ', users.first_name) as full_name"),
-                'groups.name as group_name',
-                'groups.color as group_color',
-                DB::raw('COUNT(DISTINCT attendances.id) as count')
-            )
+            'users.id',
+            DB::raw("CONCAT(UPPER(users.name), ' ', users.first_name) as full_name"),
+            'groups.name as group_name',
+            'groups.color as group_color',
+            DB::raw('COUNT(DISTINCT attendances.id) as count')
+        )
             ->groupBy('users.id', 'users.name', 'users.first_name', 'groups.name', 'groups.color')
             ->having('count', '>', 0)
             ->orderByDesc('count')
@@ -308,7 +308,7 @@ class StatisticsController extends Controller
 
         $groups = collect();
         if ($isGlobal) {
-            $groups = Group::when($churchId, fn($q) => $q->where('church_id', $churchId))->orderBy('name')->get();
+            $groups = Group::when($churchId, fn ($q) => $q->where('church_id', $churchId))->orderBy('name')->get();
             $groupIdHash = $request->input('group_id');
             $groupId = $groupIdHash ? decode_id($groupIdHash) : $groups->first()?->id;
         } else {

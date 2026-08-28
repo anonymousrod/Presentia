@@ -10,7 +10,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Subscription extends Model
 {
-    use HasFactory, HasHashid, Auditable;
+    use HasFactory;
+    use HasHashid;
+    use Auditable;
 
     protected $fillable = [
         'church_id',

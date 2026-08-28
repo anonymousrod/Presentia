@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -21,14 +20,14 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('city')->nullable();
             $table->string('logo_path')->nullable();
-            
+
             // Statut & Abonnement
             $table->enum('status', ['active', 'suspended', 'expired'])->default('active');
             $table->timestamp('subscription_starts_at')->nullable();
             $table->timestamp('subscription_expires_at')->nullable();
             $table->unsignedBigInteger('subscription_amount')->default(0); // en FCFA
             $table->string('subscription_plan')->default('Annuel (1 an)');
-            
+
             // Limites optionnelles
             $table->unsignedInteger('max_users')->nullable();
             $table->unsignedInteger('max_groups')->nullable();

@@ -42,7 +42,7 @@ class DashboardController extends Controller
         $churchId = $this->getActiveChurchId();
 
         $stats = [
-            'total_users'          => User::when($churchId, fn($q) => $q->where('church_id', $churchId))->count(),
+            'total_users'          => User::when($churchId, fn ($q) => $q->where('church_id', $churchId))->count(),
             'total_activities'     => Activity::count(),
             'upcoming_activities'  => Activity::where('start_time', '>=', now())->count(),
             'total_groups'         => Group::count(),
@@ -102,7 +102,7 @@ class DashboardController extends Controller
         $stats = [
             'upcoming_activities'    => Activity::where('start_time', '>=', now())->count(),
             'attended_activities'    => Attendance::where('user_id', $user->id)->where('status', 'present')->count(),
-            'my_contributions_amount'=> Contribution::where('user_id', $user->id)->sum('amount'),
+            'my_contributions_amount' => Contribution::where('user_id', $user->id)->sum('amount'),
         ];
 
         $upcoming_activities = Activity::where('start_time', '>=', now())

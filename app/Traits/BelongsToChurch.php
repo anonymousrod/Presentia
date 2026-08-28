@@ -13,7 +13,7 @@ trait BelongsToChurch
      */
     public static function bootBelongsToChurch(): void
     {
-        static::addGlobalScope(new ChurchScope);
+        static::addGlobalScope(new ChurchScope());
 
         static::creating(function ($model) {
             if (empty($model->church_id)) {

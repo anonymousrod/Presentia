@@ -64,10 +64,10 @@ class ActivityController extends Controller
         $this->authorize('create', Activity::class);
 
         $churchId = $this->getActiveChurchId();
-        $responsibles = User::when($churchId, fn($q) => $q->where('church_id', $churchId))
+        $responsibles = User::when($churchId, fn ($q) => $q->where('church_id', $churchId))
             ->orderBy('name')->get();
         $groups = Group::orderBy('name')->get();
-        $roles = Role::when($churchId, fn($q) => $q->where('church_id', $churchId))
+        $roles = Role::when($churchId, fn ($q) => $q->where('church_id', $churchId))
             ->orderBy('name')->get();
 
         $activityTypes = ActivityType::orderBy('name')->get();
@@ -199,7 +199,9 @@ class ActivityController extends Controller
 
     private function getLogoBase64(?string $path): string
     {
-        if (!$path) return '';
+        if (!$path) {
+            return '';
+        }
 
         $fullPath = null;
         if (file_exists(public_path($path))) {
@@ -228,10 +230,10 @@ class ActivityController extends Controller
         $this->authorize('update', $activity);
 
         $churchId = $this->getActiveChurchId();
-        $responsibles = User::when($churchId, fn($q) => $q->where('church_id', $churchId))
+        $responsibles = User::when($churchId, fn ($q) => $q->where('church_id', $churchId))
             ->orderBy('name')->get();
         $groups = Group::orderBy('name')->get();
-        $roles = Role::when($churchId, fn($q) => $q->where('church_id', $churchId))
+        $roles = Role::when($churchId, fn ($q) => $q->where('church_id', $churchId))
             ->orderBy('name')->get();
 
         $activityTypes = ActivityType::orderBy('name')->get();

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Church;
 use App\Models\User;
 
 class NotificationController extends Controller
@@ -18,7 +17,7 @@ class NotificationController extends Controller
             $churchId = session('tenant_church_id');
             $churchAdmin = User::withoutGlobalScopes()
                 ->where('church_id', $churchId)
-                ->whereHas('roles', fn($q) => $q->where('name', 'Administrateur'))
+                ->whereHas('roles', fn ($q) => $q->where('name', 'Administrateur'))
                 ->first() ?? User::withoutGlobalScopes()->where('church_id', $churchId)->first();
 
             if ($churchAdmin) {

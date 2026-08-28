@@ -35,7 +35,7 @@ class AdminSeeder extends Seeder
                 'city'                   => 'Cotonou',
                 'status'                 => 'active',
                 'subscription_starts_at' => Carbon::now(),
-                'subscription_expires_at'=> Carbon::now()->addYear(), // Abonnement d'un an
+                'subscription_expires_at' => Carbon::now()->addYear(), // Abonnement d'un an
                 'subscription_amount'    => 150000,
                 'subscription_plan'      => 'Annuel (1 an)',
                 'notes'                  => 'Église principale originelle de la plateforme.',

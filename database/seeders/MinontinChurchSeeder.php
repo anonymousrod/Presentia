@@ -35,7 +35,7 @@ class MinontinChurchSeeder extends Seeder
                 'city'                   => 'Cotonou',
                 'status'                 => 'active',
                 'subscription_starts_at' => Carbon::now(),
-                'subscription_expires_at'=> Carbon::now()->addYear(), // Abonnement de 1 an
+                'subscription_expires_at' => Carbon::now()->addYear(), // Abonnement de 1 an
                 'subscription_amount'    => 150000,
                 'subscription_plan'      => 'Annuel (1 an)',
                 'notes'                  => 'Deuxième église cliente sur la plateforme Presentia.',
@@ -273,7 +273,7 @@ class MinontinChurchSeeder extends Seeder
                 'location'                => 'Temple Principal de Minontin',
                 'capacity'                => 100,
                 'responsible_id'          => $admin->id,
-                'is_registration_required'=> false,
+                'is_registration_required' => false,
             ]
         );
 
@@ -289,7 +289,7 @@ class MinontinChurchSeeder extends Seeder
                 'location'                => 'Centre d\'accueil de Ouidah',
                 'capacity'                => 60,
                 'responsible_id'          => $admin->id,
-                'is_registration_required'=> true,
+                'is_registration_required' => true,
             ]
         );
 
@@ -339,15 +339,19 @@ class MinontinChurchSeeder extends Seeder
 
             // Par mois (Février à Juillet)
             for ($month = 2; $month <= 7; $month++) {
-                $monthSundays = array_filter($sundays, fn($d) => $d->month === $month);
-                if (empty($monthSundays)) continue;
+                $monthSundays = array_filter($sundays, fn ($d) => $d->month === $month);
+                if (empty($monthSundays)) {
+                    continue;
+                }
 
                 $monthContributions = [];
 
                 foreach ($monthSundays as $sunDate) {
                     foreach ($grpMembers as $mb) {
                         $amount = $mb->weekly_contribution ?? 1000;
-                        if ($amount <= 0) continue;
+                        if ($amount <= 0) {
+                            continue;
+                        }
 
                         $contrib = Contribution::withoutGlobalScopes()->firstOrCreate(
                             [
@@ -365,7 +369,7 @@ class MinontinChurchSeeder extends Seeder
                 }
 
                 // Créer un versement validé pour les mois passés (Février à Juin) et en attente pour Juillet
-                $totalAmount = array_sum(array_map(fn($c) => $c->amount, $monthContributions));
+                $totalAmount = array_sum(array_map(fn ($c) => $c->amount, $monthContributions));
 
                 if ($totalAmount > 0) {
                     $isPastMonth = ($month < 7);

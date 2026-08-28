@@ -24,9 +24,9 @@ class ContributionController extends Controller
             if ($groupId) {
                 $group = Group::find($groupId);
             } else {
-                $group = Group::when($churchId, fn($q) => $q->where('church_id', $churchId))->first();
+                $group = Group::when($churchId, fn ($q) => $q->where('church_id', $churchId))->first();
             }
-            $allGroups = Group::when($churchId, fn($q) => $q->where('church_id', $churchId))->orderBy('name')->get();
+            $allGroups = Group::when($churchId, fn ($q) => $q->where('church_id', $churchId))->orderBy('name')->get();
         } else {
             // Sinon, c'est un chargé de collecte ou un chef de groupe
             $group = $user->collectedGroups()->first() ?? $user->ledGroups()->first() ?? $user->groups()->first();
@@ -195,7 +195,7 @@ class ContributionController extends Controller
         if ($user->can('finance.view_all')) {
             $groupIdHash = $request->input('group_id');
             $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
-            $group = Group::find($groupId) ?? Group::when($churchId, fn($q) => $q->where('church_id', $churchId))->first();
+            $group = Group::find($groupId) ?? Group::when($churchId, fn ($q) => $q->where('church_id', $churchId))->first();
         } else {
             $group = $user->collectedGroups()->first();
         }

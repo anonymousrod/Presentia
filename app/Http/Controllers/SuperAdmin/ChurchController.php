@@ -12,7 +12,6 @@ use App\Services\AuditService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class ChurchController extends Controller
@@ -135,7 +134,7 @@ class ChurchController extends Controller
                 'city'                   => $request->input('city'),
                 'status'                 => 'active',
                 'subscription_starts_at' => $startsAt,
-                'subscription_expires_at'=> $expiresAt,
+                'subscription_expires_at' => $expiresAt,
                 'subscription_amount'    => (int) $request->input('subscription_amount'),
                 'subscription_plan'      => 'Annuel (1 an)',
                 'notes'                  => $request->input('notes'),
@@ -190,7 +189,7 @@ class ChurchController extends Controller
             if ($adminRole) {
                 setPermissionsTeamId($church->id);
                 $user->syncRoles([$adminRole]);
-                
+
                 // Double vérification dans la table de pivot model_has_roles
                 DB::table('model_has_roles')->updateOrInsert(
                     [
@@ -421,7 +420,7 @@ class ChurchController extends Controller
             $church->update([
                 'status'                 => 'active',
                 'subscription_starts_at' => $startsAt,
-                'subscription_expires_at'=> $expiresAt,
+                'subscription_expires_at' => $expiresAt,
                 'subscription_amount'    => (int) $request->input('amount'),
             ]);
 

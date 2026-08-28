@@ -46,7 +46,7 @@ class AuditLogController extends Controller
 
         // Liste des utilisateurs pour le filtre
         $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
-        $users = User::when($churchId, fn($q) => $q->where('church_id', $churchId))
+        $users = User::when($churchId, fn ($q) => $q->where('church_id', $churchId))
             ->orderBy('first_name')->orderBy('name')
             ->get();
 

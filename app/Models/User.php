@@ -15,7 +15,6 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Traits\Auditable;
 use App\Traits\HasHashid;
-use App\Traits\BelongsToChurch;
 
 class User extends Authenticatable
 {

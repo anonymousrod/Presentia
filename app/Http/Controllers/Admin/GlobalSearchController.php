@@ -30,10 +30,10 @@ class GlobalSearchController extends Controller
             }
 
             $users = $usersQuery->where(function ($q) use ($query) {
-                    $q->where('name', 'LIKE', "%{$query}%")
-                      ->orWhere('first_name', 'LIKE', "%{$query}%")
-                      ->orWhere('email', 'LIKE', "%{$query}%");
-                })
+                $q->where('name', 'LIKE', "%{$query}%")
+                  ->orWhere('first_name', 'LIKE', "%{$query}%")
+                  ->orWhere('email', 'LIKE', "%{$query}%");
+            })
                 ->limit(5)
                 ->get()
                 ->map(function ($user) {

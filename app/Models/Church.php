@@ -13,7 +13,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Church extends Model
 {
-    use HasFactory, SoftDeletes, HasHashid, Auditable;
+    use HasFactory;
+    use SoftDeletes;
+    use HasHashid;
+    use Auditable;
 
     protected $fillable = [
         'name',
