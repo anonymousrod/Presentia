@@ -7,6 +7,7 @@ use App\Services\PermissionService;
 use Illuminate\Http\Request;
 use App\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Validation\Rule;
 
 class RoleController extends Controller
 {
@@ -18,17 +19,45 @@ class RoleController extends Controller
     }
 
     /**
-     * Liste de tous les rôles.
+     * Retourne le church_id actif pour la session courante.
+     */
+    protected function getActiveChurchId(): ?int
+    {
+        return session('tenant_church_id') ?? auth()->user()?->church_id ?? null;
+    }
+
+    /**
+     * Liste de tous les rôles de l'église active — STRICTEMENT filtrés.
      */
     public function index()
     {
         $this->authorize('role.manage');
 
-        $roles = Role::withCount('users', 'permissions')
+        $churchId = $this->getActiveChurchId();
+
+        // On récupère UNIQUEMENT les rôles appartenant à cette église
+        // (church_id = $churchId), plus le rôle Super Admin global (church_id IS NULL)
+        // uniquement si l'utilisateur est Super Admin et n'est PAS en mode support
+        $roles = Role::where(function ($q) use ($churchId) {
+                if ($churchId) {
+                    $q->where('church_id', $churchId);
+                }
+            })
+            ->withCount('users', 'permissions')
             ->orderByRaw("CASE WHEN code = 'admin' THEN 1 ELSE 2 END")
             ->orderBy('is_system', 'desc')
             ->orderBy('name')
             ->get();
+
+        // Si Super Admin hors mode support → montrer aussi son rôle global
+        if (auth()->user()->isSuperAdmin() && !session()->has('tenant_church_id') && $churchId) {
+            $superAdminRole = Role::whereNull('church_id')->where('name', 'Super Admin')
+                ->withCount('users', 'permissions')
+                ->first();
+            if ($superAdminRole && !$roles->contains('id', $superAdminRole->id)) {
+                $roles->prepend($superAdminRole);
+            }
+        }
 
         return view('admin.roles.index', compact('roles'));
     }
@@ -52,14 +81,21 @@ class RoleController extends Controller
     }
 
     /**
-     * Enregistre un nouveau rôle.
+     * Enregistre un nouveau rôle pour l'église active.
      */
     public function store(Request $request)
     {
         $this->authorize('role.manage');
 
+        $churchId = $this->getActiveChurchId();
+
         $data = $request->validate([
-            'name'          => ['required', 'string', 'max:255', 'unique:roles,name'],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('roles', 'name')->where('church_id', $churchId)
+            ],
             'description'   => ['nullable', 'string', 'max:255'],
             'permissions'   => ['nullable', 'array'],
             'permissions.*' => ['string', 'exists:permissions,name'],
@@ -67,10 +103,10 @@ class RoleController extends Controller
 
         $permissionNames = $data['permissions'] ?? [];
 
-        $role = $this->permissionService->createRole($data['name'], $data['description'] ?? null, $permissionNames);
+        $role = $this->permissionService->createRole($data['name'], $data['description'] ?? null, $permissionNames, $churchId);
 
         return redirect()->route('admin.roles.index')
-            ->with('success', "Le rôle « {$role->name} » a été créé avec succès.");
+            ->with('success', "Le rôle « {$role->name} » a été créé avec succès pour votre église.");
     }
 
     /**
@@ -79,6 +115,11 @@ class RoleController extends Controller
     public function show(Role $role)
     {
         $this->authorize('role.manage');
+
+        $churchId = $this->getActiveChurchId();
+        if ($role->church_id && $role->church_id !== $churchId && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'Accès non autorisé à ce rôle.');
+        }
 
         $rolePermissions = $role->permissions()->orderBy('name')->get();
         $groupedPermissions = $rolePermissions->groupBy(function ($permission) {
@@ -96,9 +137,14 @@ class RoleController extends Controller
     {
         $this->authorize('role.manage');
 
-        if ($role->code === 'admin') {
+        $churchId = $this->getActiveChurchId();
+        if ($role->church_id && $role->church_id !== $churchId && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'Accès non autorisé à ce rôle.');
+        }
+
+        if ($role->code === 'admin' || $role->name === 'Super Admin') {
             return redirect()->route('admin.roles.index')
-                ->with('error', "Le rôle 'Administrateur' ne peut pas être modifié.");
+                ->with('error', "Ce rôle système ne peut pas être modifié.");
         }
 
         $permissions = Permission::orderBy('name')->get();
@@ -114,19 +160,31 @@ class RoleController extends Controller
     }
 
     /**
-     * Met à jour le rôle et ses permissions.
+     * Met à jour le rôle et ses permissions pour l'église active.
      */
     public function update(Request $request, Role $role)
     {
         $this->authorize('role.manage');
 
-        if ($role->code === 'admin') {
+        $churchId = $this->getActiveChurchId();
+        if ($role->church_id && $role->church_id !== $churchId && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'Accès non autorisé à ce rôle.');
+        }
+
+        if ($role->code === 'admin' || $role->name === 'Super Admin') {
             return redirect()->route('admin.roles.index')
-                ->with('error', "Le rôle 'Administrateur' ne peut pas être modifié.");
+                ->with('error', "Ce rôle système ne peut pas être modifié.");
         }
 
         $data = $request->validate([
-            'name'          => ['required', 'string', 'max:255', 'unique:roles,name,' . $role->id],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('roles', 'name')
+                    ->where('church_id', $role->church_id)
+                    ->ignore($role->id)
+            ],
             'description'   => ['nullable', 'string', 'max:255'],
             'permissions'   => ['nullable', 'array'],
             'permissions.*' => ['string', 'exists:permissions,name'],
@@ -137,15 +195,20 @@ class RoleController extends Controller
         $this->permissionService->updateRole($role, $data['name'], $data['description'] ?? null, $permissionNames);
 
         return redirect()->route('admin.roles.index')
-            ->with('success', "Le rôle « {$role->name} » a été mis à jour.");
+            ->with('success', "Les permissions du rôle « {$role->name} » ont été mises à jour pour votre église.");
     }
 
     /**
-     * Supprime un rôle de la base de données.
+     * Supprime un rôle de l'église.
      */
     public function destroy(Role $role)
     {
         $this->authorize('role.manage');
+
+        $churchId = $this->getActiveChurchId();
+        if ($role->church_id && $role->church_id !== $churchId && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'Accès non autorisé à ce rôle.');
+        }
 
         try {
             $this->permissionService->deleteRole($role);

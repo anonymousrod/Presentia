@@ -2,20 +2,34 @@
 
 @section('title', 'Journal d\'activités & Audit')
 
+@push('css')
+<style>
+    .badge-action-scan_qr {
+        background-color: rgba(102, 16, 242, 0.12) !important;
+        color: #6610f2 !important;
+        border: 1px solid rgba(102, 16, 242, 0.3) !important;
+    }
+</style>
+@endpush
+
 @section('content')
 @php
     // Dictionnaire de traduction des types d'entités en français lisible
     $typeLabels = [
         'App\Models\User' => 'Membre / Utilisateur',
         'App\Models\Group' => 'Groupe',
-        'App\Models\Contribution' => 'Cotisation',
-        'App\Models\Remittance' => 'Versement Trésorerie',
         'App\Models\Activity' => 'Activité',
         'App\Models\ActivityType' => 'Type d\'activité',
+        'App\Models\Attendance' => 'Présence / Émargement',
+        'App\Models\Registration' => 'Inscription à une activité',
+        'App\Models\Contribution' => 'Cotisation financière',
+        'App\Models\Remittance' => 'Versement Trésorerie',
         'App\Models\AppSetting' => 'Paramètres de l\'application',
         'App\Models\Gallery' => 'Galerie Médias',
         'App\Models\ScheduledNotification' => 'Notification programmée',
         'App\Models\Role' => 'Rôle & Permissions',
+        'App\Models\Church' => 'Église',
+        'App\Models\Subscription' => 'Abonnement SaaS',
     ];
 
     // Dictionnaire de traduction des champs de base de données en français
@@ -30,6 +44,9 @@
         'date' => 'Date',
         'description' => 'Description',
         'group_id' => 'Nom du groupe',
+        'activity_id' => 'Activité concernée',
+        'scan_source' => 'Mode de validation',
+        'scanned_at' => 'Date & Heure du scan',
         'leader_id' => 'Chef de groupe',
         'collector_id' => 'Chargé de collecte',
         'treasurer_id' => 'Trésorier ayant validé',
@@ -38,6 +55,8 @@
         'category' => 'Catégorie',
         'color' => 'Couleur',
         'title' => 'Titre',
+        'note' => 'Note / Remarque',
+        'is_waitlisted' => 'Sur liste d\'attente',
         'joined_at' => 'Date d\'adhésion',
         'left_at' => 'Date de départ',
         'validated_at' => 'Date de validation',
@@ -83,13 +102,14 @@
                         <label class="form-label fs-12 fw-semibold text-muted text-uppercase tracking-wider mb-1"><i class="mdi mdi-gesture-tap me-1"></i>Type d'action</label>
                         <select name="action" class="form-select border-light-subtle">
                             <option value="">Toutes les actions</option>
+                            <option value="scan_qr" {{ request('action') === 'scan_qr' ? 'selected' : '' }}>📷 Scan QR Code</option>
                             <option value="created" {{ request('action') === 'created' ? 'selected' : '' }}>Création (Ajout)</option>
                             <option value="updated" {{ request('action') === 'updated' ? 'selected' : '' }}>Modification</option>
                             <option value="validated" {{ request('action') === 'validated' ? 'selected' : '' }}>Validation de versement</option>
                             <option value="deleted" {{ request('action') === 'deleted' ? 'selected' : '' }}>Suppression</option>
                             <option value="login" {{ request('action') === 'login' ? 'selected' : '' }}>Connexion</option>
                             <option value="logout" {{ request('action') === 'logout' ? 'selected' : '' }}>Déconnexion</option>
-                            <option value="scan_qr" {{ request('action') === 'scan_qr' ? 'selected' : '' }}>Scan QR Code</option>
+                            <option value="export" {{ request('action') === 'export' ? 'selected' : '' }}>Export</option>
                         </select>
                     </div>
 
@@ -198,17 +218,18 @@
                                 <td>
                                     @php
                                         $actionConfig = match($log->action) {
-                                            'created' => ['bg' => 'success-subtle', 'text' => 'success', 'icon' => 'mdi-plus-circle-outline', 'label' => 'Création'],
-                                            'updated' => ['bg' => 'warning-subtle', 'text' => 'warning', 'icon' => 'mdi-pencil-outline', 'label' => 'Modification'],
-                                            'validated' => ['bg' => 'success-subtle', 'text' => 'success', 'icon' => 'mdi-check-decagram', 'label' => 'Validation Versement'],
-                                            'deleted' => ['bg' => 'danger-subtle', 'text' => 'danger', 'icon' => 'mdi-trash-can-outline', 'label' => 'Suppression'],
-                                            'login' => ['bg' => 'info-subtle', 'text' => 'info', 'icon' => 'mdi-login', 'label' => 'Connexion'],
-                                            'logout' => ['bg' => 'secondary-subtle', 'text' => 'secondary', 'icon' => 'mdi-logout', 'label' => 'Déconnexion'],
-                                            'scan_qr' => ['bg' => 'purple-subtle', 'text' => 'purple', 'icon' => 'mdi-qrcode-scan', 'label' => 'Scan QR Code'],
-                                            default => ['bg' => 'primary-subtle', 'text' => 'primary', 'icon' => 'mdi-information-outline', 'label' => ucfirst($log->action)],
+                                            'created' => ['bg' => 'success-subtle', 'text' => 'success', 'icon' => 'mdi-plus-circle-outline', 'label' => 'Création', 'extra_class' => ''],
+                                            'updated' => ['bg' => 'warning-subtle', 'text' => 'warning', 'icon' => 'mdi-pencil-outline', 'label' => 'Modification', 'extra_class' => ''],
+                                            'validated' => ['bg' => 'success-subtle', 'text' => 'success', 'icon' => 'mdi-check-decagram', 'label' => 'Validation Versement', 'extra_class' => ''],
+                                            'deleted' => ['bg' => 'danger-subtle', 'text' => 'danger', 'icon' => 'mdi-trash-can-outline', 'label' => 'Suppression', 'extra_class' => ''],
+                                            'login' => ['bg' => 'info-subtle', 'text' => 'info', 'icon' => 'mdi-login', 'label' => 'Connexion', 'extra_class' => ''],
+                                            'logout' => ['bg' => 'secondary-subtle', 'text' => 'secondary', 'icon' => 'mdi-logout', 'label' => 'Déconnexion', 'extra_class' => ''],
+                                            'scan_qr' => ['bg' => 'purple-subtle', 'text' => 'purple', 'icon' => 'mdi-qrcode-scan', 'label' => 'Scan QR Code', 'extra_class' => 'badge-action-scan_qr'],
+                                            'export' => ['bg' => 'info-subtle', 'text' => 'info', 'icon' => 'mdi-file-export-outline', 'label' => 'Export Données', 'extra_class' => ''],
+                                            default => ['bg' => 'primary-subtle', 'text' => 'primary', 'icon' => 'mdi-information-outline', 'label' => ucfirst($log->action), 'extra_class' => ''],
                                         };
                                     @endphp
-                                    <span class="badge bg-{{ $actionConfig['bg'] }} text-{{ $actionConfig['text'] }} border border-{{ $actionConfig['text'] }}-subtle px-2 py-1 fs-12">
+                                    <span class="badge bg-{{ $actionConfig['bg'] }} text-{{ $actionConfig['text'] }} {{ $actionConfig['extra_class'] }} border border-{{ $actionConfig['text'] }}-subtle px-2 py-1 fs-12">
                                         <i class="mdi {{ $actionConfig['icon'] }} me-1"></i>{{ $actionConfig['label'] }}
                                     </span>
                                 </td>
@@ -216,7 +237,7 @@
                                 {{-- Cible --}}
                                 <td>
                                     @php
-                                        $typeLabel = $typeLabels[$log->auditable_type] ?? class_basename($log->auditable_type);
+                                        $typeLabel = $typeLabels[$log->auditable_type] ?? ($log->auditable_type ? class_basename($log->auditable_type) : ($log->action === 'scan_qr' ? 'Présence (Scan QR)' : 'Session'));
                                         
                                         // Nom explicite de l'objet si disponible
                                         $targetName = null;
@@ -225,6 +246,12 @@
                                                 $targetName = $log->auditable->first_name . ' ' . $log->auditable->name;
                                             } elseif ($log->auditable instanceof \App\Models\Group) {
                                                 $targetName = $log->auditable->name;
+                                            } elseif ($log->auditable instanceof \App\Models\Activity) {
+                                                $targetName = $log->auditable->title;
+                                            } elseif ($log->auditable instanceof \App\Models\Attendance) {
+                                                $targetName = ($log->auditable->activity ? $log->auditable->activity->title : 'Activité') . ($log->auditable->user ? ' — ' . $log->auditable->user->first_name . ' ' . $log->auditable->user->name : '');
+                                            } elseif ($log->auditable instanceof \App\Models\Registration) {
+                                                $targetName = ($log->auditable->activity ? $log->auditable->activity->title : 'Activité') . ($log->auditable->user ? ' — ' . $log->auditable->user->first_name . ' ' . $log->auditable->user->name : '');
                                             } elseif ($log->auditable instanceof \App\Models\Contribution && $log->auditable->user) {
                                                 $targetName = 'Cotisation de ' . $log->auditable->user->first_name . ' ' . $log->auditable->user->name;
                                             } elseif ($log->auditable instanceof \App\Models\Remittance && $log->auditable->group) {
@@ -233,6 +260,16 @@
                                                 $targetName = $log->auditable->name;
                                             } elseif (isset($log->auditable->title)) {
                                                 $targetName = $log->auditable->title;
+                                            }
+                                        }
+
+                                        // Fallback depuis les nouvelles valeurs si l'entité n'est plus liée
+                                        if (!$targetName && is_array($log->new_values)) {
+                                            if (isset($log->new_values['activity_id']) && isset($activityNames[$log->new_values['activity_id']])) {
+                                                $targetName = $activityNames[$log->new_values['activity_id']];
+                                                if (isset($log->new_values['user_id']) && isset($userNames[$log->new_values['user_id']])) {
+                                                    $targetName .= ' — ' . $userNames[$log->new_values['user_id']];
+                                                }
                                             }
                                         }
                                     @endphp
@@ -291,21 +328,23 @@
             @forelse($logs as $log)
                 @php
                     $actionConfig = match($log->action) {
-                        'created' => ['bg' => 'success-subtle', 'text' => 'success', 'icon' => 'mdi-plus-circle-outline', 'label' => 'Création'],
-                        'updated' => ['bg' => 'warning-subtle', 'text' => 'warning', 'icon' => 'mdi-pencil-outline', 'label' => 'Modification'],
-                        'validated' => ['bg' => 'success-subtle', 'text' => 'success', 'icon' => 'mdi-check-decagram', 'label' => 'Validation Versement'],
-                        'deleted' => ['bg' => 'danger-subtle', 'text' => 'danger', 'icon' => 'mdi-trash-can-outline', 'label' => 'Suppression'],
-                        'login' => ['bg' => 'info-subtle', 'text' => 'info', 'icon' => 'mdi-login', 'label' => 'Connexion'],
-                        'logout' => ['bg' => 'secondary-subtle', 'text' => 'secondary', 'icon' => 'mdi-logout', 'label' => 'Déconnexion'],
-                        default => ['bg' => 'primary-subtle', 'text' => 'primary', 'icon' => 'mdi-information-outline', 'label' => ucfirst($log->action)],
+                        'created' => ['bg' => 'success-subtle', 'text' => 'success', 'icon' => 'mdi-plus-circle-outline', 'label' => 'Création', 'extra_class' => ''],
+                        'updated' => ['bg' => 'warning-subtle', 'text' => 'warning', 'icon' => 'mdi-pencil-outline', 'label' => 'Modification', 'extra_class' => ''],
+                        'validated' => ['bg' => 'success-subtle', 'text' => 'success', 'icon' => 'mdi-check-decagram', 'label' => 'Validation Versement', 'extra_class' => ''],
+                        'deleted' => ['bg' => 'danger-subtle', 'text' => 'danger', 'icon' => 'mdi-trash-can-outline', 'label' => 'Suppression', 'extra_class' => ''],
+                        'login' => ['bg' => 'info-subtle', 'text' => 'info', 'icon' => 'mdi-login', 'label' => 'Connexion', 'extra_class' => ''],
+                        'logout' => ['bg' => 'secondary-subtle', 'text' => 'secondary', 'icon' => 'mdi-logout', 'label' => 'Déconnexion', 'extra_class' => ''],
+                        'scan_qr' => ['bg' => 'purple-subtle', 'text' => 'purple', 'icon' => 'mdi-qrcode-scan', 'label' => 'Scan QR Code', 'extra_class' => 'badge-action-scan_qr'],
+                        'export' => ['bg' => 'info-subtle', 'text' => 'info', 'icon' => 'mdi-file-export-outline', 'label' => 'Export Données', 'extra_class' => ''],
+                        default => ['bg' => 'primary-subtle', 'text' => 'primary', 'icon' => 'mdi-information-outline', 'label' => ucfirst($log->action), 'extra_class' => ''],
                     };
-                    $typeLabel = $typeLabels[$log->auditable_type] ?? class_basename($log->auditable_type);
+                    $typeLabel = $typeLabels[$log->auditable_type] ?? ($log->auditable_type ? class_basename($log->auditable_type) : ($log->action === 'scan_qr' ? 'Présence (Scan QR)' : 'Session'));
                 @endphp
                 <div class="card border-0 mb-2 mx-2 mt-2 shadow-sm rounded-3">
                     <div class="card-body p-3">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <div>
-                                <span class="badge bg-{{ $actionConfig['bg'] }} text-{{ $actionConfig['text'] }} px-2 py-1 fs-11 me-1">
+                                <span class="badge bg-{{ $actionConfig['bg'] }} text-{{ $actionConfig['text'] }} {{ $actionConfig['extra_class'] }} px-2 py-1 fs-11 me-1">
                                     <i class="mdi {{ $actionConfig['icon'] }} me-1"></i>{{ $actionConfig['label'] }}
                                 </span>
                                 <span class="fw-bold fs-13 text-body">{{ $typeLabel }}</span>
@@ -373,7 +412,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <span class="text-muted fs-12 d-block mb-1">Élément concerné</span>
-                                <strong class="text-body fs-13">{{ $typeLabels[$log->auditable_type] ?? class_basename($log->auditable_type) }}</strong>
+                                <strong class="text-body fs-13">{{ $typeLabels[$log->auditable_type] ?? ($log->auditable_type ? class_basename($log->auditable_type) : ($log->action === 'scan_qr' ? 'Présence (Scan QR)' : 'Session')) }}</strong>
                             </div>
                             <div class="col-sm-4">
                                 <span class="text-muted fs-12 d-block mb-1">Adresse IP & Appareil</span>
@@ -415,12 +454,16 @@
 
                                             $formattedKey = $fieldLabels[$key] ?? ucfirst(str_replace('_', ' ', $key));
 
-                                            $formatVal = function($k, $val) use ($userNames, $groupNames) {
+                                            $formatVal = function($k, $val) use ($userNames, $groupNames, $activityNames) {
                                                 if (is_null($val)) return '—';
                                                 if (is_bool($val)) return $val ? 'Oui' : 'Non';
 
                                                 if ($k === 'status') {
                                                     return match((string)$val) {
+                                                        'PRESENT' => 'Présent (Validé)',
+                                                        'LATE' => 'En retard',
+                                                        'ABSENT' => 'Absent',
+                                                        'ABSENT_JUSTIFIED' => 'Absent justifié',
                                                         'pending' => 'En attente de versement',
                                                         'validated' => 'Validé à la trésorerie',
                                                         'rejected' => 'Rejeté',
@@ -430,8 +473,20 @@
                                                     };
                                                 }
 
+                                                if ($k === 'scan_source') {
+                                                    return match((string)$val) {
+                                                        'qr_code' => 'Scan QR Code (Caméra)',
+                                                        'manual' => 'Pointage manuel par responsable',
+                                                        default => ucfirst((string)$val)
+                                                    };
+                                                }
+
                                                 if ($k === 'group_id') {
                                                     return $groupNames[$val] ?? "Groupe #$val";
+                                                }
+
+                                                if ($k === 'activity_id') {
+                                                    return $activityNames[$val] ?? "Activité #$val";
                                                 }
 
                                                 if (in_array($k, ['collector_id', 'leader_id', 'treasurer_id', 'user_id', 'collected_by'])) {

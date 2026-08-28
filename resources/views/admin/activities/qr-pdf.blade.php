@@ -323,25 +323,29 @@
                             <tr>
                                 @if(!empty($logoUeebBase64))
                                 <td style="padding: 0 10px 0 0; vertical-align: middle; line-height: 1;">
-                                    <img src="{{ $logoUeebBase64 }}" alt="Logo" height="28" style="vertical-align: middle;">
+                                    <img src="{{ $logoUeebBase64 }}" alt="Logo" height="32" style="vertical-align: middle;">
                                 </td>
                                 @else
-                                <td style="padding: 0 10px 0 0; vertical-align: middle; line-height: 1; font-size: 26px; color: #ffffff;">
+                                <td style="padding: 0 10px 0 0; vertical-align: middle; line-height: 1; font-size: 24px; color: #ffffff;">
                                     &#9670;
                                 </td>
                                 @endif
-                                <td style="padding: 0; vertical-align: middle; line-height: 1; font-size: 28px; font-weight: bold; color: #ffffff; letter-spacing: 2px; text-transform: uppercase;">
-                                    {{ config('app.name') }}
+                                <td style="padding: 0; vertical-align: middle; line-height: 1.1;">
+                                    <div style="font-size: 17px; font-weight: bold; color: #ffffff; letter-spacing: 1px; text-transform: uppercase;">
+                                        {{ $church->name ?? ($activity->church->name ?? config('app.name')) }}
+                                    </div>
+                                    <div style="font-size: 9px; color: #c7d2fe; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px;">
+                                        {{ ($church->city ?? $activity->church?->city) ? ($church->city ?? $activity->church?->city) . ' — ' : '' }}Système de Gestion des Présences
+                                    </div>
                                 </td>
                             </tr>
                         </table>
                     </div>
-                    <div class="org-tagline">Système de Gestion des Présences</div>
                 </td>
-                <!-- <td class="header-badge-cell">
+                <td class="header-badge-cell">
                     <div class="badge-type">&#10003; Fiche d'Émargement</div>
-                    <div class="badge-version">Document sécurisé — QR v{{ $activity->qr_version }}</div>
-                </td> -->
+                    <div class="badge-version">QR Session — {{ $activity->start_time->format('d/m/Y') }}</div>
+                </td>
             </tr>
         </table>
     </div>
@@ -369,12 +373,15 @@
 
                     <table class="info-table">
                         <tr>
-                            <td class="info-label">&#128197; Date de début</td>
-                            <td class="info-value">{{ $activity->start_time->format('d/m/Y') }} à {{ $activity->start_time->format('H:i') }}</td>
+                            <td class="info-label">&#128197; Date</td>
+                            <td class="info-value">{{ $activity->start_time->format('d/m/Y') }}</td>
                         </tr>
                         <tr>
-                            <td class="info-label">&#128336; Date de fin</td>
-                            <td class="info-value">{{ $activity->end_time->format('d/m/Y') }} à {{ $activity->end_time->format('H:i') }}</td>
+                            <td class="info-label">&#9200; Horaires</td>
+                            <td class="info-value">
+                                De {{ $activity->start_time->format('H:i') }}
+                                à {{ $activity->end_time->format('H:i') }}
+                            </td>
                         </tr>
                         @if($activity->location)
                         <tr>
@@ -446,11 +453,11 @@
         <table class="footer-table">
             <tr>
                 <td class="footer-left">
-                    <div class="footer-security">&#128274; Document généré et sécurisé par {{ config('app.name') }}</div>
-                    <div class="footer-meta">Généré le {{ now()->format('d/m/Y à H:i') }} — Ne pas reproduire sans autorisation</div>
+                    <div class="footer-security">&#128274; Document officiel émis pour {{ $church->name ?? ($activity->church->name ?? config('app.name')) }} via {{ config('app.name') }}</div>
+                    <div class="footer-meta">Généré le {{ now()->format('d/m/Y à H:i') }} — Session : {{ $activity->title }}</div>
                 </td>
                 <td class="footer-right">
-                    <span class="watermark-badge">CONFIDENTIEL</span>
+                    <span class="watermark-badge">OFFICIEL</span>
                 </td>
             </tr>
         </table>

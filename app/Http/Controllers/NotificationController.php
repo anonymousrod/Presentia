@@ -2,14 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Church;
+use App\Models\User;
+
 class NotificationController extends Controller
 {
+    /**
+     * Obtenir l'utilisateur effectif (l'administrateur de l'église cliente en mode support, sinon l'utilisateur authentifié).
+     */
+    private function getEffectiveUser(): User
+    {
+        $user = auth()->user();
+
+        if (session()->has('tenant_church_id') && $user && $user->isSuperAdmin()) {
+            $churchId = session('tenant_church_id');
+            $churchAdmin = User::withoutGlobalScopes()
+                ->where('church_id', $churchId)
+                ->whereHas('roles', fn($q) => $q->where('name', 'Administrateur'))
+                ->first() ?? User::withoutGlobalScopes()->where('church_id', $churchId)->first();
+
+            if ($churchAdmin) {
+                return $churchAdmin;
+            }
+        }
+
+        return $user;
+    }
+
     /**
      * Marquer une notification comme lue.
      */
     public function markAsRead(string $id)
     {
-        $notification = auth()->user()->notifications()->findOrFail($id);
+        $user = $this->getEffectiveUser();
+        $notification = $user->notifications()->findOrFail($id);
         $notification->markAsRead();
 
         $url = $notification->data['url'] ?? route('dashboard');
@@ -22,7 +48,8 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        $notifications = auth()->user()->notifications()->paginate(20);
+        $user = $this->getEffectiveUser();
+        $notifications = $user->notifications()->paginate(20);
         return view('notifications.index', compact('notifications'));
     }
 
@@ -31,7 +58,8 @@ class NotificationController extends Controller
      */
     public function destroy(string $id)
     {
-        $notification = auth()->user()->notifications()->findOrFail($id);
+        $user = $this->getEffectiveUser();
+        $notification = $user->notifications()->findOrFail($id);
         $notification->delete();
 
         return back()->with('success', 'Notification supprimée avec succès.');
@@ -42,7 +70,8 @@ class NotificationController extends Controller
      */
     public function destroyAll()
     {
-        auth()->user()->notifications()->delete();
+        $user = $this->getEffectiveUser();
+        $user->notifications()->delete();
 
         return back()->with('success', 'Toutes les notifications ont été supprimées.');
     }
@@ -52,7 +81,8 @@ class NotificationController extends Controller
      */
     public function markAllAsRead()
     {
-        auth()->user()->unreadNotifications->markAsRead();
+        $user = $this->getEffectiveUser();
+        $user->unreadNotifications->markAsRead();
 
         return back()->with('success', 'Toutes les notifications ont été marquées comme lues.');
     }

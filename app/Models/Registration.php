@@ -6,13 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\Auditable;
+use App\Traits\BelongsToChurch;
 
 class Registration extends Model
 {
     use HasFactory;
     use Auditable;
+    use BelongsToChurch;
 
     protected $fillable = [
+        'church_id',
         'user_id',
         'activity_id',
         'status',

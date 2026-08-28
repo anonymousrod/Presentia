@@ -37,7 +37,7 @@ class SendPasswordResetWhatsApp implements ShouldQueue
             return;
         }
 
-        $appName = config('app.name', 'Presentia');
+        $appName = config('app.name', 'MeVoici');
         $name = $this->user->first_name ?? $this->user->name ?? 'Membre';
 
         $message = "👋 *Bonjour {$name},*

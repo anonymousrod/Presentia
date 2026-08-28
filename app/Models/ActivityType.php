@@ -5,12 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasHashid;
 use App\Traits\Auditable;
+use App\Traits\BelongsToChurch;
 
 class ActivityType extends Model
 {
     use HasHashid;
     use Auditable;
-    protected $fillable = ['name', 'color'];
+    use BelongsToChurch;
+    protected $fillable = ['church_id', 'name', 'color'];
 
     public function activities()
     {

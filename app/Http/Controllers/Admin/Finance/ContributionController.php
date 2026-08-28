@@ -15,6 +15,7 @@ class ContributionController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
+        $churchId = session('tenant_church_id') ?? $user->church_id ?? null;
 
         // Si l'utilisateur peut tout voir (Trésorier/Admin), il peut choisir le groupe
         if ($user->can('finance.view_all')) {
@@ -23,9 +24,9 @@ class ContributionController extends Controller
             if ($groupId) {
                 $group = Group::find($groupId);
             } else {
-                $group = Group::first();
+                $group = Group::when($churchId, fn($q) => $q->where('church_id', $churchId))->first();
             }
-            $allGroups = Group::all();
+            $allGroups = Group::when($churchId, fn($q) => $q->where('church_id', $churchId))->orderBy('name')->get();
         } else {
             // Sinon, c'est un chargé de collecte ou un chef de groupe
             $group = $user->collectedGroups()->first() ?? $user->ledGroups()->first() ?? $user->groups()->first();
@@ -33,7 +34,7 @@ class ContributionController extends Controller
         }
 
         if (!$group) {
-            return redirect()->route('dashboard')->with('error', 'Vous n\'êtes responsable d\'aucun groupe pour la collecte.');
+            return view('admin.finance.contributions.empty');
         }
 
         // Année (toujours l'année actuelle) et Mois
@@ -189,10 +190,12 @@ class ContributionController extends Controller
         ]);
 
         $user = auth()->user();
+        $churchId = session('tenant_church_id') ?? $user->church_id ?? null;
+
         if ($user->can('finance.view_all')) {
             $groupIdHash = $request->input('group_id');
             $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
-            $group = Group::find($groupId) ?? Group::first();
+            $group = Group::find($groupId) ?? Group::when($churchId, fn($q) => $q->where('church_id', $churchId))->first();
         } else {
             $group = $user->collectedGroups()->first();
         }

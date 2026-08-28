@@ -29,6 +29,15 @@ class UserController extends Controller
 
         $query = User::query();
 
+        // Scope Multi-Tenant : Restreindre strictement aux utilisateurs de l'église active
+        if (auth()->check()) {
+            $authUser = auth()->user();
+            $activeChurchId = session('tenant_church_id') ?? $authUser->church_id;
+            if ($activeChurchId) {
+                $query->where('church_id', $activeChurchId);
+            }
+        }
+
         // Recherche textuelle
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
@@ -99,9 +108,12 @@ class UserController extends Controller
         // Notifier le nouveau membre
         $user->notify(new AccountCreatedNotification());
 
-        // Notifier les admins
-        if (\Spatie\Permission\Models\Role::where('name', 'Administrateur')->exists()) {
-            User::role('Administrateur')->each(fn ($admin) => $admin->notify(new NewMemberCreatedNotification($user)));
+        // Notifier les admins DE LA MEME EGLISE uniquement
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id ?? null;
+        if (\Spatie\Permission\Models\Role::where('name', 'Administrateur')->where('church_id', $churchId)->exists()) {
+            User::role('Administrateur')
+                ->when($churchId, fn($q) => $q->where('church_id', $churchId))
+                ->each(fn ($admin) => $admin->notify(new NewMemberCreatedNotification($user)));
         }
 
         return redirect()->route('admin.users.index')
@@ -240,7 +252,11 @@ class UserController extends Controller
     public function export(Request $request)
     {
         $this->authorize('export', User::class);
-        $query = User::with('roles', 'groups')->orderBy('name');
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id ?? null;
+
+        $query = User::with('roles', 'groups')
+            ->when($churchId, fn($q) => $q->where('church_id', $churchId))
+            ->orderBy('name');
 
         $statusFilter = null;
         if ($status = $request->input('status')) {
@@ -275,22 +291,48 @@ class UserController extends Controller
 
         $users = $query->get();
 
-        $settings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
-
-        $logoUeebPath = str_starts_with($settings->pdf_logo_1, 'assets/') ? public_path($settings->pdf_logo_1) : storage_path('app/public/' . $settings->pdf_logo_1);
-        $logoJeunessePath = str_starts_with($settings->pdf_logo_2, 'assets/') ? public_path($settings->pdf_logo_2) : storage_path('app/public/' . $settings->pdf_logo_2);
-
-        $logoUeebBase64 = '';
-        if ($settings->pdf_logo_1 && file_exists($logoUeebPath)) {
-            $logoUeebBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoUeebPath));
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
+        $church = $churchId ? \App\Models\Church::find($churchId) : auth()->user()?->church;
+        if (!$church) {
+            $church = \App\Models\Church::first();
         }
 
-        $logoJeunesseBase64 = '';
-        if ($settings->pdf_logo_2 && file_exists($logoJeunessePath)) {
-            $logoJeunesseBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoJeunessePath));
+        $settings = $church ? \App\Models\AppSetting::where('church_id', $church->id)->first() : null;
+        if (!$settings) {
+            $settings = \App\Models\AppSetting::find(1);
         }
 
-        $pdf = Pdf::loadView('admin.users.pdf', compact('users', 'statusFilter', 'searchQuery', 'directoryFilter', 'logoUeebBase64', 'logoJeunesseBase64'));
-        return $pdf->download("Liste_Membres_" . now()->format('Ymd-His') . ".pdf");
+        $logo1Path = $settings?->pdf_logo_1 ?: ($church?->logo_path ?: ($settings?->logo_dark ?: 'assets/images/Icone J-EBER.png'));
+        $logo2Path = $settings?->pdf_logo_2 ?: 'assets/images/logo-jeunesse-etoile-rouge.png';
+
+        $logoUeebBase64 = $this->getLogoBase64($logo1Path);
+        $logoJeunesseBase64 = $this->getLogoBase64($logo2Path);
+
+        $pdf = Pdf::loadView('admin.users.pdf', compact('users', 'statusFilter', 'searchQuery', 'directoryFilter', 'logoUeebBase64', 'logoJeunesseBase64', 'church'));
+        $churchSlug = $church ? Str::slug($church->name) . '_' : '';
+        return $pdf->download("Liste_Membres_{$churchSlug}" . now()->format('Ymd-His') . ".pdf");
+    }
+
+    private function getLogoBase64(?string $path): string
+    {
+        if (!$path) return '';
+
+        $fullPath = null;
+        if (file_exists(public_path($path))) {
+            $fullPath = public_path($path);
+        } elseif (file_exists(public_path('storage/' . $path))) {
+            $fullPath = public_path('storage/' . $path);
+        } elseif (file_exists(storage_path('app/public/' . $path))) {
+            $fullPath = storage_path('app/public/' . $path);
+        } elseif (file_exists(public_path('assets/images/' . basename($path)))) {
+            $fullPath = public_path('assets/images/' . basename($path));
+        }
+
+        if ($fullPath && file_exists($fullPath)) {
+            $mime = @mime_content_type($fullPath) ?: 'image/png';
+            return 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($fullPath));
+        }
+
+        return '';
     }
 }

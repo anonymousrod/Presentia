@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\Auditable;
 use App\Traits\HasHashid;
+use App\Traits\BelongsToChurch;
 
 class Activity extends Model
 {
@@ -16,8 +17,10 @@ class Activity extends Model
     use HasHashid;
     use SoftDeletes;
     use Auditable;
+    use BelongsToChurch;
 
     protected $fillable = [
+        'church_id',
         'title',
         'description',
         'activity_type_id',

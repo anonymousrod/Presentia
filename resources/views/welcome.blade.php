@@ -459,23 +459,30 @@
                 <p class="text-muted mt-2">Découvrez l'équipe dirigeante de notre jeunesse.</p>
             </div>
             <div class="row justify-content-center g-3 g-md-4">
-                @foreach($leaders as $leader)
+                @forelse($leaders as $leader)
                     <div class="col-6 col-md-4 col-xl-3 mb-3">
-                        <div class="card org-card h-100">
-                            <div class="org-img-wrapper">
+                        <div class="card org-card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+                            <div class="org-img-wrapper" style="height: 220px; overflow: hidden; background: #f3f6f9;">
                                 @php
                                     $photoUrl = $leader->photo ? asset('storage/' . $leader->photo) : asset('assets/images/home/user-placeholder.jpg');
                                 @endphp
-                                <img src="{{ $photoUrl }}" class="org-img" alt="{{ $leader->name }}">
+                                <img src="{{ $photoUrl }}" class="org-img w-100 h-100" style="object-fit: cover;" alt="{{ $leader->first_name }} {{ $leader->name }}">
                             </div>
                             <div class="card-body text-center p-3 p-md-4">
                                 <h5 class="fw-bold mb-1 fs-14 fs-md-16">{{ $leader->first_name }} {{ $leader->name }}</h5>
                                 <div class="d-flex flex-wrap justify-content-center gap-1 mb-2">
                                     @foreach($leader->roles as $role)
-                                        @if(in_array($role->name, ['Administrateur', 'Président', 'Vice Président', 'Membre du bureau']))
-                                            <span class="badge bg-primary-subtle text-primary mb-1 fs-10 fs-md-12">{{ $role->name == 'Administrateur' ? 'Président' : $role->name }}</span>
+                                        @if(in_array($role->name, ['Super Admin', 'Administrateur', 'Président', 'Vice-président', 'Vice Président', 'Secrétaire Général', 'Trésorier Général', 'Membre du bureau', 'Pasteur']))
+                                            @php
+                                                $displayRoleName = match($role->name) {
+                                                    'Super Admin' => 'Administrateur',
+                                                    'Administrateur' => 'Président',
+                                                    default => $role->name
+                                                };
+                                            @endphp
+                                            <span class="badge bg-primary-subtle text-primary mb-1 fs-11 px-2 py-1 rounded-pill fw-semibold">{{ $displayRoleName }}</span>
                                             @if($role->description)
-                                                <p class="text-muted fs-12 fs-md-13 mb-0 text-center">{{ $role->description }}</p>
+                                                <p class="text-muted fs-12 mb-0 text-center w-100">{{ $role->description }}</p>
                                             @endif
                                         @endif
                                     @endforeach
@@ -483,7 +490,11 @@
                             </div>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <div class="col-12 text-center py-4">
+                        <p class="text-muted fs-14">L'équipe dirigeante sera affichée très prochainement.</p>
+                    </div>
+                @endforelse
             </div>
         </section>
 

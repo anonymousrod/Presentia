@@ -15,6 +15,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Traits\Auditable;
 use App\Traits\HasHashid;
+use App\Traits\BelongsToChurch;
 
 class User extends Authenticatable
 {
@@ -30,7 +31,25 @@ class User extends Authenticatable
      */
     public ?string $plain_password = null;
 
+    protected static function booted(): void
+    {
+        static::creating(function ($user) {
+            if (empty($user->church_id)) {
+                $effectiveChurchId = session('tenant_church_id') ?? (auth()->check() ? auth()->user()?->church_id : null);
+                if ($effectiveChurchId) {
+                    $user->church_id = $effectiveChurchId;
+                }
+            }
+        });
+    }
+
+    public function church(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Church::class);
+    }
+
     protected $fillable = [
+        'church_id',
         'name',
         'first_name',
         'phone',
@@ -211,4 +230,16 @@ class User extends Authenticatable
         return asset('storage/' . $settings->default_avatar);
     }
 
+    /**
+     * Vérifie si l'utilisateur est le Super Administrateur de la plateforme.
+     */
+    public function isSuperAdmin(): bool
+    {
+        return \Illuminate\Support\Facades\DB::table('model_has_roles')
+            ->where('model_id', $this->id)
+            ->where('model_type', static::class)
+            ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+            ->where('roles.name', 'Super Admin')
+            ->exists();
+    }
 }

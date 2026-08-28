@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use Spatie\Permission\Models\Role;
+use App\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\User;
 use Spatie\Permission\PermissionRegistrar;
@@ -17,11 +17,18 @@ class PermissionService
     }
 
     /**
-     * Crée un nouveau rôle Spatie et lui synchronise les permissions indiquées.
+     * Crée un nouveau rôle Spatie rattaché à l'église courante et lui synchronise les permissions indiquées.
      */
-    public function createRole(string $name, ?string $description, array $permissionNames): Role
+    public function createRole(string $name, ?string $description, array $permissionNames, ?int $churchId = null): Role
     {
-        $role = Role::create(['name' => $name, 'description' => $description, 'guard_name' => 'web']);
+        $churchId = $churchId ?? session('tenant_church_id') ?? auth()->user()?->church_id ?? null;
+
+        $role = Role::create([
+            'church_id'   => $churchId,
+            'name'        => $name,
+            'description' => $description,
+            'guard_name'  => 'web'
+        ]);
         $role->syncPermissions($permissionNames);
 
         $this->clearCache();
@@ -65,17 +72,18 @@ class PermissionService
     }
 
     /**
-     * Synchronise les rôles de l'utilisateur.
+     * Synchronise les rôles de l'utilisateur dans son église.
      */
     public function syncUserRoles(User $user, array $roleNames): void
     {
-        $defaultRole = Role::where('code', 'default_user')->first();
+        $churchId = $user->church_id;
+        $defaultRole = Role::where('church_id', $churchId)->where('code', 'default_user')->first();
         if ($defaultRole && !in_array($defaultRole->name, $roleNames)) {
             $roleNames[] = $defaultRole->name;
         }
 
-        // Préserver le rôle 'Chef de groupe' s'il l'a déjà (il est géré automatiquement, pas via l'interface)
-        $groupLeaderRole = Role::where('code', 'group_leader')->first();
+        // Préserver le rôle 'Chef de groupe' s'il l'a déjà
+        $groupLeaderRole = Role::where('church_id', $churchId)->where('code', 'group_leader')->first();
         if ($groupLeaderRole && $user->hasRole($groupLeaderRole->name) && !in_array($groupLeaderRole->name, $roleNames)) {
             $roleNames[] = $groupLeaderRole->name;
         }

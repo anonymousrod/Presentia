@@ -30,7 +30,10 @@ class AuditService
     public static function log(string $action, ?Model $model = null, ?array $oldValues = null, ?array $newValues = null): void
     {
         try {
+            $churchId = session('tenant_church_id') ?? ($model && isset($model->church_id) ? $model->church_id : Auth::user()?->church_id);
+
             AuditLog::create([
+                'church_id'      => $churchId,
                 'user_id'        => Auth::id(),
                 'action'         => $action,
                 'auditable_type' => $model ? get_class($model) : null,

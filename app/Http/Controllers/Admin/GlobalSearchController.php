@@ -20,11 +20,20 @@ class GlobalSearchController extends Controller
 
         $results = [];
 
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
+
         // Recherche des Utilisateurs (Membres)
         if (auth()->user()->can('manage-users')) {
-            $users = User::where('name', 'LIKE', "%{$query}%")
-                ->orWhere('first_name', 'LIKE', "%{$query}%")
-                ->orWhere('email', 'LIKE', "%{$query}%")
+            $usersQuery = User::query();
+            if ($churchId) {
+                $usersQuery->where('church_id', $churchId);
+            }
+
+            $users = $usersQuery->where(function ($q) use ($query) {
+                    $q->where('name', 'LIKE', "%{$query}%")
+                      ->orWhere('first_name', 'LIKE', "%{$query}%")
+                      ->orWhere('email', 'LIKE', "%{$query}%");
+                })
                 ->limit(5)
                 ->get()
                 ->map(function ($user) {

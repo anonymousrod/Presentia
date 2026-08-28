@@ -160,3 +160,35 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::post('remittances/{remittance}/validate', [App\Http\Controllers\Admin\Finance\RemittanceController::class, 'validateRemittance'])->name('remittances.validate')->middleware('can:remittance.validate');
     });
 });
+
+// Page d'information pour abonnement expiré
+Route::middleware(['auth'])->get('/subscription-expired', function () {
+    $user = auth()->user();
+    $church = $user->church;
+    return view('pages.subscription-expired', compact('church'));
+})->name('subscription.expired');
+
+// =========================================================================
+// PORTAIL SUPER ADMINISTRATEUR (GESTION SAAS MULTI-ÉGLISES & ABONNEMENTS)
+// =========================================================================
+Route::middleware(['auth', 'super_admin'])->prefix('super-admin')->name('super-admin.')->group(function () {
+    Route::get('/', [App\Http\Controllers\SuperAdmin\SaaSOverviewController::class, 'index'])->name('dashboard');
+
+    // Gestion des Églises
+    Route::get('churches', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'index'])->name('churches.index');
+    Route::get('churches/create', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'create'])->name('churches.create');
+    Route::post('churches', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'store'])->name('churches.store');
+    Route::get('churches/{church}', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'show'])->name('churches.show');
+    Route::get('churches/{church}/edit', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'edit'])->name('churches.edit');
+    Route::put('churches/{church}', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'update'])->name('churches.update');
+    Route::delete('churches/{church}', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'destroy'])->name('churches.destroy');
+
+    // Renouvellement d'abonnement 1 An
+    Route::get('churches/{church}/renew', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'renewForm'])->name('churches.renew.form');
+    Route::post('churches/{church}/renew', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'renew'])->name('churches.renew');
+
+    // Activer / Suspendre & Support
+    Route::post('churches/{church}/toggle-status', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'toggleStatus'])->name('churches.toggle-status');
+    Route::get('churches/{church}/impersonate', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'impersonate'])->name('churches.impersonate');
+    Route::get('leave-impersonation', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'leaveImpersonation'])->name('leave-impersonation');
+});

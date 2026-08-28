@@ -11,7 +11,13 @@ class AppSetting extends Model
     use HasFactory;
     use Auditable;
 
+    public function church(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Church::class);
+    }
+
     protected $fillable = [
+        'church_id',
         'favicon',
         'logo_sm',
         'logo_dark',

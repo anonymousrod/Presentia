@@ -10,15 +10,22 @@ use App\Traits\OptimizesImages;
 class AppSettingController extends Controller
 {
     use OptimizesImages;
+    protected function getActiveChurchId(): int
+    {
+        return session('tenant_church_id') ?? auth()->user()?->church_id ?? 1;
+    }
+
     public function edit()
     {
-        $setting = AppSetting::firstOrCreate(['id' => 1]);
+        $churchId = $this->getActiveChurchId();
+        $setting = AppSetting::firstOrCreate(['church_id' => $churchId]);
         return view('admin.settings.edit', compact('setting'));
     }
 
     public function update(Request $request)
     {
-        $setting = AppSetting::firstOrCreate(['id' => 1]);
+        $churchId = $this->getActiveChurchId();
+        $setting = AppSetting::firstOrCreate(['church_id' => $churchId]);
 
         $fields = [
             'favicon',

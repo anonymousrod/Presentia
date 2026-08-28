@@ -18,24 +18,27 @@ class StatisticsController extends Controller
      */
     public function index()
     {
-        $activityTypes = ActivityType::orderBy('name')->get();
-        $groups = Group::orderBy('name')->get();
+        $activityTypes = ActivityType::orderBy('name')->get(); // scoped via BelongsToChurch
+        $groups = Group::orderBy('name')->get();               // scoped via BelongsToChurch
         $years = Activity::selectRaw('YEAR(start_time) as year')
             ->where('status', 'PUBLISHED')
             ->whereNotNull('start_time')
             ->distinct()
             ->orderByDesc('year')
-            ->pluck('year');
+            ->pluck('year');                                   // scoped via BelongsToChurch
 
         // KPIs rapides
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
+
         $totalMembers = DB::table('group_members')
-            ->whereNull('left_at')
-            ->distinct('user_id')
-            ->count('user_id');
+            ->join('groups', 'group_members.group_id', '=', 'groups.id')
+            ->whereNull('group_members.left_at')
+            ->when($churchId, fn($q) => $q->where('groups.church_id', $churchId))
+            ->distinct('group_members.user_id')
+            ->count('group_members.user_id');
 
-        $totalGroups = Group::count();
-
-        $totalActivities = Activity::where('status', 'PUBLISHED')->count();
+        $totalGroups = Group::count();       // scoped via BelongsToChurch
+        $totalActivities = Activity::where('status', 'PUBLISHED')->count(); // scoped
 
         return view('admin.statistics.index', compact(
             'activityTypes',
@@ -203,7 +206,8 @@ class StatisticsController extends Controller
         $totalSessions = $activityIds->count();
 
         // Récupérer les membres de groupes avec leurs présences
-        $data = DB::table('group_members')
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
+        $dataQuery = DB::table('group_members')
             ->join('users', 'users.id', '=', 'group_members.user_id')
             ->join('groups', 'groups.id', '=', 'group_members.group_id')
             ->leftJoin('attendances', function ($join) use ($activityIds) {
@@ -212,8 +216,13 @@ class StatisticsController extends Controller
                     ->whereIn('attendances.status', ['PRESENT', 'LATE']);
             })
             ->whereNull('group_members.left_at')
-            ->whereNull('users.deleted_at')
-            ->select(
+            ->whereNull('users.deleted_at');
+
+        if ($churchId) {
+            $dataQuery->where('groups.church_id', $churchId);
+        }
+
+        $data = $dataQuery->select(
                 'users.id',
                 DB::raw("CONCAT(UPPER(users.name), ' ', users.first_name) as full_name"),
                 'groups.name as group_name',
@@ -290,6 +299,7 @@ class StatisticsController extends Controller
     public function group(Request $request)
     {
         $user = auth()->user();
+        $churchId = session('tenant_church_id') ?? $user->church_id ?? null;
         $isGlobal = $user->can('stats.view_global');
 
         if (!$isGlobal && !$user->can('stats.view_own_group')) {
@@ -298,7 +308,7 @@ class StatisticsController extends Controller
 
         $groups = collect();
         if ($isGlobal) {
-            $groups = Group::orderBy('name')->get();
+            $groups = Group::when($churchId, fn($q) => $q->where('church_id', $churchId))->orderBy('name')->get();
             $groupIdHash = $request->input('group_id');
             $groupId = $groupIdHash ? decode_id($groupIdHash) : $groups->first()?->id;
         } else {
@@ -306,7 +316,7 @@ class StatisticsController extends Controller
         }
 
         if (!$groupId) {
-            return redirect()->route('dashboard')->with('error', 'Aucun groupe trouvé.');
+            return view('admin.statistics.group-empty', compact('isGlobal'));
         }
 
         $group = Group::withCount(['members' => function ($q) {

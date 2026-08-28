@@ -80,19 +80,40 @@ class QrCodeController extends Controller
 
         $qrCodeDataUri = $result->getDataUri();
 
-        $settings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
+        $church = $activity->church ?? (session('tenant_church_id') ? \App\Models\Church::find(session('tenant_church_id')) : auth()->user()?->church) ?? \App\Models\Church::first();
 
-        $logoName = $settings->pdf_logo_1 ?: 'Icone J-EBER.png';
-        $logoUeebPath = str_starts_with($logoName, 'assets/') || $logoName === 'Icone J-EBER.png'
-            ? public_path('assets/images/' . str_replace('assets/images/', '', $logoName))
-            : storage_path('app/public/' . $logoName);
-
-        $logoUeebBase64 = '';
-        if (file_exists($logoUeebPath)) {
-            $logoUeebBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoUeebPath));
+        $settings = $church ? \App\Models\AppSetting::where('church_id', $church->id)->first() : null;
+        if (!$settings) {
+            $settings = \App\Models\AppSetting::find(1);
         }
 
-        $pdf = Pdf::loadView('admin.activities.qr-pdf', compact('activity', 'qrCodeDataUri', 'logoUeebBase64'));
+        $logo1Path = $settings?->pdf_logo_1 ?: ($church?->logo_path ?: ($settings?->logo_dark ?: 'assets/images/Icone J-EBER.png'));
+        $logoUeebBase64 = $this->getLogoBase64($logo1Path);
+
+        $pdf = Pdf::loadView('admin.activities.qr-pdf', compact('activity', 'qrCodeDataUri', 'logoUeebBase64', 'church'));
         return $pdf->download("QR_Code_{$activity->id}_{$activity->title}.pdf");
+    }
+
+    private function getLogoBase64(?string $path): string
+    {
+        if (!$path) return '';
+
+        $fullPath = null;
+        if (file_exists(public_path($path))) {
+            $fullPath = public_path($path);
+        } elseif (file_exists(public_path('storage/' . $path))) {
+            $fullPath = public_path('storage/' . $path);
+        } elseif (file_exists(storage_path('app/public/' . $path))) {
+            $fullPath = storage_path('app/public/' . $path);
+        } elseif (file_exists(public_path('assets/images/' . basename($path)))) {
+            $fullPath = public_path('assets/images/' . basename($path));
+        }
+
+        if ($fullPath && file_exists($fullPath)) {
+            $mime = @mime_content_type($fullPath) ?: 'image/png';
+            return 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($fullPath));
+        }
+
+        return '';
     }
 }

@@ -14,6 +14,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->appendToGroup('web', \App\Http\Middleware\ForcePasswordChange::class);
         $middleware->appendToGroup('web', \App\Http\Middleware\AuditRequestMiddleware::class);
+        $middleware->appendToGroup('web', \App\Http\Middleware\CheckChurchSubscription::class);
+        $middleware->alias([
+            'super_admin' => \App\Http\Middleware\EnsureUserIsSuperAdmin::class,
+            'subscription.active' => \App\Http\Middleware\CheckChurchSubscription::class,
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

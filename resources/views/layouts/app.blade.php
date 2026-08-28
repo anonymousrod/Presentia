@@ -87,6 +87,7 @@
     @include('layouts.partials.afterfooter')
     @include('layouts.partials.scripts')
     @stack('scripts')
+    @stack('js')
 </body>
     
 </html>

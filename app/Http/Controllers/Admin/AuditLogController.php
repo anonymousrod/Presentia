@@ -45,24 +45,33 @@ class AuditLogController extends Controller
         $logs = $query->paginate(20)->withQueryString();
 
         // Liste des utilisateurs pour le filtre
-        $users = User::orderBy('first_name')->orderBy('name')->get();
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
+        $users = User::when($churchId, fn($q) => $q->where('church_id', $churchId))
+            ->orderBy('first_name')->orderBy('name')
+            ->get();
 
         // Types d'entités auditées principales avec noms explicites
         $auditableTypes = [
             'App\Models\User' => 'Membres / Utilisateurs',
             'App\Models\Group' => 'Groupes',
-            'App\Models\Contribution' => 'Cotisations',
-            'App\Models\Remittance' => 'Versements Trésorerie',
             'App\Models\Activity' => 'Activités',
             'App\Models\ActivityType' => 'Types d\'activité',
+            'App\Models\Attendance' => 'Présences / Émargements (QR Code)',
+            'App\Models\Registration' => 'Inscriptions aux activités',
+            'App\Models\Contribution' => 'Cotisations financières',
+            'App\Models\Remittance' => 'Versements Trésorerie',
             'App\Models\AppSetting' => 'Paramètres de l\'application',
             'App\Models\Gallery' => 'Galerie Médias',
             'App\Models\ScheduledNotification' => 'Notifications programmées',
+            'App\Models\Role' => 'Rôles & Permissions',
+            'App\Models\Church' => 'Églises',
+            'App\Models\Subscription' => 'Abonnements SaaS',
         ];
 
-        $userNames = User::all()->mapWithKeys(fn ($u) => [$u->id => trim($u->first_name . ' ' . $u->name)]);
-        $groupNames = \App\Models\Group::all()->pluck('name', 'id');
+        $userNames = $users->mapWithKeys(fn ($u) => [$u->id => trim($u->first_name . ' ' . $u->name)]);
+        $groupNames = \App\Models\Group::all()->pluck('name', 'id'); // scoped via BelongsToChurch
+        $activityNames = \App\Models\Activity::all()->pluck('title', 'id'); // scoped via BelongsToChurch
 
-        return view('admin.audit-logs.index', compact('logs', 'users', 'auditableTypes', 'userNames', 'groupNames'));
+        return view('admin.audit-logs.index', compact('logs', 'users', 'auditableTypes', 'userNames', 'groupNames', 'activityNames'));
     }
 }

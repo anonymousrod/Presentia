@@ -29,8 +29,15 @@ class ActivityTypeController extends Controller
      */
     public function store(Request $request)
     {
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
+
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:activity_types',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                \Illuminate\Validation\Rule::unique('activity_types', 'name')->where('church_id', $churchId)
+            ],
             'color' => 'required|string|size:7|starts_with:#',
         ]);
 
@@ -53,8 +60,15 @@ class ActivityTypeController extends Controller
      */
     public function update(Request $request, \App\Models\ActivityType $activityType)
     {
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
+
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:activity_types,name,' . $activityType->id,
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                \Illuminate\Validation\Rule::unique('activity_types', 'name')->where('church_id', $churchId)->ignore($activityType->id)
+            ],
             'color' => 'required|string|size:7|starts_with:#',
         ]);
 

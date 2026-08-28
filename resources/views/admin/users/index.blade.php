@@ -167,9 +167,15 @@
                                         @endif
                                         <div>
                                             <h6 class="mb-0 fw-semibold fs-14">{{ $user->first_name }} {{ $user->name }}</h6>
-                                            @if($user->hasRole('admin'))
-                                                <span class="badge bg-danger-subtle text-danger rounded-pill mt-1" style="font-size:0.65rem;"><i class="mdi mdi-shield-account me-1"></i>Admin</span>
-                                            @endif
+                                            <div class="d-flex flex-wrap gap-1 mt-1">
+                                                @forelse($user->getRoleNames() as $rName)
+                                                    <span class="badge bg-{{ in_array($rName, ['Administrateur', 'Admin', 'Super Admin']) ? 'danger' : ($rName === 'Trésorier Général' ? 'success' : 'primary') }}-subtle text-{{ in_array($rName, ['Administrateur', 'Admin', 'Super Admin']) ? 'danger' : ($rName === 'Trésorier Général' ? 'success' : 'primary') }} rounded-pill" style="font-size:0.68rem;">
+                                                        <i class="mdi mdi-shield-account me-1"></i>{{ $rName }}
+                                                    </span>
+                                                @empty
+                                                    <span class="badge bg-secondary-subtle text-secondary rounded-pill" style="font-size:0.68rem;">Membre</span>
+                                                @endforelse
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -266,6 +272,15 @@
                                 </div>
                                 <div class="mb-3 ps-{{ auth()->user()->can('member.edit') ? '4' : '0' }} ms-{{ auth()->user()->can('member.edit') ? '3' : '0' }}">
                                     <h6 class="fw-bold mb-1 fs-15">{{ $user->first_name }} {{ $user->name }}</h6>
+                                    <div class="d-flex flex-wrap gap-1 mb-2">
+                                        @forelse($user->getRoleNames() as $rName)
+                                            <span class="badge bg-{{ in_array($rName, ['Administrateur', 'Admin', 'Super Admin']) ? 'danger' : ($rName === 'Trésorier Général' ? 'success' : 'primary') }}-subtle text-{{ in_array($rName, ['Administrateur', 'Admin', 'Super Admin']) ? 'danger' : ($rName === 'Trésorier Général' ? 'success' : 'primary') }} rounded-pill" style="font-size:0.68rem;">
+                                                <i class="mdi mdi-shield-account me-1"></i>{{ $rName }}
+                                            </span>
+                                        @empty
+                                            <span class="badge bg-secondary-subtle text-secondary rounded-pill" style="font-size:0.68rem;">Membre</span>
+                                        @endforelse
+                                    </div>
                                     <div class="bg-light rounded-2 p-2 mt-2 fs-13 text-muted d-flex flex-column gap-1">
                                         @if($user->email)
                                         <div><i class="mdi mdi-email-outline me-1"></i>{{ $user->email }}</div>

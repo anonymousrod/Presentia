@@ -345,17 +345,17 @@
         <table class="header-table">
             <tr>
                 <td class="header-logo-left">
-                    @if($logoUeebBase64)
-                        <img src="{{ $logoUeebBase64 }}" alt="UEEB">
+                    @if(!empty($logoUeebBase64))
+                        <img src="{{ $logoUeebBase64 }}" alt="Logo">
                     @endif
                 </td>
                 <td class="header-title-center">
-                    <div class="org-name">Eglise Baptiste de l'Etoile Rouge</div>
-                    <div class="dept-name">Département de la Jeunesse</div>
+                    <div class="org-name">{{ $church->name ?? ($activity->church->name ?? 'Église Locale') }}</div>
+                    <div class="dept-name">{{ ($church->city ?? $activity->church?->city) ? ($church->city ?? $activity->church?->city) . ' — ' : '' }}Gestion des Présences</div>
                 </td>
                 <td class="header-logo-right">
-                    @if($logoJeunesseBase64)
-                        <img src="{{ $logoJeunesseBase64 }}" alt="Jeunesse Etoile Rouge">
+                    @if(!empty($logoJeunesseBase64))
+                        <img src="{{ $logoJeunesseBase64 }}" alt="Logo">
                     @endif
                 </td>
             </tr>
@@ -383,7 +383,7 @@
                 </td>
                 <td style="width:25%;">
                     <span class="label">Lieu</span>
-                    {{ $activity->location ?: 'EB Étoile Rouge' }}
+                    {{ $activity->location ?: ($church->name ?? 'Église Locale') }}
                 </td>
                 <td style="width:25%;">
                     <span class="label">Responsable</span>
@@ -460,11 +460,11 @@
         <table class="footer-inner">
             <tr>
                 <td class="footer-left">
-                    <span class="cert-text">Ce document officiel a été généré électroniquement et certifié conforme par la plateforme de gestion <strong>{{ config('app.name') }}</strong>.</span>
+                    <span class="cert-text">Ce document officiel a été généré électroniquement pour <strong>{{ $church->name ?? ($activity->church->name ?? config('app.name')) }}</strong> et certifié conforme via la plateforme <strong>{{ config('app.name') }}</strong>.</span>
                 </td>
                 <td class="footer-right">
                     Généré le {{ now()->format('d/m/Y à H:i') }}<br>
-                    Liste de présence — {{ $activity->title }}
+                    {{ $church->name ?? ($activity->church->name ?? config('app.name')) }} — {{ $activity->title }}
                 </td>
             </tr>
         </table>

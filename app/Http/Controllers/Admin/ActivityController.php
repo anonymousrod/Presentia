@@ -21,6 +21,14 @@ class ActivityController extends Controller
     use OptimizesImages;
 
     /**
+     * Retourne le church_id actif (support mode ou utilisateur normal).
+     */
+    protected function getActiveChurchId(): ?int
+    {
+        return session('tenant_church_id') ?? auth()->user()?->church_id ?? null;
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
@@ -55,9 +63,12 @@ class ActivityController extends Controller
     {
         $this->authorize('create', Activity::class);
 
-        $responsibles = User::all();
-        $groups = Group::all();
-        $roles = Role::all();
+        $churchId = $this->getActiveChurchId();
+        $responsibles = User::when($churchId, fn($q) => $q->where('church_id', $churchId))
+            ->orderBy('name')->get();
+        $groups = Group::orderBy('name')->get();
+        $roles = Role::when($churchId, fn($q) => $q->where('church_id', $churchId))
+            ->orderBy('name')->get();
 
         $activityTypes = ActivityType::orderBy('name')->get();
 
@@ -135,22 +146,20 @@ class ActivityController extends Controller
             ->select('registrations.*')
             ->get();
 
-        $settings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
+        $church = $activity->church ?? (session('tenant_church_id') ? \App\Models\Church::find(session('tenant_church_id')) : auth()->user()?->church) ?? \App\Models\Church::first();
 
-        $logoUeebPath = str_starts_with($settings->pdf_logo_1, 'assets/') ? public_path($settings->pdf_logo_1) : storage_path('app/public/' . $settings->pdf_logo_1);
-        $logoJeunessePath = str_starts_with($settings->pdf_logo_2, 'assets/') ? public_path($settings->pdf_logo_2) : storage_path('app/public/' . $settings->pdf_logo_2);
-
-        $logoUeebBase64 = '';
-        if ($settings->pdf_logo_1 && file_exists($logoUeebPath)) {
-            $logoUeebBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoUeebPath));
+        $settings = $church ? \App\Models\AppSetting::where('church_id', $church->id)->first() : null;
+        if (!$settings) {
+            $settings = \App\Models\AppSetting::find(1);
         }
 
-        $logoJeunesseBase64 = '';
-        if ($settings->pdf_logo_2 && file_exists($logoJeunessePath)) {
-            $logoJeunesseBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoJeunessePath));
-        }
+        $logo1Path = $settings?->pdf_logo_1 ?: ($church?->logo_path ?: ($settings?->logo_dark ?: 'assets/images/Icone J-EBER.png'));
+        $logo2Path = $settings?->pdf_logo_2 ?: 'assets/images/logo-jeunesse-etoile-rouge.png';
 
-        $pdf = Pdf::loadView('admin.activities.registrations-pdf', compact('activity', 'registrations', 'logoUeebBase64', 'logoJeunesseBase64'));
+        $logoUeebBase64 = $this->getLogoBase64($logo1Path);
+        $logoJeunesseBase64 = $this->getLogoBase64($logo2Path);
+
+        $pdf = Pdf::loadView('admin.activities.registrations-pdf', compact('activity', 'registrations', 'logoUeebBase64', 'logoJeunesseBase64', 'church'));
         return $pdf->download("Liste_Inscriptions_{$activity->id}_{$activity->title}.pdf");
     }
 
@@ -161,7 +170,7 @@ class ActivityController extends Controller
     {
         $this->authorize('view', $activity);
 
-        $activity->load(['responsible', 'group', 'role', 'attendances.user.groups']);
+        $activity->load(['responsible', 'group', 'role', 'attendances.user.groups', 'church']);
 
         // Retrieve valid attendances (Present or Late or Excused or Absent)
         $attendances = $activity->attendances()
@@ -171,23 +180,44 @@ class ActivityController extends Controller
             ->select('attendances.*')
             ->get();
 
-        $settings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
+        $church = $activity->church ?? (session('tenant_church_id') ? \App\Models\Church::find(session('tenant_church_id')) : auth()->user()?->church) ?? \App\Models\Church::first();
 
-        $logoUeebPath = str_starts_with($settings->pdf_logo_1, 'assets/') ? public_path($settings->pdf_logo_1) : storage_path('app/public/' . $settings->pdf_logo_1);
-        $logoJeunessePath = str_starts_with($settings->pdf_logo_2, 'assets/') ? public_path($settings->pdf_logo_2) : storage_path('app/public/' . $settings->pdf_logo_2);
-
-        $logoUeebBase64 = '';
-        if ($settings->pdf_logo_1 && file_exists($logoUeebPath)) {
-            $logoUeebBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoUeebPath));
+        $settings = $church ? \App\Models\AppSetting::where('church_id', $church->id)->first() : null;
+        if (!$settings) {
+            $settings = \App\Models\AppSetting::find(1);
         }
 
-        $logoJeunesseBase64 = '';
-        if ($settings->pdf_logo_2 && file_exists($logoJeunessePath)) {
-            $logoJeunesseBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoJeunessePath));
-        }
+        $logo1Path = $settings?->pdf_logo_1 ?: ($church?->logo_path ?: ($settings?->logo_dark ?: 'assets/images/Icone J-EBER.png'));
+        $logo2Path = $settings?->pdf_logo_2 ?: 'assets/images/logo-jeunesse-etoile-rouge.png';
 
-        $pdf = Pdf::loadView('admin.activities.attendance-pdf', compact('activity', 'attendances', 'logoUeebBase64', 'logoJeunesseBase64'));
+        $logoUeebBase64 = $this->getLogoBase64($logo1Path);
+        $logoJeunesseBase64 = $this->getLogoBase64($logo2Path);
+
+        $pdf = Pdf::loadView('admin.activities.attendance-pdf', compact('activity', 'attendances', 'logoUeebBase64', 'logoJeunesseBase64', 'church'));
         return $pdf->download("Liste_Presence_{$activity->id}_{$activity->title}.pdf");
+    }
+
+    private function getLogoBase64(?string $path): string
+    {
+        if (!$path) return '';
+
+        $fullPath = null;
+        if (file_exists(public_path($path))) {
+            $fullPath = public_path($path);
+        } elseif (file_exists(public_path('storage/' . $path))) {
+            $fullPath = public_path('storage/' . $path);
+        } elseif (file_exists(storage_path('app/public/' . $path))) {
+            $fullPath = storage_path('app/public/' . $path);
+        } elseif (file_exists(public_path('assets/images/' . basename($path)))) {
+            $fullPath = public_path('assets/images/' . basename($path));
+        }
+
+        if ($fullPath && file_exists($fullPath)) {
+            $mime = @mime_content_type($fullPath) ?: 'image/png';
+            return 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($fullPath));
+        }
+
+        return '';
     }
 
     /**
@@ -197,9 +227,12 @@ class ActivityController extends Controller
     {
         $this->authorize('update', $activity);
 
-        $responsibles = User::all();
-        $groups = Group::all();
-        $roles = Role::all();
+        $churchId = $this->getActiveChurchId();
+        $responsibles = User::when($churchId, fn($q) => $q->where('church_id', $churchId))
+            ->orderBy('name')->get();
+        $groups = Group::orderBy('name')->get();
+        $roles = Role::when($churchId, fn($q) => $q->where('church_id', $churchId))
+            ->orderBy('name')->get();
 
         $activityTypes = ActivityType::orderBy('name')->get();
 

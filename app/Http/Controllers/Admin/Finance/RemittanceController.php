@@ -15,6 +15,7 @@ class RemittanceController extends Controller
 {
     public function index(Request $request)
     {
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id ?? null;
         $query = Remittance::with(['collector', 'group', 'treasurer']);
 
         $groupId = $request->filled('group_id') ? decode_id($request->group_id) : null;
@@ -39,7 +40,8 @@ class RemittanceController extends Controller
 
         $remittances = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
 
-        $groups = Group::orderBy('name')->get();
+        $groups = Group::when($churchId, fn($q) => $q->where('church_id', $churchId))
+            ->orderBy('name')->get();
 
         // Sommes financières
         $totalCollected  = (clone $contributionsQuery)->sum('amount');
@@ -53,10 +55,12 @@ class RemittanceController extends Controller
     public function store(Request $request)
     {
         $user = auth()->user();
+        $churchId = session('tenant_church_id') ?? $user->church_id ?? null;
+
         if ($user->can('finance.view_all')) {
             $groupIdHash = $request->input('group_id');
             $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
-            $group = Group::find($groupId) ?? Group::first();
+            $group = Group::find($groupId) ?? Group::when($churchId, fn($q) => $q->where('church_id', $churchId))->first();
         } else {
             $group = $user->collectedGroups()->first() ?? $user->ledGroups()->first() ?? $user->groups()->first();
         }
@@ -99,10 +103,12 @@ class RemittanceController extends Controller
             $contribution->save();
         }
 
-        // Notifier les trésoriers généraux
+        // Notifier les trésoriers généraux de la même église
         $collector = auth()->user();
-        if (\Spatie\Permission\Models\Role::where('name', 'Trésorier Général')->exists()) {
-            User::role('Trésorier Général')->each(fn ($treasurer) => $treasurer->notify(new RemittanceSubmittedNotification($collector, $group, (int) $totalAmount)));
+        if (\Spatie\Permission\Models\Role::where('name', 'Trésorier Général')->where('church_id', $churchId)->exists()) {
+            User::role('Trésorier Général')
+                ->when($churchId, fn($q) => $q->where('church_id', $churchId))
+                ->each(fn ($treasurer) => $treasurer->notify(new RemittanceSubmittedNotification($collector, $group, (int) $totalAmount)));
         }
 
         return redirect()->back()->with('success', 'Versement de ' . $totalAmount . ' FCFA déclaré à la trésorerie. En attente de validation.');

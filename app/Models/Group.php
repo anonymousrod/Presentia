@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\Auditable;
 use App\Traits\HasHashid;
+use App\Traits\BelongsToChurch;
 
 class Group extends Model
 {
@@ -16,8 +17,10 @@ class Group extends Model
     use HasHashid;
     use SoftDeletes;
     use Auditable;
+    use BelongsToChurch;
 
     protected $fillable = [
+        'church_id',
         'name',
         'description',
         'category',

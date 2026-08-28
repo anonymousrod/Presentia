@@ -32,7 +32,56 @@
                     <div id="two-column-menu">
                     </div>
                     <ul class="navbar-nav" id="navbar-nav">
-                        <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+                        {{-- SUPER ADMIN SAAS NAVIGATION --}}
+                        @if(auth()->check() && auth()->user()->isSuperAdmin())
+                            <li class="menu-title"><span class="text-warning fw-bold"><i class="mdi mdi-shield-crown me-1"></i>Plateforme SaaS</span></li>
+
+                            @if(session()->has('tenant_church_id'))
+                                <li class="nav-item px-3 mb-2">
+                                    <div class="alert alert-warning border-0 p-2 mb-0 rounded-3 fs-11">
+                                        <i class="mdi mdi-information-outline me-1"></i>Mode Support Église
+                                        <a href="{{ route('super-admin.leave-impersonation') }}" class="btn btn-xs btn-dark d-block mt-1 rounded-pill w-100 fs-10">Quitter le support</a>
+                                    </div>
+                                </li>
+                            @endif
+
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ request()->routeIs('super-admin.dashboard') ? 'active' : '' }}" href="{{ route('super-admin.dashboard') }}">
+                                    <i class="mdi mdi-view-dashboard-outline text-warning"></i> <span>Supervision SaaS</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ request()->routeIs('super-admin.churches.*') ? 'active' : '' }}" href="#sidebarSuperAdmin" data-bs-toggle="collapse"
+                                    role="button" aria-expanded="{{ request()->routeIs('super-admin.churches.*') ? 'true' : 'false' }}" aria-controls="sidebarSuperAdmin">
+                                    <i class="mdi mdi-church text-warning"></i> <span>Gestion des Églises</span>
+                                </a>
+                                <div class="collapse menu-dropdown {{ request()->routeIs('super-admin.churches.*') ? 'show' : '' }}" id="sidebarSuperAdmin">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{{ route('super-admin.churches.index') }}" class="nav-link {{ request()->routeIs('super-admin.churches.index', 'super-admin.churches.show') ? 'active' : '' }}">
+                                                Toutes les églises
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ route('super-admin.churches.create') }}" class="nav-link {{ request()->routeIs('super-admin.churches.create') ? 'active' : '' }}">
+                                                Inscrire une église
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        @endif
+
+                        {{-- Avertissement d'expiration pour l'Admin d'Église --}}
+                        @if(auth()->check() && !auth()->user()->isSuperAdmin() && auth()->user()->church && auth()->user()->church->expiresInLessThan30Days())
+                            <li class="nav-item px-3 mb-2">
+                                <div class="alert alert-warning border-0 p-2 mb-0 rounded-3 fs-11">
+                                    <i class="mdi mdi-alert me-1"></i>Abonnement expire dans {{ auth()->user()->church->daysLeftInSubscription() }}j !
+                                </div>
+                            </li>
+                        @endif
+
+                        <li class="menu-title"><span data-key="t-menu">Menu Église</span></li>
                         
                         {{-- 1. Tableau de bord --}}
                         @if(auth()->check())

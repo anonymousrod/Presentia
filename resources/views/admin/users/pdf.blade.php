@@ -328,17 +328,17 @@
         <table class="header-table">
             <tr>
                 <td class="header-logo-left">
-                    @if($logoUeebBase64)
-                        <img src="{{ $logoUeebBase64 }}" alt="UEEB">
+                    @if(!empty($logoUeebBase64))
+                        <img src="{{ $logoUeebBase64 }}" alt="Logo">
                     @endif
                 </td>
                 <td class="header-title-center">
-                    <div class="org-name">Eglise Baptiste de l'Etoile Rouge</div>
-                    <div class="dept-name">Département de la Jeunesse</div>
+                    <div class="org-name">{{ $church->name ?? 'Église Locale' }}</div>
+                    <div class="dept-name">{{ $church->city ? $church->city . ' — ' : '' }}Gestion des Membres</div>
                 </td>
                 <td class="header-logo-right">
-                    @if($logoJeunesseBase64)
-                        <img src="{{ $logoJeunesseBase64 }}" alt="Jeunesse Etoile Rouge">
+                    @if(!empty($logoJeunesseBase64))
+                        <img src="{{ $logoJeunesseBase64 }}" alt="Logo">
                     @endif
                 </td>
             </tr>
@@ -364,8 +364,8 @@
                     {{ now()->format('d/m/Y à H:i') }}
                 </td>
                 <td style="width:25%;">
-                    <span class="label">Généré par</span>
-                    Plateforme {{ config('app.name') }}
+                    <span class="label">Église / Organisation</span>
+                    {{ $church->name ?? config('app.name') }}
                 </td>
                 <td style="width:25%;">
                     <span class="label">Total membres</span>
@@ -378,14 +378,18 @@
                         if ($statusFilter) {
                             $filters[] = "Statut: " . $statusFilter;
                         }
-                        if ($searchQuery) {
-                            $filters[] = 'Recherche: "' . $searchQuery . '"';
+                        if ($directoryFilter) {
+                            $filters[] = $directoryFilter;
                         }
-                        if (isset($directoryFilter) && $directoryFilter) {
-                            $filters[] = 'Répertoire: ' . $directoryFilter;
+                        if ($searchQuery) {
+                            $filters[] = "Recherche: " . $searchQuery;
                         }
                     @endphp
-                    {{ count($filters) > 0 ? implode(', ', $filters) : 'Aucun' }}
+                    @if(count($filters) > 0)
+                        {{ implode(' | ', $filters) }}
+                    @else
+                        Tous les membres
+                    @endif
                 </td>
             </tr>
         </table>
@@ -442,11 +446,11 @@
         <table class="footer-inner">
             <tr>
                 <td class="footer-left">
-                    <span class="cert-text">Ce document officiel a été généré électroniquement et certifié conforme par la plateforme de gestion <strong>{{ config('app.name') }}</strong>.</span>
+                    <span class="cert-text">Ce document officiel a été généré électroniquement pour <strong>{{ $church->name ?? config('app.name') }}</strong> et certifié conforme via la plateforme <strong>{{ config('app.name') }}</strong>.</span>
                 </td>
                 <td class="footer-right">
                     Généré le {{ now()->format('d/m/Y à H:i') }}<br>
-                    Liste des Membres — {{ config('app.name') }}
+                    {{ $church->name ?? config('app.name') }}
                 </td>
             </tr>
         </table>

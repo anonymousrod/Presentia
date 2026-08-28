@@ -20,6 +20,15 @@ class GroupController extends Controller
 {
     use OptimizesImages;
     use AuthorizesRequests;
+
+    /**
+     * Retourne le church_id actif (support mode ou utilisateur normal).
+     */
+    protected function getActiveChurchId(): ?int
+    {
+        return session('tenant_church_id') ?? auth()->user()?->church_id ?? null;
+    }
+
     public function index(Request $request)
     {
         $this->authorize('viewAny', Group::class);
@@ -52,7 +61,10 @@ class GroupController extends Controller
     {
         $this->authorize('create', Group::class);
 
-        $users = User::orderBy('name')->get();
+        $churchId = $this->getActiveChurchId();
+        $users = User::when($churchId, fn($q) => $q->where('church_id', $churchId))
+            ->orderBy('name')
+            ->get();
 
         return view('admin.groups.create', compact('users'));
     }
@@ -109,9 +121,11 @@ class GroupController extends Controller
             ->orderByPivot('left_at', 'desc')
             ->get();
 
-        // Utilisateurs pouvant être ajoutés (non encore membres actifs)
+        // Utilisateurs pouvant être ajoutés (non encore membres actifs) — uniquement de la même église
+        $churchId = $this->getActiveChurchId();
         $activeMemberIds = $activeMembers->pluck('id');
         $availableUsers = User::whereNotIn('id', $activeMemberIds)
+            ->when($churchId, fn($q) => $q->where('church_id', $churchId))
             ->orderBy('name')
             ->get();
 
@@ -122,7 +136,10 @@ class GroupController extends Controller
     {
         $this->authorize('update', $group);
 
-        $users = User::orderBy('name')->get();
+        $churchId = $this->getActiveChurchId();
+        $users = User::when($churchId, fn($q) => $q->where('church_id', $churchId))
+            ->orderBy('name')
+            ->get();
 
         return view('admin.groups.edit', compact('group', 'users'));
     }

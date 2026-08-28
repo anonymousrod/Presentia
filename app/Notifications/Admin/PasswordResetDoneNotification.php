@@ -20,7 +20,7 @@ class PasswordResetDoneNotification extends Notification
 
     public function toArray($notifiable): array
     {
-        $appName = config('app.name', 'Presentia');
+        $appName = config('app.name', 'MeVoici');
         return [
             'icon'    => 'mdi mdi-lock-check-outline',
             'color'   => 'success',

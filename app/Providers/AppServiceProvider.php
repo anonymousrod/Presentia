@@ -48,7 +48,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Share app settings globally
         view()->composer('*', function ($view) {
-            $settings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
+            $churchId = session('tenant_church_id') ?? (auth()->check() ? auth()->user()?->church_id : null) ?? 1;
+            $settings = \App\Models\AppSetting::where('church_id', $churchId)->first()
+                ?? \App\Models\AppSetting::firstOrCreate(['id' => 1]);
 
             // Generate URLs for all image fields so views don't have to check storage vs assets
             $imageFields = [
@@ -92,9 +94,12 @@ class AppServiceProvider extends ServiceProvider
             $view->with('appSettings', $settings);
         });
 
-        // Bypass implicit pour l'administrateur
+        // Bypass implicite pour le Super Administrateur et l'Administrateur d'église
         \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
-            return $user->hasRole('Administrateur') ? true : null;
+            if ($user->isSuperAdmin() || $user->hasRole('Administrateur')) {
+                return true;
+            }
+            return null;
         });
 
         // Gate manage-users requise pour la protection des routes d'administration

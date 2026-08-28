@@ -311,17 +311,17 @@
         <table class="header-table">
             <tr>
                 <td class="header-logo-left">
-                    @if($logoUeebBase64)
-                        <img src="{{ $logoUeebBase64 }}" alt="UEEB">
+                    @if(!empty($logoUeebBase64))
+                        <img src="{{ $logoUeebBase64 }}" alt="Logo">
                     @endif
                 </td>
                 <td class="header-title-center">
-                    <div class="org-name">Eglise Baptiste de l'Etoile Rouge</div>
-                    <div class="dept-name">Département de la Jeunesse</div>
+                    <div class="org-name">{{ $church->name ?? ($activity->church->name ?? 'Église Locale') }}</div>
+                    <div class="dept-name">{{ ($church->city ?? $activity->church?->city) ? ($church->city ?? $activity->church?->city) . ' — ' : '' }}Gestion des Activités</div>
                 </td>
                 <td class="header-logo-right">
-                    @if($logoJeunesseBase64)
-                        <img src="{{ $logoJeunesseBase64 }}" alt="Jeunesse Etoile Rouge">
+                    @if(!empty($logoJeunesseBase64))
+                        <img src="{{ $logoJeunesseBase64 }}" alt="Logo">
                     @endif
                 </td>
             </tr>
@@ -349,7 +349,7 @@
                 </td>
                 <td style="width:25%;">
                     <span class="label">Lieu</span>
-                    {{ $activity->location ?: 'EB Étoile Rouge' }}
+                    {{ $activity->location ?: ($church->name ?? 'Église Locale') }}
                 </td>
                 <td style="width:25%;">
                     <span class="label">Responsable</span>
@@ -363,8 +363,8 @@
             @if($activity->description)
             <tr>
                 <td colspan="4">
-                    <span class="label">Thème / Description</span>
-                    {{ Str::limit($activity->description, 120) }}
+                    <span class="label">Description</span>
+                    {{ $activity->description }}
                 </td>
             </tr>
             @endif
@@ -372,33 +372,60 @@
     </div>
 
     <!-- TABLEAU DES INSCRIPTIONS -->
-    <div class="table-section">
-        <div class="section-heading">Participants inscrits</div>
-        <table class="data-table">
+    <div class="table-wrapper">
+        <table class="registrations-table">
             <thead>
                 <tr>
-                    <th style="width:5%;">N</th>
-                    <th style="width:27%;">Nom Complet</th>
-                    <th style="width:28%;">Email</th>
-                    <th style="width:17%;">Date d'inscription</th>
-                    <th style="width:23%;">Motif / Justification</th>
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 25%;">Nom &amp; Prénom(s)</th>
+                    <th style="width: 20%;">Email</th>
+                    <th style="width: 15%;">Téléphone</th>
+                    <th style="width: 15%;">Statut</th>
+                    <th style="width: 10%;">Présence</th>
+                    <th style="width: 10%;" class="center">Inscrit le</th>
                 </tr>
             </thead>
             <tbody>
-                @php $rowNum = 1; @endphp
-                @foreach($registrations as $reg)
+                @foreach($registrations as $index => $registration)
+                    @php
+                        $user = $registration->user;
+                        $status = $registration->status;
+                        $statusVal = is_object($status) ? $status->value : (string)$status;
+                        $statusLabel = is_object($status) ? ($status->label() ?? $statusVal) : $statusVal;
+                    @endphp
                     <tr>
-                        <td class="center">{{ $rowNum++ }}</td>
-                        <td>{{ $reg->user->full_name }}</td>
-                        <td>{{ $reg->user->email ?? '—' }}</td>
-                        <td class="center">{{ $reg->created_at->format('d/m/Y H:i') }}</td>
+                        <td class="center font-mono">{{ $index + 1 }}</td>
                         <td>
-                            @if($reg->status->value === 'ABSENT_JUSTIFIED')
-                                <span class="badge-justified">{{ $reg->justification ?: 'Aucun motif renseigné' }}</span>
+                            @if($user)
+                                <span class="user-name">{{ $user->name }} {{ $user->first_name }}</span>
+                                @if($user->profession)
+                                    <span class="user-profession">{{ $user->profession }}</span>
+                                @endif
                             @else
-                                <span class="badge-ok">Inscrit(e)</span>
+                                <span class="user-name" style="color: #888;">Utilisateur supprimé</span>
                             @endif
                         </td>
+                        <td class="font-mono">{{ $user->email ?? '—' }}</td>
+                        <td class="font-mono">{{ $user->phone ?? '—' }}</td>
+                        <td>
+                            @if($statusVal === 'CONFIRMED' || $statusVal === 'PRESENT')
+                                <span class="badge-confirmed">{{ $statusLabel }}</span>
+                            @elseif($statusVal === 'UNCERTAIN')
+                                <span class="badge-uncertain">{{ $statusLabel }}</span>
+                            @elseif($statusVal === 'EXCUSED')
+                                <span class="badge-excused">{{ $statusLabel }}</span>
+                            @else
+                                <span class="badge-pending">{{ $statusLabel }}</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($registration->attended_at)
+                                <span class="badge-attended">Présent</span>
+                            @else
+                                <span class="badge-not-attended">Non pointé</span>
+                            @endif
+                        </td>
+                        <td class="center font-mono">{{ $registration->created_at->format('d/m/Y') }}</td>
                     </tr>
                 @endforeach
             </tbody>

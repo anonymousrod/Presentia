@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             ActivityTypeSeeder::class,
             ChartDataSeeder::class, //pas en production
             ContributionSeeder::class,
+            MinontinChurchSeeder::class,
             // MemberSeeder::class,
             // ExecutiveSeeder::class,
             // GroupSeeder::class,

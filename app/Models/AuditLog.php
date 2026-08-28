@@ -5,12 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use App\Traits\BelongsToChurch;
 
 class AuditLog extends Model
 {
+    use BelongsToChurch;
+
     public $timestamps = false;
 
     protected $fillable = [
+        'church_id',
         'user_id',
         'action',
         'auditable_type',

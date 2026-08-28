@@ -2,8 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity;
+use App\Models\Attendance;
+use App\Models\Contribution;
+use App\Models\Group;
+use App\Models\Remittance;
+use App\Models\User;
+
 class DashboardController extends Controller
 {
+    /**
+     * Retourne le church_id actif (support mode ou utilisateur normal).
+     */
+    private function getActiveChurchId(): ?int
+    {
+        return session('tenant_church_id') ?? auth()->user()?->church_id ?? null;
+    }
+
     public function index()
     {
         $user = auth()->user();
@@ -24,14 +39,16 @@ class DashboardController extends Controller
 
     private function adminDashboard()
     {
+        $churchId = $this->getActiveChurchId();
+
         $stats = [
-            'total_users' => \App\Models\User::count(),
-            'total_activities' => \App\Models\Activity::count(),
-            'upcoming_activities' => \App\Models\Activity::where('start_time', '>=', now())->count(),
-            'total_groups' => \App\Models\Group::count(),
+            'total_users'          => User::when($churchId, fn($q) => $q->where('church_id', $churchId))->count(),
+            'total_activities'     => Activity::count(),
+            'upcoming_activities'  => Activity::where('start_time', '>=', now())->count(),
+            'total_groups'         => Group::count(),
         ];
 
-        $recent_activities = \App\Models\Activity::latest()->take(5)->get();
+        $recent_activities = Activity::latest()->take(5)->get();
 
         return view('dashboard.admin', compact('stats', 'recent_activities'));
     }
@@ -39,13 +56,13 @@ class DashboardController extends Controller
     private function treasurerDashboard()
     {
         $stats = [
-            'pending_remittances_count' => \App\Models\Remittance::where('status', 'pending')->count(),
-            'pending_remittances_amount' => \App\Models\Remittance::where('status', 'pending')->sum('amount'),
-            'validated_remittances_amount' => \App\Models\Remittance::where('status', 'validated')->sum('amount'),
-            'total_contributions' => \App\Models\Contribution::count(),
+            'pending_remittances_count'    => Remittance::where('status', 'pending')->count(),
+            'pending_remittances_amount'   => Remittance::where('status', 'pending')->sum('amount'),
+            'validated_remittances_amount' => Remittance::where('status', 'validated')->sum('amount'),
+            'total_contributions'          => Contribution::count(),
         ];
 
-        $pending_remittances = \App\Models\Remittance::with(['group', 'collector'])
+        $pending_remittances = Remittance::with(['group', 'collector'])
             ->where('status', 'pending')
             ->latest()
             ->take(5)
@@ -57,28 +74,25 @@ class DashboardController extends Controller
     private function leaderDashboard()
     {
         $user = auth()->user();
-        // A leader usually has a group where they are the group_leader (or similar).
-        // Let's assume the user has a group.
-        $group = \App\Models\Group::where('leader_id', $user->id)
+        $group = Group::where('leader_id', $user->id)
             ->orWhere('collector_id', $user->id)
             ->first();
 
-        // If no group found as leader, fallback to their assigned group
         if (!$group) {
             $group = $user->groups()->first();
         }
 
         $stats = [
-            'group_members_count' => $group ? $group->members()->count() : 0,
-            'group_upcoming_activities' => \App\Models\Activity::where('start_time', '>=', now())->count(), // Adjust if activities are group-specific
-            'total_group_contributions' => $group ? \App\Models\Contribution::whereHas('user', function ($q) use ($group) {
+            'group_members_count'         => $group ? $group->members()->count() : 0,
+            'group_upcoming_activities'   => Activity::where('start_time', '>=', now())->count(),
+            'total_group_contributions'   => $group ? Contribution::whereHas('user', function ($q) use ($group) {
                 $q->whereHas('groups', function ($q2) use ($group) {
                     $q2->where('groups.id', $group->id);
                 });
             })->sum('amount') : 0,
         ];
 
-        $recent_activities = \App\Models\Activity::latest()->take(5)->get();
+        $recent_activities = Activity::latest()->take(5)->get();
 
         return view('dashboard.leader', compact('stats', 'recent_activities', 'group'));
     }
@@ -86,12 +100,12 @@ class DashboardController extends Controller
     private function userDashboard($user)
     {
         $stats = [
-            'upcoming_activities' => \App\Models\Activity::where('start_time', '>=', now())->count(),
-            'attended_activities' => \App\Models\Attendance::where('user_id', $user->id)->where('status', 'present')->count(),
-            'my_contributions_amount' => \App\Models\Contribution::where('user_id', $user->id)->sum('amount'),
+            'upcoming_activities'    => Activity::where('start_time', '>=', now())->count(),
+            'attended_activities'    => Attendance::where('user_id', $user->id)->where('status', 'present')->count(),
+            'my_contributions_amount'=> Contribution::where('user_id', $user->id)->sum('amount'),
         ];
 
-        $upcoming_activities = \App\Models\Activity::where('start_time', '>=', now())
+        $upcoming_activities = Activity::where('start_time', '>=', now())
             ->orderBy('start_time', 'asc')
             ->take(3)
             ->get();
