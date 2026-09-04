@@ -24,7 +24,7 @@
                 </div>
 
                 <button type="button"
-                    class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger shadow-none"
+                    class="btn btn-sm px-2 px-sm-3 fs-16 header-item vertical-menu-btn topnav-hamburger shadow-none"
                     id="topnav-hamburger-icon">
                     <span class="hamburger-icon">
                         <span></span>
@@ -32,6 +32,11 @@
                         <span></span>
                     </span>
                 </button>
+
+                <!-- Logo Principal (Pour Thème Sombre) sur petit écran -->
+                <a href="{{ route('dashboard') }}" class="d-flex d-md-none align-items-center text-decoration-none ms-1 ms-sm-2 header-item py-0">
+                    <img src="{{ $appSettings->logo_dark_url ?? asset('assets/images/logo-dark.png') }}" alt="{{ config('app.name') }}" height="22">
+                </a>
 
                 <!-- App Search-->
                 <form class="app-search d-none d-md-block">

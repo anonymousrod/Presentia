@@ -6,8 +6,20 @@
     
     <title>@yield('title', 'Dashboard | Velzon')</title>
 
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#405189">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MeVoici">
+    <link rel="apple-touch-icon" href="/assets/images/icons/apple-touch-icon.png">
+
     <!-- Favicon -->
     <link rel="shortcut icon" href="{{ $appSettings->favicon_url ?? asset('assets/images/favicon.ico') }}">
+
+    <!-- PWA Service Worker & Installer -->
+    <script src="{{ asset('assets/js/pwa-installer.js') }}" defer></script>
 
     <!-- jsvectormap -->
     <link href="{{ asset('assets/libs/jsvectormap/jsvectormap.min.css') }}" rel="stylesheet" type="text/css" />

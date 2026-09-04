@@ -8,8 +8,20 @@
     <meta content="{{ config('app.name') }} - Plateforme EBER" name="description" />
     <meta content="Themesbrand" name="author" />
     
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#405189">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MeVoici">
+    <link rel="apple-touch-icon" href="/assets/images/icons/apple-touch-icon.png">
+
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+
+    <!-- PWA Service Worker & Installer -->
+    <script src="{{ asset('assets/js/pwa-installer.js') }}" defer></script>
 
     <!-- Layout config Js -->
     <script src="{{ asset('assets/js/layout.js') }}"></script>
