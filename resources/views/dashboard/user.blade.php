@@ -126,15 +126,65 @@
     
     @media (max-width: 991.98px) {
         .activity-hero {
-            padding: 3rem 0 7rem 0; /* Plus de padding en bas pour la superposition */
+            padding: 1.5rem 0 3.75rem 0;
+            margin: -1rem -1rem 1.5rem -1rem;
+            border-bottom-left-radius: 1.25rem;
+            border-bottom-right-radius: 1.25rem;
             text-align: center;
         }
         .hero-title {
-            font-size: 2.2rem !important;
+            font-size: 1.45rem !important;
+            margin-bottom: 0.25rem !important;
         }
+        .activity-hero .hero-badge,
+        .activity-hero .badge {
+            font-size: 0.68rem !important;
+            padding: 4px 10px !important;
+            margin-bottom: 0.35rem !important;
+        }
+        .activity-hero .badge-container-wrap {
+            margin-bottom: 0.5rem !important;
+        }
+        .hero-orb {
+            opacity: 0.35;
+            filter: blur(50px);
+        }
+        .orb-1 { width: 180px; height: 180px; top: -70px; left: -50px; }
+        .orb-2 { width: 160px; height: 160px; bottom: -50px; right: 0; }
         .scan-btn-container {
             justify-content: center !important;
-            margin-top: 1.5rem;
+            margin-top: 0.85rem !important;
+        }
+        .scan-btn {
+            padding: 8px 18px !important;
+            font-size: 0.88rem !important;
+            gap: 8px !important;
+        }
+        .scan-btn i {
+            font-size: 1.15rem !important;
+        }
+        .dashboard-stats-row {
+            margin-top: -2.75rem !important;
+        }
+    }
+    @media (max-width: 575.98px) {
+        .activity-hero {
+            padding: 1.25rem 0 3.25rem 0;
+            margin: -0.75rem -0.75rem 1.25rem -0.75rem;
+        }
+        .hero-title {
+            font-size: 1.25rem !important;
+        }
+        .activity-hero .badge {
+            font-size: 0.65rem !important;
+            padding: 3px 8px !important;
+        }
+        .scan-btn {
+            padding: 7px 15px !important;
+            font-size: 0.82rem !important;
+        }
+        .dashboard-stats-row {
+            margin-top: -2.25rem !important;
         }
     }
 </style>
@@ -146,7 +196,7 @@
     <div class="col">
         <div class="h-100">
             <!-- Hero Section -->
-            <div class="activity-hero px-4">
+            <div class="activity-hero px-3 px-md-4">
                 <div class="hero-grid"></div>
                 <div class="hero-orb orb-1"></div>
                 <div class="hero-orb orb-2"></div>
@@ -169,18 +219,18 @@
                             }
                         @endphp
                         <div class="col-lg-7">
-                            <div class="d-flex align-items-center mb-4 justify-content-center justify-content-lg-start">
+                            <div class="d-flex align-items-center mb-2 mb-md-3 justify-content-center justify-content-lg-start badge-container-wrap">
                                 <span class="badge hero-badge px-3 py-2 rounded-pill shadow-sm" style="font-size: 0.75rem; letter-spacing: 1px;">
                                     <i class="mdi mdi-account-circle-outline text-info me-1"></i> ESPACE PERSONNEL
                                 </span>
                             </div>
-                            <h1 class="hero-title text-white fw-bold display-4 mb-3" style="letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+                            <h1 class="hero-title text-white fw-bold display-4 mb-1 mb-md-2" style="letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">
                                 Bonjour, <span style="color: var(--vz-info); filter: brightness(1.2);">{{ $displayName }} !</span>
                             </h1>
-                            <p class="fs-16 mb-0 d-none d-lg-block" style="max-width: 550px; line-height: 1.6; color: rgba(255,255,255,0.7);">
+                            <p class="fs-15 mb-0 d-none d-lg-block" style="max-width: 550px; line-height: 1.6; color: rgba(255,255,255,0.7);">
                                 Bienvenue sur votre tableau de bord. Scannez le code QR à l'église pour marquer votre présence, ou consultez vos prochaines activités.
                             </p>
-                            <p class="fs-15 mb-0 d-lg-none" style="color: rgba(255,255,255,0.7);">
+                            <p class="fs-13 mb-0 d-lg-none text-center" style="color: rgba(255,255,255,0.7);">
                                 Scannez le code QR à l'église pour marquer votre présence.
                             </p>
                         </div>
@@ -190,7 +240,7 @@
                                 <a href="{{ route('attendance.scan') }}" class="scan-btn">
                                     <i class="ri-qr-scan-2-line"></i> Scanner ma présence
                                 </a>
-                                <p class="text-white-50 mt-3 mb-0" style="font-size: 0.85rem;">Activez votre caméra pour badger à l'entrée</p>
+                                <p class="text-white-50 mt-2 mb-0 d-none d-sm-block" style="font-size: 0.8rem;">Activez votre caméra pour badger à l'entrée</p>
                             </div>
                         </div>
                     </div>
@@ -198,7 +248,7 @@
             </div>
 
             <!-- Stats Row (Overlapping the Hero) -->
-            <div class="row g-2 g-md-3" style="margin-top: -5rem; position: relative; z-index: 10;">
+            <div class="row g-2 g-md-3 dashboard-stats-row" style="margin-top: -5rem; position: relative; z-index: 10;">
                 <div class="col-4 col-md-6 col-xl-4">
                     <div class="card premium-card overflow-hidden h-100">
                         <div class="card-body p-2 p-sm-3 p-md-4">

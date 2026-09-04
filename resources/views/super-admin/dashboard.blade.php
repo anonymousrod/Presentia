@@ -160,12 +160,69 @@
 
     @media (max-width: 991.98px) {
         .saas-hero {
-            padding: 2.5rem 0 6rem 0;
+            padding: 1.5rem 0 3.75rem 0;
+            margin: -1rem -1rem 1.5rem -1rem;
+            border-bottom-left-radius: 1.25rem;
+            border-bottom-right-radius: 1.25rem;
             text-align: center;
         }
+        .saas-hero .display-6 {
+            font-size: 1.45rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+        .saas-hero .hero-badge {
+            font-size: 0.68rem !important;
+            padding: 4px 10px !important;
+        }
+        .saas-hero .pulse-dot {
+            width: 6px;
+            height: 6px;
+        }
+        .hero-orb {
+            opacity: 0.35;
+            filter: blur(50px);
+        }
+        .orb-1 { width: 180px; height: 180px; top: -70px; left: -50px; }
+        .orb-2 { width: 160px; height: 160px; bottom: -50px; right: 0; }
         .hero-actions-container {
             justify-content: center !important;
-            margin-top: 1.25rem;
+            margin-top: 0.85rem;
+        }
+        .saas-cta-btn, .saas-secondary-btn {
+            padding: 8px 16px;
+            font-size: 0.82rem;
+            gap: 6px;
+        }
+        .saas-kpi-row {
+            margin-top: -2.75rem !important;
+        }
+    }
+    @media (max-width: 575.98px) {
+        .saas-hero {
+            padding: 1.25rem 0 3.25rem 0;
+            margin: -0.75rem -0.75rem 1.25rem -0.75rem;
+        }
+        .saas-hero .display-6 {
+            font-size: 1.25rem !important;
+        }
+        .saas-hero .badge {
+            font-size: 0.65rem !important;
+            padding: 3px 8px !important;
+        }
+        .hero-actions-container .d-flex {
+            flex-direction: row !important;
+            flex-wrap: wrap;
+            justify-content: center !important;
+        }
+        .saas-cta-btn, .saas-secondary-btn {
+            flex: 1 1 auto;
+            min-width: 135px;
+            justify-content: center;
+            padding: 7px 12px;
+            font-size: 0.78rem;
+        }
+        .saas-kpi-row {
+            margin-top: -2.25rem !important;
         }
     }
 </style>
@@ -179,7 +236,7 @@
             {{-- ========================================================================= --}}
             {{-- HERO SECTION (IDENTIQUE AU DESIGN /DASHBOARD) --}}
             {{-- ========================================================================= --}}
-            <div class="saas-hero px-4">
+            <div class="saas-hero px-3 px-md-4">
                 <div class="hero-grid"></div>
                 <div class="hero-orb orb-1"></div>
                 <div class="hero-orb orb-2"></div>
@@ -187,7 +244,7 @@
                 <div class="container-fluid max-w-1200 hero-content">
                     <div class="row align-items-center">
                         <div class="col-lg-7">
-                            <div class="mb-3 d-flex justify-content-center justify-content-lg-start gap-2 flex-wrap">
+                            <div class="mb-2 mb-md-3 d-flex justify-content-center justify-content-lg-start gap-2 flex-wrap">
                                 <span class="badge hero-badge px-3 py-2 rounded-pill shadow-sm" style="font-size: 0.75rem; letter-spacing: 1px;">
                                     <i class="ri-shield-star-line me-1"></i> PORTAIL SUPER ADMINISTRATEUR
                                 </span>
@@ -195,13 +252,13 @@
                                     <span class="pulse-dot bg-success"></span> SaaS 100% Opérationnel
                                 </span>
                             </div>
-                            <h1 class="display-6 fw-bold text-white mb-2 text-center text-lg-start" style="line-height: 1.2;">
+                            <h1 class="display-6 fw-bold text-white mb-1 mb-md-2 text-center text-lg-start" style="line-height: 1.2;">
                                 Supervision <span style="color: var(--vz-warning); filter: brightness(1.2);">SaaS Multi-Églises</span>
                             </h1>
                             <p class="fs-15 mb-0 d-none d-lg-block" style="max-width: 600px; line-height: 1.6; color: rgba(255,255,255,0.75);">
                                 Vue d'ensemble des églises clientes, gestion des abonnements annuels (1 an) et administration centralisée de la plateforme.
                             </p>
-                            <p class="fs-14 mb-0 d-lg-none text-center" style="color: rgba(255,255,255,0.75);">
+                            <p class="fs-13 mb-0 d-lg-none text-center" style="color: rgba(255,255,255,0.75);">
                                 Gestion centralisée des églises et abonnements annuels.
                             </p>
                         </div>
@@ -223,7 +280,7 @@
             {{-- ========================================================================= --}}
             {{-- 4 CARTES KPI (STATS ROW) - DESIGN /DASHBOARD RESPONSIVE --}}
             {{-- ========================================================================= --}}
-            <div class="row g-2 g-md-3" style="margin-top: -5rem; position: relative; z-index: 10;">
+            <div class="row g-2 g-md-3 saas-kpi-row" style="margin-top: -5rem; position: relative; z-index: 10;">
                 {{-- Total Églises --}}
                 <div class="col-6 col-md-6 col-xl-3">
                     <div class="card premium-card overflow-hidden h-100">

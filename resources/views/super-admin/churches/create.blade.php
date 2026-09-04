@@ -256,6 +256,21 @@
         margin-top: 1.5rem;
         margin-bottom: 2.5rem;
     }
+    .form-mandatory-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 14px;
+        background: rgba(var(--vz-danger-rgb), 0.06);
+        border: 1px solid rgba(var(--vz-danger-rgb), 0.18);
+        border-radius: 8px;
+        font-size: 0.78rem;
+        color: var(--vz-secondary-color);
+        line-height: 1.4;
+    }
+    .form-mandatory-note span {
+        display: inline;
+    }
     .btn-submit-main {
         padding: 11px 28px;
         font-size: 0.9rem;
@@ -295,42 +310,70 @@
     ========================================================================= */
     @media (max-width: 991.98px) {
         .stepper-divider { display: none; }
-        .create-hero { padding: 1.75rem 0 4.5rem 0; text-align: center; }
-        .hero-back-wrap { justify-content: center !important; margin-top: 1rem; }
+        .create-hero {
+            padding: 1.25rem 0 3.25rem 0;
+            margin: -1rem -1rem 0 -1rem;
+            border-bottom-left-radius: 1.25rem;
+            border-bottom-right-radius: 1.25rem;
+            text-align: center;
+        }
+        .create-hero .fs-22 {
+            font-size: 1.35rem !important;
+            margin-bottom: 0.2rem !important;
+        }
+        .create-hero .hero-badge {
+            font-size: 0.65rem !important;
+            padding: 3px 8px !important;
+        }
+        .create-hero .orb {
+            opacity: 0.3;
+            filter: blur(40px);
+        }
+        .create-hero .orb-blue  { width: 160px; height: 160px; top: -60px; left: -40px; }
+        .create-hero .orb-amber { width: 140px; height: 140px; bottom: -30px; right: 0; }
+        .hero-back-wrap { justify-content: center !important; margin-top: 0.65rem; }
+        .btn-hero-back { padding: 6px 14px; font-size: 0.78rem; }
+        .steps-wrap { margin-top: -1.75rem; }
         .section-body { padding: 1.1rem; }
     }
     @media (max-width: 767.98px) {
-        .steps-wrap { margin-top: -1.75rem; }
         .section-header { padding: 0.9rem 1.1rem; }
         .section-body { padding: 1rem; }
     }
     @media (max-width: 575.98px) {
-        .create-hero { padding: 1.5rem 0 3.5rem 0; }
-        .stepper-card { padding: 0.75rem !important; }
+        .create-hero {
+            padding: 1rem 0 2.5rem 0;
+            margin: -0.75rem -0.75rem 0 -0.75rem;
+        }
+        .create-hero .fs-22 {
+            font-size: 1.15rem !important;
+        }
+        .steps-wrap { margin-top: -1.25rem; }
+        .stepper-card { padding: 0.6rem !important; }
         .mobile-step-pill {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            padding: 8px 4px;
+            padding: 6px 2px;
             background: rgba(248, 250, 252, 0.9);
             border: 1px solid rgba(226, 232, 240, 0.9);
-            border-radius: 12px;
+            border-radius: 10px;
             height: 100%;
         }
         .mobile-step-pill .step-pill-icon {
-            width: 32px;
-            height: 32px;
-            font-size: 0.95rem;
-            margin-bottom: 4px;
+            width: 28px;
+            height: 28px;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
         }
         .mobile-step-pill .step-title {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
         }
         .mobile-step-pill .step-number {
-            font-size: 0.6rem;
-            margin-bottom: 1px;
+            font-size: 0.55rem;
+            margin-bottom: 0px;
         }
         .action-bar {
             padding: 1.1rem 1rem;
@@ -342,9 +385,12 @@
             align-items: stretch !important;
             gap: 12px !important;
         }
-        .action-bar .text-muted {
-            text-align: center;
+        .form-mandatory-note {
+            width: 100%;
             justify-content: center;
+            text-align: center;
+            padding: 7px 10px;
+            font-size: 0.74rem;
         }
         .action-bar-actions {
             display: flex;
@@ -866,9 +912,9 @@
             ================================================================= --}}
             <div class="action-bar mt-4 mb-2 rounded-3">
                 <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
-                    <div class="text-muted fs-12 d-flex align-items-center gap-1">
-                        <i class="ri-error-warning-line text-danger"></i>
-                        Les champs marqués <span class="text-danger fw-bold mx-1">*</span> sont obligatoires.
+                    <div class="form-mandatory-note">
+                        <i class="ri-error-warning-line text-danger fs-14 flex-shrink-0"></i>
+                        <span>Les champs marqués d'un <strong class="text-danger">*</strong> sont obligatoires.</span>
                     </div>
                     <div class="action-bar-actions d-flex gap-2 flex-wrap justify-content-end">
                         <button type="submit" class="btn-submit-main" id="btn-create-church">

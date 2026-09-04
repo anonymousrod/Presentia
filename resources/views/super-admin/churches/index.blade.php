@@ -326,17 +326,106 @@
     ========================================================================= */
     @media (max-width: 991.98px) {
         .churches-hero {
-            padding: 2rem 0 6.5rem 0;
+            padding: 1.5rem 0 3.75rem 0;
+            margin: -1rem -1rem 0 -1rem;
+            border-bottom-left-radius: 1.25rem;
+            border-bottom-right-radius: 1.25rem;
             text-align: center;
         }
+        .churches-hero .display-6 {
+            font-size: 1.45rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+        .churches-hero .hero-badge {
+            font-size: 0.68rem !important;
+            padding: 4px 10px !important;
+        }
+        .hero-orb {
+            opacity: 0.35;
+            filter: blur(50px);
+        }
+        .orb-blue  { width: 180px; height: 180px; top: -70px; left: -50px; }
+        .orb-amber { width: 150px; height: 150px; bottom: -40px; right: 0; }
+        .orb-teal  { display: none; }
         .hero-actions-wrap {
             justify-content: center !important;
-            margin-top: 1.5rem;
+            margin-top: 0.85rem !important;
+        }
+        .btn-hero-primary, .btn-hero-secondary {
+            padding: 8px 16px;
+            font-size: 0.82rem;
+            gap: 6px;
+        }
+        .kpi-row {
+            margin-top: -2.75rem !important;
         }
     }
     @media (max-width: 575.98px) {
-        .kpi-value { font-size: 1.4rem; }
-        .kpi-icon  { width: 38px; height: 38px; font-size: 1.1rem; border-radius: 11px; }
+        .churches-hero {
+            padding: 1.25rem 0 3.25rem 0;
+            margin: -0.75rem -0.75rem 0 -0.75rem;
+        }
+        .churches-hero .display-6 {
+            font-size: 1.25rem !important;
+        }
+        .churches-hero .badge {
+            font-size: 0.65rem !important;
+            padding: 3px 8px !important;
+        }
+        .hero-actions-wrap .d-flex {
+            flex-direction: row !important;
+            flex-wrap: wrap;
+            justify-content: center !important;
+        }
+        .btn-hero-primary, .btn-hero-secondary {
+            flex: 1 1 auto;
+            min-width: 135px;
+            justify-content: center;
+            padding: 7px 12px;
+            font-size: 0.78rem;
+        }
+        .kpi-row {
+            margin-top: -2.25rem !important;
+        }
+        .kpi-value { font-size: 1.25rem; }
+        .kpi-icon  { width: 34px; height: 34px; font-size: 1rem; border-radius: 10px; }
+    }
+    @media (max-width: 767.98px) {
+        .mobile-church-card {
+            border: 1px solid var(--vz-border-color) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03) !important;
+            background: var(--vz-card-bg) !important;
+        }
+        .mobile-church-card .card-accent {
+            display: none !important;
+        }
+        .mobile-church-info-box {
+            background: rgba(var(--vz-light-rgb), 0.7);
+            border-radius: 10px;
+            padding: 9px 8px;
+            border: 1px solid var(--vz-border-color);
+        }
+        .mobile-church-card .days-bar {
+            height: 5px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.07);
+        }
+        .mobile-church-card .action-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            border: 1px solid var(--vz-border-color);
+            background: var(--vz-card-bg);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .mobile-church-card .action-btn-view    { color: var(--vz-primary); }
+        .mobile-church-card .action-btn-renew   { color: #4338ca !important; background: rgba(67, 56, 202, 0.08) !important; }
+        .mobile-church-card .action-btn-support { color: #d97706 !important; background: rgba(217, 119, 6, 0.08) !important; }
+        .mobile-church-card .action-btn-edit    { color: var(--vz-secondary); }
+        .mobile-church-card .action-btn-suspend { color: var(--vz-danger); }
+        .mobile-church-card .action-btn-activate{ color: var(--vz-primary) !important; background: rgba(var(--vz-primary-rgb), 0.08) !important; }
+        .mobile-church-card .action-btn-delete  { color: var(--vz-danger); }
     }
 </style>
 @endpush
@@ -348,7 +437,7 @@
         {{-- =====================================================================
              HERO HEADER
         ===================================================================== --}}
-        <div class="churches-hero px-4">
+        <div class="churches-hero px-3 px-md-4">
             <div class="hero-grid"></div>
             <div class="hero-orb orb-blue"></div>
             <div class="hero-orb orb-amber"></div>
@@ -357,7 +446,7 @@
             <div class="container-fluid hero-content">
                 <div class="row align-items-center">
                     <div class="col-lg-7">
-                        <div class="mb-3 d-flex justify-content-center justify-content-lg-start gap-2 flex-wrap">
+                        <div class="mb-2 mb-md-3 d-flex justify-content-center justify-content-lg-start gap-2 flex-wrap">
                             <span class="badge hero-badge px-3 py-2 rounded-pill">
                                 <i class="ri-building-line me-1"></i> GESTION DES CLIENTS SAAS
                             </span>
@@ -366,13 +455,13 @@
                                 {{ $activeCount ?? 0 }} active(s)
                             </span>
                         </div>
-                        <h1 class="display-6 fw-bold text-white mb-2 text-center text-lg-start" style="line-height:1.2;">
+                        <h1 class="display-6 fw-bold text-white mb-1 mb-md-2 text-center text-lg-start" style="line-height:1.2;">
                             Églises <span style="color:#f7b84b; filter:brightness(1.1);">Clientes</span>
                         </h1>
                         <p class="fs-15 mb-0 d-none d-lg-block" style="max-width:580px; line-height:1.65; color:rgba(255,255,255,0.72);">
                             Consultez l'état des abonnements, administrez les accès et intervenez en mode support pour chaque église cliente de la plateforme.
                         </p>
-                        <p class="fs-14 mb-0 d-lg-none text-center" style="color:rgba(255,255,255,0.72);">
+                        <p class="fs-13 mb-0 d-lg-none text-center" style="color:rgba(255,255,255,0.72);">
                             Supervision et gestion de toutes les églises clientes.
                         </p>
                     </div>
@@ -587,20 +676,18 @@
                                         $isActive    = $church->status !== 'suspended' && $church->isSubscriptionActive();
                                         $isSuspended = $church->status === 'suspended';
                                         $isExpired   = !$isActive && !$isSuspended;
-                                        $accentColor = $isActive ? '#22c55e' : ($isSuspended ? '#9ca3af' : 'var(--vz-danger)');
                                         $daysLeft    = $church->daysLeftInSubscription();
-                                        $avatarColors = ['bg-primary-subtle text-primary','bg-warning-subtle text-warning','bg-info-subtle text-info','bg-success-subtle text-success','bg-danger-subtle text-danger','bg-secondary-subtle text-secondary'];
+                                        $avatarColors = ['bg-primary-subtle text-primary','bg-warning-subtle text-warning','bg-info-subtle text-info','bg-secondary-subtle text-secondary'];
                                         $avatarColor  = $avatarColors[$church->id % count($avatarColors)];
                                     @endphp
                                     <div class="mobile-church-card">
-                                        <div class="card-accent" style="background:{{ $accentColor }};"></div>
                                         <div class="p-3">
                                             {{-- Ligne 1 : Nom + Statut --}}
                                             <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
                                                 <div class="d-flex align-items-center gap-2 min-w-0">
                                                     @if($church->hasCustomLogo())
                                                         <div class="church-avatar bg-white border shadow-sm p-1" style="width:38px;height:38px;border-radius:10px;">
-                                                            <img src="{{ $church->logo_url }}" alt="{{ $church->name }}" class="w-100 h-100 rounded" style="object-fit: contain;">
+                                                             <img src="{{ $church->logo_url }}" alt="{{ $church->name }}" class="w-100 h-100 rounded" style="object-fit: contain;">
                                                         </div>
                                                     @else
                                                         <div class="church-avatar {{ $avatarColor }}" style="width:38px;height:38px;border-radius:10px;font-size:.85rem;">
@@ -623,29 +710,34 @@
                                                 </span>
                                             </div>
 
-                                            {{-- Ligne 2 : Infos --}}
-                                            <div class="row g-2 fs-11 text-muted border-top border-bottom py-2 my-2">
-                                                <div class="col-4 text-center">
-                                                    <div class="fw-bold text-body fs-13">{{ $church->users_count }}</div>
-                                                    <div>Membres</div>
-                                                </div>
-                                                <div class="col-4 text-center border-start border-end">
-                                                    <div class="fw-bold text-body fs-13">{{ $church->groups_count }}</div>
-                                                    <div>Groupes</div>
-                                                </div>
-                                                <div class="col-4 text-center">
-                                                    <div class="fw-bold text-body fs-12">{{ $church->subscription_expires_at ? $church->subscription_expires_at->format('d/m/Y') : '—' }}</div>
-                                                    <div>Échéance</div>
+                                            {{-- Ligne 2 : Infos métriques équilibrées --}}
+                                            <div class="mobile-church-info-box my-3">
+                                                <div class="row g-1 text-center">
+                                                    <div class="col-4">
+                                                        <div class="text-muted fs-11 text-uppercase fw-semibold mb-1"><i class="ri-user-line me-1 text-primary"></i>Membres</div>
+                                                        <div class="fw-bold text-body fs-13">{{ $church->users_count }}</div>
+                                                    </div>
+                                                    <div class="col-4 border-start border-end">
+                                                        <div class="text-muted fs-11 text-uppercase fw-semibold mb-1"><i class="ri-team-line me-1 text-info"></i>Groupes</div>
+                                                        <div class="fw-bold text-body fs-13">{{ $church->groups_count }}</div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="text-muted fs-11 text-uppercase fw-semibold mb-1"><i class="ri-calendar-line me-1 text-secondary"></i>Échéance</div>
+                                                        <div class="fw-bold text-body fs-12">{{ $church->subscription_expires_at ? $church->subscription_expires_at->format('d/m/Y') : '—' }}</div>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            {{-- Barre de jours restants --}}
+                                            {{-- Barre de jours restants (Timeline bleue claire) --}}
                                             @if($isActive && $daysLeft !== null && $daysLeft >= 0)
-                                                @php $pct = min(100, round(($daysLeft / 365) * 100)); $barColor = $pct > 40 ? '#22c55e' : ($pct > 15 ? '#f7b84b' : 'var(--vz-danger)'); @endphp
-                                                <div class="mb-2">
-                                                    <div class="d-flex justify-content-between fs-10 text-muted mb-1">
-                                                        <span>{{ $daysLeft }}j restants</span>
-                                                        <span>{{ $pct }}%</span>
+                                                @php 
+                                                    $pct = min(100, round(($daysLeft / 365) * 100)); 
+                                                    $barColor = $pct > 25 ? 'var(--vz-primary)' : ($pct > 10 ? '#f59e0b' : 'var(--vz-danger)'); 
+                                                @endphp
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between fs-11 text-muted mb-1">
+                                                        <span><i class="ri-timer-line me-1 text-primary"></i>Abonnement ({{ $daysLeft }}j restants)</span>
+                                                        <span class="fw-semibold text-body">{{ $pct }}%</span>
                                                     </div>
                                                     <div class="days-bar">
                                                         <div class="days-bar-fill" style="width:{{ $pct }}%; background:{{ $barColor }};"></div>

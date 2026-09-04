@@ -186,6 +186,22 @@
     }
     .btn-cancel:hover { background: var(--vz-light); color: var(--vz-body-color); border-color: var(--vz-gray-300); }
 
+    .form-mandatory-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 14px;
+        background: rgba(var(--vz-danger-rgb), 0.06);
+        border: 1px solid rgba(var(--vz-danger-rgb), 0.18);
+        border-radius: 8px;
+        font-size: 0.78rem;
+        color: var(--vz-secondary-color);
+        line-height: 1.4;
+    }
+    .form-mandatory-note span {
+        display: inline;
+    }
+
     /* =========================================================================
        DANGER ZONE
     ========================================================================= */
@@ -214,8 +230,25 @@
         .section-body { padding: 1.1rem; }
     }
     @media (max-width: 575.98px) {
-        .action-bar { margin: 0 -1rem; padding: 0.9rem 1rem; }
-        .btn-submit-main, .btn-cancel { font-size: 0.82rem; padding: 9px 16px; }
+        .action-bar { padding: 1.1rem 1rem; }
+        .action-bar .d-flex.align-items-center {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 12px !important;
+        }
+        .form-mandatory-note {
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+            padding: 7px 10px;
+            font-size: 0.74rem;
+        }
+        .btn-submit-main, .btn-cancel {
+            width: 100%;
+            justify-content: center;
+            font-size: 0.88rem;
+            padding: 12px 16px;
+        }
     }
 </style>
 @endpush
@@ -518,9 +551,9 @@
             ================================================================= --}}
             <div class="action-bar mt-4 mb-4 rounded-3">
                 <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
-                    <div class="text-muted fs-12 d-flex align-items-center gap-1">
-                        <i class="ri-error-warning-line text-danger"></i>
-                        Les champs marqués <span class="text-danger fw-bold mx-1">*</span> sont obligatoires.
+                    <div class="form-mandatory-note">
+                        <i class="ri-error-warning-line text-danger fs-14 flex-shrink-0"></i>
+                        <span>Les champs marqués d'un <strong class="text-danger">*</strong> sont obligatoires.</span>
                     </div>
                     <div class="d-flex gap-2 flex-wrap justify-content-end">
                         <a href="{{ route('super-admin.churches.show', $church) }}" class="btn-cancel">
