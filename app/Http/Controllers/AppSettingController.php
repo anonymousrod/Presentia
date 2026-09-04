@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\AppSetting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use App\Traits\OptimizesImages;
 
 class AppSettingController extends Controller
@@ -27,7 +26,7 @@ class AppSettingController extends Controller
     {
         $churchId = $this->getActiveChurchId();
         $setting = AppSetting::firstOrCreate(['church_id' => $churchId]);
-        
+
         // Seul le Super Admin HORS mode support peut modifier les logos globaux de la plateforme
         $isSuperAdmin = (auth()->user()?->isSuperAdmin() ?? false) && !session()->has('tenant_church_id');
 

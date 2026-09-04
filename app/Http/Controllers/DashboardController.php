@@ -47,15 +47,15 @@ class DashboardController extends Controller
         $churchId = $this->getActiveChurchId();
         $isSupportMode = session()->has('tenant_church_id') && auth()->check() && auth()->user()->isSuperAdmin();
         $supportChurch = $isSupportMode ? \App\Models\Church::find($churchId) : null;
-        
+
         $displayAdmin = auth()->user();
         if ($isSupportMode && $supportChurch) {
             setPermissionsTeamId($supportChurch->id);
             $localAdmin = User::withoutGlobalScopes()
                 ->where('church_id', $supportChurch->id)
-                ->whereHas('roles', fn($q) => $q->where('name', 'Administrateur'))
+                ->whereHas('roles', fn ($q) => $q->where('name', 'Administrateur'))
                 ->first() ?? User::withoutGlobalScopes()->where('church_id', $supportChurch->id)->first();
-            
+
             if ($localAdmin) {
                 $displayAdmin = $localAdmin;
             }
