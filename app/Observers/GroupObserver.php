@@ -38,10 +38,19 @@ class GroupObserver
             // 1. Assign "Chef de groupe" role to the new leader if set
             if ($newLeaderId) {
                 $newLeader = User::find($newLeaderId);
-                $groupLeaderRole = \Spatie\Permission\Models\Role::where('code', 'group_leader')->first();
+                $churchId = $group->church_id ?? $newLeader?->church_id;
+
+                if (function_exists('setPermissionsTeamId') && $churchId) {
+                    setPermissionsTeamId($churchId);
+                }
+
+                $groupLeaderRole = \App\Models\Role::where('church_id', $churchId)
+                    ->where('code', 'group_leader')
+                    ->first();
+
                 if ($newLeader && $groupLeaderRole) {
                     if (!$newLeader->hasRole($groupLeaderRole->name)) {
-                        $newLeader->assignRole($groupLeaderRole->name);
+                        $newLeader->assignRole($groupLeaderRole);
                     }
                 }
 
@@ -70,14 +79,26 @@ class GroupObserver
 
                 if (!$oldLeaderStillLeads) {
                     $oldLeader = User::find($oldLeaderId);
-                    $groupLeaderRole = \Spatie\Permission\Models\Role::where('code', 'group_leader')->first();
+                    $churchId = $group->church_id ?? $oldLeader?->church_id;
+
+                    if (function_exists('setPermissionsTeamId') && $churchId) {
+                        setPermissionsTeamId($churchId);
+                    }
+
+                    $groupLeaderRole = \App\Models\Role::where('church_id', $churchId)
+                        ->where('code', 'group_leader')
+                        ->first();
+
                     if ($oldLeader && $groupLeaderRole && $oldLeader->hasRole($groupLeaderRole->name)) {
-                        $oldLeader->removeRole($groupLeaderRole->name);
+                        $oldLeader->removeRole($groupLeaderRole);
 
                         // Ensure they still have the default role
-                        $defaultRole = \Spatie\Permission\Models\Role::where('code', 'default_user')->first();
+                        $defaultRole = \App\Models\Role::where('church_id', $churchId)
+                            ->where('code', 'default_user')
+                            ->first();
+
                         if ($defaultRole && !$oldLeader->hasRole($defaultRole->name)) {
-                            $oldLeader->assignRole($defaultRole->name);
+                            $oldLeader->assignRole($defaultRole);
                         }
                     }
                 }
@@ -98,14 +119,26 @@ class GroupObserver
 
             if (!$leaderStillLeads) {
                 $leader = User::find($group->leader_id);
-                $groupLeaderRole = \Spatie\Permission\Models\Role::where('code', 'group_leader')->first();
+                $churchId = $group->church_id ?? $leader?->church_id;
+
+                if (function_exists('setPermissionsTeamId') && $churchId) {
+                    setPermissionsTeamId($churchId);
+                }
+
+                $groupLeaderRole = \App\Models\Role::where('church_id', $churchId)
+                    ->where('code', 'group_leader')
+                    ->first();
+
                 if ($leader && $groupLeaderRole && $leader->hasRole($groupLeaderRole->name)) {
-                    $leader->removeRole($groupLeaderRole->name);
+                    $leader->removeRole($groupLeaderRole);
 
                     // Ensure they still have the default role
-                    $defaultRole = \Spatie\Permission\Models\Role::where('code', 'default_user')->first();
+                    $defaultRole = \App\Models\Role::where('church_id', $churchId)
+                        ->where('code', 'default_user')
+                        ->first();
+
                     if ($defaultRole && !$leader->hasRole($defaultRole->name)) {
-                        $leader->assignRole($defaultRole->name);
+                        $leader->assignRole($defaultRole);
                     }
                 }
             }

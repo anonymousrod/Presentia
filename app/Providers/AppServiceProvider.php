@@ -52,6 +52,17 @@ class AppServiceProvider extends ServiceProvider
             $settings = \App\Models\AppSetting::where('church_id', $churchId)->first()
                 ?? \App\Models\AppSetting::firstOrCreate(['id' => 1]);
 
+            // Les 4 logos fondamentaux de la plateforme MeVoici sont GLOBAUX et constants.
+            // Ils proviennent toujours des paramètres maîtres (id = 1) et ne varient JAMAIS selon l'église,
+            // que ce soit sur le front-office (landing page) ou sur le back-office (administration).
+            $masterSettings = \App\Models\AppSetting::find(1);
+            if ($masterSettings) {
+                $settings->favicon = $masterSettings->favicon;
+                $settings->logo_sm = $masterSettings->logo_sm;
+                $settings->logo_dark = $masterSettings->logo_dark;
+                $settings->logo_light = $masterSettings->logo_light;
+            }
+
             // Generate URLs for all image fields so views don't have to check storage vs assets
             $imageFields = [
                 'favicon', 'logo_sm', 'logo_dark', 'logo_light',

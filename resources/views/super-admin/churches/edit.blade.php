@@ -280,7 +280,7 @@
         @endif
 
         {{-- Formulaire de modification --}}
-        <form action="{{ route('super-admin.churches.update', $church) }}" method="POST" id="edit-church-form">
+        <form action="{{ route('super-admin.churches.update', $church) }}" method="POST" id="edit-church-form" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -326,6 +326,25 @@
                                         @error('city')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
+                                    </div>
+                                </div>
+
+                                {{-- Logo officiel de l'église --}}
+                                <div class="col-12">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Logo officiel de l'église <span class="text-muted fs-11 fw-normal">(optionnel)</span></label>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="bg-white border rounded-3 p-2 shadow-sm d-flex align-items-center justify-content-center flex-shrink-0" style="width: 64px; height: 64px;">
+                                                <img id="church-logo-preview" src="{{ $church->logo_url }}" alt="Logo" class="img-fluid rounded" style="max-height: 50px; max-width: 50px; object-fit: contain;">
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <input type="file" name="logo" id="church-logo-input" class="form-control @error('logo') is-invalid @enderror" accept="image/*" onchange="previewChurchLogo(this)">
+                                                <small class="text-muted d-block mt-1 fs-11">Formats acceptés : PNG, JPG, WEBP, SVG (max. 4 Mo). Le logo s'affichera sur les listes, les PDF et les documents officiels.</small>
+                                                @error('logo')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -522,6 +541,19 @@
 
 @push('scripts')
 <script>
+    function previewChurchLogo(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('church-logo-preview');
+                if (preview) {
+                    preview.src = e.target.result;
+                }
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
     document.getElementById('edit-church-form').addEventListener('submit', function () {
         const btn = document.getElementById('btn-save-church');
         btn.disabled = true;

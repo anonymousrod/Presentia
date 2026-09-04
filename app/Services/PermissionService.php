@@ -76,7 +76,12 @@ class PermissionService
      */
     public function syncUserRoles(User $user, array $roleNames): void
     {
-        $churchId = $user->church_id;
+        $churchId = $user->church_id ?? session('tenant_church_id') ?? auth()->user()?->church_id;
+
+        if (function_exists('setPermissionsTeamId') && $churchId) {
+            setPermissionsTeamId($churchId);
+        }
+
         $defaultRole = Role::where('church_id', $churchId)->where('code', 'default_user')->first();
         if ($defaultRole && !in_array($defaultRole->name, $roleNames)) {
             $roleNames[] = $defaultRole->name;
@@ -88,7 +93,24 @@ class PermissionService
             $roleNames[] = $groupLeaderRole->name;
         }
 
-        $user->syncRoles($roleNames);
+        // Gestion explicite du rôle global Super Admin (qui a church_id = NULL)
+        $hasSuperAdmin = in_array('Super Admin', $roleNames);
+        if ($hasSuperAdmin) {
+            $churchRoleNames = array_values(array_diff($roleNames, ['Super Admin']));
+            $user->syncRoles($churchRoleNames);
+
+            $superAdminRole = Role::whereNull('church_id')->where('name', 'Super Admin')->first();
+            if ($superAdminRole) {
+                $user->assignRole($superAdminRole);
+            }
+        } else {
+            $user->syncRoles($roleNames);
+            $superAdminRole = Role::whereNull('church_id')->where('name', 'Super Admin')->first();
+            if ($superAdminRole && $user->hasRole('Super Admin')) {
+                $user->removeRole($superAdminRole);
+            }
+        }
+
         $this->clearCache();
     }
 

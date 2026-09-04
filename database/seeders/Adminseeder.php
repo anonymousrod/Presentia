@@ -82,8 +82,8 @@ class AdminSeeder extends Seeder
         $admin = User::withoutGlobalScopes()->firstOrCreate(
             ['email' => 'admin@eber.org'],
             [
-                'name'       => 'Administrateur',
-                'first_name' => 'ÉBER',
+                'name'       => 'Admin',
+                'first_name' => 'Super',
                 'phone'      => '69129089',
                 'password'   => Hash::make('Admin@1234!'),
                 'status'     => 'ACTIVE',

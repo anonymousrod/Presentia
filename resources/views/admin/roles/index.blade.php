@@ -172,14 +172,14 @@
                                                         <i class="ri-eye-fill"></i>
                                                     </a>
                                                 </li>
-                                                @unless($role->code === 'admin')
+                                                @unless($role->code === 'admin' || $role->name === 'Super Admin' || $role->code === 'super_admin')
                                                 @can('role.manage')
                                                 <li class="list-inline-item" data-bs-toggle="tooltip" title="Modifier">
                                                     <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-soft-primary px-2 py-1">
                                                         <i class="ri-pencil-fill"></i>
                                                     </a>
                                                 </li>
-                                                @unless($role->is_system)
+                                                @unless($role->is_system || $role->name === 'Super Admin')
                                                 <li class="list-inline-item" data-bs-toggle="tooltip" title="Supprimer">
                                                     <button type="button" class="btn btn-sm btn-soft-danger px-2 py-1"
                                                             @click="deleteTarget = '{{ route('admin.roles.destroy', $role) }}'; deleteName = '{{ $role->name }}'">
@@ -273,12 +273,12 @@
                                         <a href="{{ route('admin.roles.show', $role) }}" class="btn btn-sm btn-soft-info flex-grow-1 fs-12 py-1 shadow-none">
                                             <i class="ri-eye-fill me-1"></i>Voir
                                         </a>
-                                        @unless($role->code === 'admin')
+                                        @unless($role->code === 'admin' || $role->name === 'Super Admin' || $role->code === 'super_admin')
                                         @can('role.manage')
                                         <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-soft-primary flex-grow-1 fs-12 py-1 shadow-none">
                                             <i class="ri-pencil-fill me-1"></i>Modifier
                                         </a>
-                                        @unless($role->is_system)
+                                        @unless($role->is_system || $role->name === 'Super Admin')
                                         <button type="button" class="btn btn-sm btn-soft-danger flex-grow-1 fs-12 py-1 shadow-none" 
                                                 @click="deleteTarget = '{{ route('admin.roles.destroy', $role) }}'; deleteName = '{{ $role->name }}'">
                                             <i class="ri-delete-bin-5-fill me-1"></i>Supprimer

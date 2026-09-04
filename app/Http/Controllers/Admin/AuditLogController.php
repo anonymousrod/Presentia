@@ -16,7 +16,11 @@ class AuditLogController extends Controller
     {
         Gate::authorize('audit.view');
 
-        $query = AuditLog::with(['user', 'auditable'])->orderBy('created_at', 'desc');
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
+
+        $query = AuditLog::with(['user', 'auditable'])
+            ->when($churchId, fn ($q) => $q->where('church_id', $churchId))
+            ->orderBy('created_at', 'desc');
 
         if ($request->filled('action')) {
             $query->where('action', $request->input('action'));
@@ -45,7 +49,6 @@ class AuditLogController extends Controller
         $logs = $query->paginate(20)->withQueryString();
 
         // Liste des utilisateurs pour le filtre
-        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
         $users = User::when($churchId, fn ($q) => $q->where('church_id', $churchId))
             ->orderBy('first_name')->orderBy('name')
             ->get();
@@ -69,8 +72,8 @@ class AuditLogController extends Controller
         ];
 
         $userNames = $users->mapWithKeys(fn ($u) => [$u->id => trim($u->first_name . ' ' . $u->name)]);
-        $groupNames = \App\Models\Group::all()->pluck('name', 'id'); // scoped via BelongsToChurch
-        $activityNames = \App\Models\Activity::all()->pluck('title', 'id'); // scoped via BelongsToChurch
+        $groupNames = \App\Models\Group::when($churchId, fn ($q) => $q->where('church_id', $churchId))->pluck('name', 'id');
+        $activityNames = \App\Models\Activity::when($churchId, fn ($q) => $q->where('church_id', $churchId))->pluck('title', 'id');
 
         return view('admin.audit-logs.index', compact('logs', 'users', 'auditableTypes', 'userNames', 'groupNames', 'activityNames'));
     }

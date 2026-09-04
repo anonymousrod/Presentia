@@ -151,18 +151,38 @@
                 
                 <div class="container-fluid max-w-1200 hero-content">
                     <div class="row align-items-center">
+                        @php
+                            $inSupportMode = session()->has('tenant_church_id');
+                            $supportChurch = $inSupportMode ? \App\Models\Church::find(session('tenant_church_id')) : null;
+                        @endphp
                         <div class="col-lg-7">
                             <div class="mb-4 d-flex justify-content-center justify-content-lg-start">
-                                <span class="badge hero-badge px-3 py-2 rounded-pill shadow-sm mb-3" style="font-size: 0.75rem; letter-spacing: 1px;">
-                                    <i class="ri-shield-user-line me-1"></i> ESPACE ADMINISTRATEUR
-                                </span>
+                                @if($inSupportMode && $supportChurch)
+                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm mb-3 fw-bold" style="font-size: 0.75rem; letter-spacing: 1px;">
+                                        <i class="ri-shield-flash-line me-1"></i> MODE SUPPORT : {{ strtoupper($supportChurch->name) }}
+                                    </span>
+                                @else
+                                    <span class="badge hero-badge px-3 py-2 rounded-pill shadow-sm mb-3" style="font-size: 0.75rem; letter-spacing: 1px;">
+                                        <i class="ri-shield-user-line me-1"></i> ESPACE ADMINISTRATEUR
+                                    </span>
+                                @endif
                             </div>
                             <h1 class="display-5 fw-bold text-white mb-2 text-center text-lg-start" style="line-height: 1.2;">
-                                Bonjour, <span style="color: var(--vz-primary); filter: brightness(1.3);">{{ auth()->user()->first_name }} !</span>
+                                @if($inSupportMode && $supportChurch && isset($displayAdmin))
+                                    Bonjour, <span style="color: var(--vz-warning); filter: brightness(1.2);">{{ $displayAdmin->first_name }} {{ $displayAdmin->name }} !</span>
+                                @else
+                                    Bonjour, <span style="color: var(--vz-primary); filter: brightness(1.3);">{{ auth()->user()->first_name }} !</span>
+                                @endif
                             </h1>
-                            <p class="fs-16 mb-0 d-none d-lg-block" style="max-width: 550px; line-height: 1.6; color: rgba(255,255,255,0.7);">
-                                Voici un résumé complet de l'activité globale sur {{ config('app.name') }} aujourd'hui.
-                            </p>
+                            @if($inSupportMode && $supportChurch && isset($displayAdmin))
+                                <p class="fs-16 mb-0 d-none d-lg-block" style="max-width: 580px; line-height: 1.6; color: rgba(255,255,255,0.85);">
+                                    Vous naviguez actuellement dans l'espace d'administration de <strong>« {{ $supportChurch->name }} »</strong> sous le compte de <strong>{{ $displayAdmin->full_name }}</strong>.
+                                </p>
+                            @else
+                                <p class="fs-16 mb-0 d-none d-lg-block" style="max-width: 550px; line-height: 1.6; color: rgba(255,255,255,0.7);">
+                                    Voici un résumé complet de l'activité globale sur {{ config('app.name') }} aujourd'hui.
+                                </p>
+                            @endif
                             <p class="fs-15 mb-0 d-lg-none text-center" style="color: rgba(255,255,255,0.7);">
                                 Scannez le code QR à l'église pour marquer votre présence.
                             </p>

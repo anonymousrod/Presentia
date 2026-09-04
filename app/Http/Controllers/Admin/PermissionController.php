@@ -25,8 +25,34 @@ class PermissionController extends Controller
     {
         $this->authorize('permission.manage');
 
+        // Déterminer l'église active pour le membre
+        $churchId = $user->church_id ?? session('tenant_church_id') ?? auth()->user()?->church_id;
+
+        // Définir le contexte d'équipe Spatie Permission
+        if (function_exists('setPermissionsTeamId') && $churchId) {
+            setPermissionsTeamId($churchId);
+        }
+
         $permissions = Permission::orderBy('name')->get();
-        $roles = Role::orderBy('name')->get();
+
+        // Récupérer STRICTEMENT les rôles appartenant à cette église
+        $roles = Role::where(function ($q) use ($churchId) {
+            if ($churchId) {
+                $q->where('church_id', $churchId);
+            }
+        })
+        ->orderByRaw("CASE WHEN code = 'admin' THEN 1 ELSE 2 END")
+        ->orderBy('is_system', 'desc')
+        ->orderBy('name')
+        ->get();
+
+        // Si l'utilisateur est Super Admin ou que le Super Admin connecté le gère
+        if ($user->isSuperAdmin() || (auth()->user()?->isSuperAdmin() && !session()->has('tenant_church_id'))) {
+            $superAdminRole = Role::whereNull('church_id')->where('name', 'Super Admin')->first();
+            if ($superAdminRole && !$roles->contains('id', $superAdminRole->id)) {
+                $roles->prepend($superAdminRole);
+            }
+        }
 
         // Récupérer les permissions directes de l'utilisateur
         $directPermissionNames = $user->getDirectPermissions()->pluck('name')->toArray();
@@ -60,9 +86,14 @@ class PermissionController extends Controller
     {
         $this->authorize('permission.manage');
 
+        $churchId = $user->church_id ?? session('tenant_church_id') ?? auth()->user()?->church_id;
+        if (function_exists('setPermissionsTeamId') && $churchId) {
+            setPermissionsTeamId($churchId);
+        }
+
         $data = $request->validate([
             'roles'         => ['nullable', 'array'],
-            'roles.*'       => ['string', 'exists:roles,name'],
+            'roles.*'       => ['string'],
             'permissions'   => ['nullable', 'array'],
             'permissions.*' => ['string', 'exists:permissions,name'],
         ]);

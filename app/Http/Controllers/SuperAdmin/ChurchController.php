@@ -9,6 +9,7 @@ use App\Models\Group;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Services\AuditService;
+use App\Traits\OptimizesImages;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,8 @@ use Illuminate\Support\Str;
 
 class ChurchController extends Controller
 {
+    use OptimizesImages;
+
     /**
      * Liste de toutes les églises avec filtres et recherche.
      */
@@ -79,6 +82,7 @@ class ChurchController extends Controller
             'phone'               => 'nullable|string|max:50',
             'address'             => 'nullable|string|max:255',
             'city'                => 'nullable|string|max:100',
+            'logo'                => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:4096',
             'subscription_amount' => 'required|numeric|min:0',
             'payment_method'      => 'required|string|max:100',
             'payment_reference'   => 'nullable|string|max:100',
@@ -154,12 +158,20 @@ class ChurchController extends Controller
                 'notes'             => 'Abonnement initial de création d\'église.',
             ]);
 
+            // 3.1 Sauvegarde du logo de l'église si fourni
+            if ($request->hasFile('logo')) {
+                $logoPath = $this->optimizeAndStoreImage($request->file('logo'), 'churches');
+                $church->logo_path = $logoPath;
+                $church->save();
+            }
+
             // 4. Création des paramètres par défaut de l'église
             AppSetting::create([
                 'church_id'       => $church->id,
                 'hero_title'      => 'Bienvenue à ' . $church->name,
                 'hero_subtitle'   => 'Plateforme de gestion de la jeunesse et des activités.',
                 'contact_phone'   => $church->phone,
+                'pdf_logo_1'      => $church->logo_path,
             ]);
 
             // 4.1 Génération des rôles et permissions propres à cette église
@@ -297,6 +309,7 @@ class ChurchController extends Controller
             'phone'               => 'nullable|string|max:50',
             'address'             => 'nullable|string|max:255',
             'city'                => 'nullable|string|max:100',
+            'logo'                => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:4096',
             'notes'               => 'nullable|string',
 
             // Infos Administrateur
@@ -315,7 +328,19 @@ class ChurchController extends Controller
 
         return DB::transaction(function () use ($request, $church, $admin) {
             $oldChurch = $church->toArray();
-            $church->update($request->only(['name', 'email', 'phone', 'address', 'city', 'notes']));
+            $updateData = $request->only(['name', 'email', 'phone', 'address', 'city', 'notes']);
+
+            if ($request->hasFile('logo')) {
+                $logoPath = $this->optimizeAndStoreImage($request->file('logo'), 'churches');
+                $updateData['logo_path'] = $logoPath;
+
+                AppSetting::updateOrCreate(
+                    ['church_id' => $church->id],
+                    ['pdf_logo_1' => $logoPath]
+                );
+            }
+
+            $church->update($updateData);
             AuditService::log('updated', $church, $oldChurch, $church->toArray());
 
             // Mise à jour de l'administrateur s'il existe et que les données sont fournies

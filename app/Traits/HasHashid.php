@@ -29,8 +29,8 @@ trait HasHashid
     /**
      * Résoudre le modèle depuis une route (Implicit Route Binding)
      *
-     * @param  mixed  $value Le hash de l'URL
-     * @param  string|null  $field
+     * @param  mixed  $value Le hash ou la valeur de l'URL
+     * @param  string|null  $field Le champ spécifié dans la route (ex: slug)
      * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function resolveRouteBinding($value, $field = null)
@@ -39,12 +39,22 @@ trait HasHashid
             return null;
         }
 
-        $id = decode_id($value);
-
-        if ($id === null) {
-            return null;
+        // Si un champ spécifique est demandé dans la route (ex: {model:slug})
+        if ($field && $field !== 'hashid') {
+            return $this->where($field, $value)->first();
         }
 
-        return $this->where($this->getKeyName(), $id)->first();
+        $id = decode_id($value);
+
+        if ($id !== null) {
+            return $this->where($this->getKeyName(), $id)->first();
+        }
+
+        // Si ce n'est pas un hashid valide, tentative par id direct (si numérique)
+        if (is_numeric($value)) {
+            return $this->where($this->getKeyName(), (int)$value)->first();
+        }
+
+        return null;
     }
 }

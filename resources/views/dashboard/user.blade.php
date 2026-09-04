@@ -153,6 +153,21 @@
                 
                 <div class="container-fluid max-w-1200 hero-content">
                     <div class="row align-items-center">
+                        @php
+                            $inSupportMode = session()->has('tenant_church_id') && auth()->check() && auth()->user()->isSuperAdmin();
+                            $supportChurch = $inSupportMode ? \App\Models\Church::find(session('tenant_church_id')) : null;
+                            $displayName = $user->first_name;
+                            if ($inSupportMode && $supportChurch) {
+                                setPermissionsTeamId($supportChurch->id);
+                                $churchAdmin = \App\Models\User::withoutGlobalScopes()
+                                    ->where('church_id', $supportChurch->id)
+                                    ->whereHas('roles', fn($q) => $q->where('name', 'Administrateur'))
+                                    ->first() ?? \App\Models\User::withoutGlobalScopes()->where('church_id', $supportChurch->id)->first();
+                                if ($churchAdmin) {
+                                    $displayName = $churchAdmin->first_name . ' ' . $churchAdmin->name;
+                                }
+                            }
+                        @endphp
                         <div class="col-lg-7">
                             <div class="d-flex align-items-center mb-4 justify-content-center justify-content-lg-start">
                                 <span class="badge hero-badge px-3 py-2 rounded-pill shadow-sm" style="font-size: 0.75rem; letter-spacing: 1px;">
@@ -160,7 +175,7 @@
                                 </span>
                             </div>
                             <h1 class="hero-title text-white fw-bold display-4 mb-3" style="letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">
-                                Bonjour, <span style="color: var(--vz-info); filter: brightness(1.2);">{{ $user->first_name }} !</span>
+                                Bonjour, <span style="color: var(--vz-info); filter: brightness(1.2);">{{ $displayName }} !</span>
                             </h1>
                             <p class="fs-16 mb-0 d-none d-lg-block" style="max-width: 550px; line-height: 1.6; color: rgba(255,255,255,0.7);">
                                 Bienvenue sur votre tableau de bord. Scannez le code QR à l'église pour marquer votre présence, ou consultez vos prochaines activités.

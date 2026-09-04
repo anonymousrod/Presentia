@@ -4,28 +4,67 @@ namespace App\Http\Controllers;
 
 use App\Models\AppSetting;
 use App\Models\Activity;
+use App\Models\Church;
 use App\Models\Group;
 use App\Models\Gallery;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class HomeController extends Controller
 {
-    public function index()
+    /**
+     * Page d'accueil générale (redirige vers le dashboard si connecté ou affiche la dernière église visitée / église principale).
+     */
+    public function index(): View|RedirectResponse
     {
-        $settings = AppSetting::first() ?? new AppSetting();
+        // Si l'utilisateur est déjà connecté, redirection vers son espace de travail
+        if (auth()->check()) {
+            return redirect()->route('dashboard');
+        }
 
-        // Déterminer l'église active pour la page d'accueil
-        $churchId = session('tenant_church_id')
-            ?? (auth()->check() ? auth()->user()->church_id : null)
-            ?? \App\Models\Church::first()?->id
+        // Récupérer la dernière église visitée par ce navigateur ou la première église active
+        $churchId = session('last_visited_church_id')
+            ?? session('tenant_church_id')
+            ?? Church::where('status', 'active')->first()?->id
             ?? 1;
+
+        $church = Church::find($churchId) ?? Church::first();
+
+        if (!$church) {
+            abort(404, "Aucune église n'est configurée sur la plateforme.");
+        }
+
+        return $this->renderLandingForChurch($church);
+    }
+
+    /**
+     * Page d'accueil dédiée à une église spécifique via son slug : /c/{slug}
+     */
+    public function churchLanding(Church $church): View
+    {
+        // Mémoriser l'église visitée en session pour les prochains accès
+        session(['last_visited_church_id' => $church->id]);
+
+        return $this->renderLandingForChurch($church);
+    }
+
+    /**
+     * Rendu de la page d'accueil personnalisée pour une église donnée.
+     */
+    protected function renderLandingForChurch(Church $church): View
+    {
+        $churchId = $church->id;
 
         // Configurer le team_id de Spatie Permissions pour les requêtes de rôles
         if (function_exists('setPermissionsTeamId')) {
             setPermissionsTeamId($churchId);
         }
 
-        // 1. Organigramme (Responsables / Bureau exécutif)
+        // 1. Paramètres de l'église (Textes, Logos, Bannière)
+        $settings = AppSetting::where('church_id', $churchId)->first() ?? new AppSetting();
+
+        // 2. Organigramme (Responsables / Bureau exécutif de cette église)
         $executiveRoles = [
             'Pasteur',
             'Super Admin',
@@ -72,10 +111,10 @@ class HomeController extends Controller
             return $highestPriority;
         });
 
-        // 2. Les Groupes
+        // 3. Les Groupes de cette église
         $groups = Group::where('church_id', $churchId)->with(['leader', 'collector'])->withCount('members')->get();
 
-        // 3. Les Statistiques
+        // 4. Les Statistiques
         $stats = [
             'users' => User::where('church_id', $churchId)->count(),
             'groups' => $groups->count(),
@@ -83,10 +122,10 @@ class HomeController extends Controller
             'leaders' => $leaders->count(),
         ];
 
-        // 4. Galerie
+        // 5. Galerie photos de cette église
         $galleries = Gallery::where('church_id', $churchId)->where('is_active', true)->latest()->paginate(8, ['*'], 'gallery_page');
 
-        // 5. Actualités (Prochaines activités)
+        // 6. Prochains Événements de cette église
         $activities = Activity::where('church_id', $churchId)
             ->where('start_time', '>=', now())
             ->whereIn('status', ['published', 'ongoing'])
@@ -94,12 +133,30 @@ class HomeController extends Controller
             ->take(3)
             ->get();
 
-        // 6. Numéro de téléphone de contact
+        // 7. Contact responsable
         $admin = $leaders->first(function ($user) {
             return $user->roles->contains(fn ($r) => in_array($r->name, ['Administrateur', 'Super Admin', 'Président']));
         });
-        $adminPhone = $admin?->phone ?: ($settings->church_phone ?? '+229 00 00 00 00');
+        $adminPhone = $settings->contact_phone ?: ($admin?->phone ?: ($church->phone ?? '+229 00 00 00 00'));
 
-        return view('welcome', compact('settings', 'leaders', 'groups', 'stats', 'galleries', 'activities', 'adminPhone'));
+        // 8. Liste de toutes les églises actives (pour le sélecteur / modal de changement d'église)
+        $allChurches = Church::where('status', 'active')
+            ->select(['id', 'name', 'slug', 'city', 'address', 'logo_path'])
+            ->orderBy('name')
+            ->get();
+
+        $currentChurch = $church;
+
+        return view('welcome', compact(
+            'currentChurch',
+            'allChurches',
+            'settings',
+            'leaders',
+            'groups',
+            'stats',
+            'galleries',
+            'activities',
+            'adminPhone'
+        ));
     }
 }

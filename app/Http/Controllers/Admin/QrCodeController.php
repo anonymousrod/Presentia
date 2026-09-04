@@ -87,7 +87,7 @@ class QrCodeController extends Controller
             $settings = \App\Models\AppSetting::find(1);
         }
 
-        $logo1Path = $settings?->pdf_logo_1 ?: ($church?->logo_path ?: ($settings?->logo_dark ?: 'assets/images/Icone J-EBER.png'));
+        $logo1Path = $settings?->pdf_logo_1 ?: ($church?->logo_path ?: ($settings?->logo_sm ?: 'assets/images/home/church-default.svg'));
         $logoUeebBase64 = $this->getLogoBase64($logo1Path);
 
         $pdf = Pdf::loadView('admin.activities.qr-pdf', compact('activity', 'qrCodeDataUri', 'logoUeebBase64', 'church'));

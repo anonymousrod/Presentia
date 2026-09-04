@@ -23,6 +23,11 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        // Le Super Administrateur (y compris en mode support) a toujours accès au tableau de bord administrateur
+        if ($user->isSuperAdmin()) {
+            return $this->adminDashboard();
+        }
+
         // Récupérer les codes de tous les rôles de l'utilisateur
         $userRoleCodes = $user->roles->pluck('code')->toArray();
 
@@ -40,6 +45,21 @@ class DashboardController extends Controller
     private function adminDashboard()
     {
         $churchId = $this->getActiveChurchId();
+        $isSupportMode = session()->has('tenant_church_id') && auth()->check() && auth()->user()->isSuperAdmin();
+        $supportChurch = $isSupportMode ? \App\Models\Church::find($churchId) : null;
+        
+        $displayAdmin = auth()->user();
+        if ($isSupportMode && $supportChurch) {
+            setPermissionsTeamId($supportChurch->id);
+            $localAdmin = User::withoutGlobalScopes()
+                ->where('church_id', $supportChurch->id)
+                ->whereHas('roles', fn($q) => $q->where('name', 'Administrateur'))
+                ->first() ?? User::withoutGlobalScopes()->where('church_id', $supportChurch->id)->first();
+            
+            if ($localAdmin) {
+                $displayAdmin = $localAdmin;
+            }
+        }
 
         $stats = [
             'total_users'          => User::when($churchId, fn ($q) => $q->where('church_id', $churchId))->count(),
@@ -50,7 +70,7 @@ class DashboardController extends Controller
 
         $recent_activities = Activity::latest()->take(5)->get();
 
-        return view('dashboard.admin', compact('stats', 'recent_activities'));
+        return view('dashboard.admin', compact('stats', 'recent_activities', 'displayAdmin', 'supportChurch', 'isSupportMode'));
     }
 
     private function treasurerDashboard()

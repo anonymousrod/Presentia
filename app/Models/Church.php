@@ -135,7 +135,24 @@ class Church extends Model
     }
 
     /**
-     * URL du logo ou logo par défaut.
+     * Vérifie si l'église possède un logo propre personnalisé (soit dans church.logo_path soit dans app_settings.pdf_logo_1).
+     */
+    public function hasCustomLogo(): bool
+    {
+        if ($this->logo_path && file_exists(public_path('storage/' . $this->logo_path))) {
+            return true;
+        }
+
+        $churchSettings = \App\Models\AppSetting::withoutGlobalScopes()->where('church_id', $this->id)->first();
+        if ($churchSettings?->pdf_logo_1 && file_exists(public_path('storage/' . $churchSettings->pdf_logo_1))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * URL du logo de l'église ou logo vectoriel par défaut.
      */
     public function getLogoUrlAttribute(): string
     {
@@ -143,6 +160,42 @@ class Church extends Model
             return asset('storage/' . $this->logo_path);
         }
 
-        return asset('assets/images/logo-sm.png');
+        $churchSettings = \App\Models\AppSetting::withoutGlobalScopes()->where('church_id', $this->id)->first();
+        if ($churchSettings?->pdf_logo_1 && file_exists(public_path('storage/' . $churchSettings->pdf_logo_1))) {
+            return asset('storage/' . $churchSettings->pdf_logo_1);
+        }
+
+        return asset('assets/images/home/church-default.svg');
+    }
+
+    /**
+     * Résolution de route pour les églises (par slug, hashid ou id).
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        if ($field) {
+            return $this->where($field, $value)->first();
+        }
+
+        // Par défaut pour l'église, on cherche par slug en priorité
+        $church = $this->where('slug', $value)->first();
+        if ($church) {
+            return $church;
+        }
+
+        $id = decode_id($value);
+        if ($id !== null) {
+            return $this->where($this->getKeyName(), $id)->first();
+        }
+
+        if (is_numeric($value)) {
+            return $this->where($this->getKeyName(), (int)$value)->first();
+        }
+
+        return null;
     }
 }

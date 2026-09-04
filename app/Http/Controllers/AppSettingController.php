@@ -18,20 +18,21 @@ class AppSettingController extends Controller
     public function edit()
     {
         $churchId = $this->getActiveChurchId();
+        $church = \App\Models\Church::find($churchId);
         $setting = AppSetting::firstOrCreate(['church_id' => $churchId]);
-        return view('admin.settings.edit', compact('setting'));
+        return view('admin.settings.edit', compact('setting', 'church'));
     }
 
     public function update(Request $request)
     {
         $churchId = $this->getActiveChurchId();
         $setting = AppSetting::firstOrCreate(['church_id' => $churchId]);
+        
+        // Seul le Super Admin HORS mode support peut modifier les logos globaux de la plateforme
+        $isSuperAdmin = (auth()->user()?->isSuperAdmin() ?? false) && !session()->has('tenant_church_id');
 
-        $fields = [
-            'favicon',
-            'logo_sm',
-            'logo_dark',
-            'logo_light',
+        // Champs de fichiers autorisés selon le rôle
+        $fileFields = [
             'pdf_logo_1',
             'pdf_logo_2',
             'default_avatar',
@@ -44,6 +45,11 @@ class AppSettingController extends Controller
             'hero_image',
             'about_image',
         ];
+
+        // Seul le Super Admin a le droit de modifier les logos globaux de la plateforme MeVoici
+        if ($isSuperAdmin) {
+            $fileFields = array_merge(['favicon', 'logo_sm', 'logo_dark', 'logo_light'], $fileFields);
+        }
 
         $data = [];
 
@@ -66,15 +72,15 @@ class AppSettingController extends Controller
             }
         }
 
-        foreach ($fields as $field) {
+        foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
-                // S'il y avait déjà un fichier dans 'settings', on peut le supprimer
-                // if ($setting->$field && str_starts_with($setting->$field, 'settings/')) {
-                //     Storage::disk('public')->delete($setting->$field);
-                // }
-
                 $path = $this->optimizeAndStoreImage($request->file($field), 'settings');
                 $data[$field] = $path;
+
+                // Si le Super Admin modifie les logos de la plateforme, on synchronise également le master setting (id: 1)
+                if ($isSuperAdmin && in_array($field, ['favicon', 'logo_sm', 'logo_dark', 'logo_light'])) {
+                    AppSetting::where('id', 1)->update([$field => $path]);
+                }
             }
         }
 

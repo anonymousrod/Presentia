@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\PasswordChangeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/c/{church:slug}', [App\Http\Controllers\HomeController::class, 'churchLanding'])->name('church.landing');
 
 // Pages légales
 Route::view('/politique-de-confidentialite', 'pages.privacy')->name('privacy');

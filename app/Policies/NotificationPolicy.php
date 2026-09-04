@@ -41,9 +41,8 @@ class NotificationPolicy
             return Response::allow();
         }
 
-        $groupLeaderRole = \Spatie\Permission\Models\Role::where('code', 'group_leader')->first();
         if ($user->can(PermissionEnum::NOTIFICATION_SEND_GROUP->value)) {
-            if ($groupLeaderRole && $user->hasRole($groupLeaderRole->name) && $group->leader_id !== $user->id) {
+            if ($user->hasRole('Chef de groupe') && $group->leader_id !== $user->id) {
                 return Response::deny("Vous ne pouvez envoyer une notification qu'aux membres de votre propre groupe.");
             }
 

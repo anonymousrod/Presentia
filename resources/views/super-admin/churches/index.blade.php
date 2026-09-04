@@ -598,9 +598,15 @@
                                             {{-- Ligne 1 : Nom + Statut --}}
                                             <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
                                                 <div class="d-flex align-items-center gap-2 min-w-0">
-                                                    <div class="church-avatar {{ $avatarColor }}" style="width:38px;height:38px;border-radius:10px;font-size:.85rem;">
-                                                        {{ strtoupper(substr($church->name, 0, 2)) }}
-                                                    </div>
+                                                    @if($church->hasCustomLogo())
+                                                        <div class="church-avatar bg-white border shadow-sm p-1" style="width:38px;height:38px;border-radius:10px;">
+                                                            <img src="{{ $church->logo_url }}" alt="{{ $church->name }}" class="w-100 h-100 rounded" style="object-fit: contain;">
+                                                        </div>
+                                                    @else
+                                                        <div class="church-avatar {{ $avatarColor }}" style="width:38px;height:38px;border-radius:10px;font-size:.85rem;">
+                                                            {{ strtoupper(substr($church->name, 0, 2)) }}
+                                                        </div>
+                                                    @endif
                                                     <div class="min-w-0">
                                                         <h6 class="fs-14 fw-bold mb-0 text-truncate">
                                                             <a href="{{ route('super-admin.churches.show', $church) }}" class="text-body">{{ $church->name }}</a>
@@ -717,9 +723,15 @@
                                             {{-- Église --}}
                                             <td class="ps-4">
                                                 <div class="d-flex align-items-center gap-3 min-w-0">
-                                                    <div class="church-avatar {{ $avatarColor }}">
-                                                        {{ strtoupper(substr($church->name, 0, 2)) }}
-                                                    </div>
+                                                    @if($church->hasCustomLogo())
+                                                        <div class="church-avatar bg-white border shadow-sm p-1">
+                                                            <img src="{{ $church->logo_url }}" alt="{{ $church->name }}" class="w-100 h-100 rounded" style="object-fit: contain;">
+                                                        </div>
+                                                    @else
+                                                        <div class="church-avatar {{ $avatarColor }}">
+                                                            {{ strtoupper(substr($church->name, 0, 2)) }}
+                                                        </div>
+                                                    @endif
                                                     <div class="min-w-0 flex-grow-1">
                                                         <h6 class="fs-13 mb-0 fw-bold text-truncate">
                                                             <a href="{{ route('super-admin.churches.show', $church) }}" class="text-body">{{ $church->name }}</a>

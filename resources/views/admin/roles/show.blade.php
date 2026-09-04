@@ -36,7 +36,7 @@
                             <div class="text-white">
                                 <h3 class="text-white fw-bold mb-1 fs-18 fs-md-24">{{ $role->name }}</h3>
                                 <div class="d-flex flex-wrap justify-content-center justify-content-md-start align-items-center gap-2">
-                                    @if(in_array($role->name, ['Administrateur', 'Jeune', 'Chef de groupe']))
+                                    @if(in_array($role->name, ['Administrateur', 'Super Admin', 'Jeune', 'Chef de groupe']) || $role->is_system)
                                         <span class="badge bg-light text-primary fs-11 px-2 py-1">RÔLE SYSTÈME</span>
                                     @else
                                         <span class="badge bg-white text-info fs-11 px-2 py-1">RÔLE PERSONNALISÉ</span>
@@ -58,7 +58,7 @@
                             </div>
                         </div>
 
-                        @unless(in_array($role->name, ['Administrateur']))
+                        @unless(in_array($role->name, ['Administrateur', 'Super Admin']) || $role->code === 'admin' || $role->code === 'super_admin')
                         <div class="w-100 w-xl-auto text-center text-xl-end">
                             <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-light btn-sm text-primary fw-bold shadow-none rounded-pill px-3 py-2 w-100 w-md-auto">
                                 <i class="ri-pencil-fill align-bottom me-1"></i> Modifier le rôle

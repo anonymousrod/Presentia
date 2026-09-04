@@ -243,11 +243,22 @@
                                 @endif
                             </div>
 
-                            {{-- Titre de l'église --}}
-                            <h1 class="display-6 fw-bold text-white mb-2 text-center text-lg-start" style="line-height: 1.2;">
-                                {{ $church->name }}
-                                <span style="color: var(--vz-warning); filter: brightness(1.2); font-size: 0.75em; font-family: monospace;">[{{ $church->code }}]</span>
-                            </h1>
+                            {{-- Titre de l'église avec Logo --}}
+                            <div class="d-flex align-items-center gap-3 mb-2 justify-content-center justify-content-lg-start flex-wrap flex-sm-nowrap">
+                                @if($church->hasCustomLogo())
+                                    <div class="bg-white rounded-3 p-2 shadow-sm border flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                        <img src="{{ $church->logo_url }}" alt="{{ $church->name }}" class="img-fluid rounded" style="max-height: 48px; max-width: 48px; object-fit: contain;">
+                                    </div>
+                                @else
+                                    <div class="rounded-3 p-2 shadow-sm border flex-shrink-0 d-flex align-items-center justify-content-center bg-white bg-opacity-10 text-white" style="width: 60px; height: 60px; font-size: 1.4rem; font-weight: 800;">
+                                        {{ strtoupper(substr($church->name, 0, 2)) }}
+                                    </div>
+                                @endif
+                                <h1 class="display-6 fw-bold text-white mb-0 text-center text-lg-start" style="line-height: 1.2;">
+                                    {{ $church->name }}
+                                    <span style="color: var(--vz-warning); filter: brightness(1.2); font-size: 0.75em; font-family: monospace;">[{{ $church->code }}]</span>
+                                </h1>
+                            </div>
 
                             <p class="fs-15 mb-0 text-center text-lg-start" style="max-width: 650px; line-height: 1.6; color: rgba(255,255,255,0.8);">
                                 @if($church->city)

@@ -12,10 +12,18 @@ class AssignGroupLeaderRole
     public function handle(GroupLeaderAssigned $event): void
     {
         $leader = $event->newLeader;
+        $churchId = $event->group->church_id ?? $leader->church_id;
 
-        $groupLeaderRole = \Spatie\Permission\Models\Role::where('code', 'group_leader')->first();
+        if (function_exists('setPermissionsTeamId') && $churchId) {
+            setPermissionsTeamId($churchId);
+        }
+
+        $groupLeaderRole = \App\Models\Role::where('church_id', $churchId)
+            ->where('code', 'group_leader')
+            ->first();
+
         if ($groupLeaderRole && ! $leader->hasRole($groupLeaderRole->name)) {
-            $leader->assignRole($groupLeaderRole->name);
+            $leader->assignRole($groupLeaderRole);
         }
     }
 }

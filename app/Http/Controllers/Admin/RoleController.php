@@ -142,7 +142,7 @@ class RoleController extends Controller
             abort(403, 'Accès non autorisé à ce rôle.');
         }
 
-        if ($role->code === 'admin' || $role->name === 'Super Admin') {
+        if ($role->code === 'admin' || $role->name === 'Super Admin' || $role->code === 'super_admin') {
             return redirect()->route('admin.roles.index')
                 ->with('error', "Ce rôle système ne peut pas être modifié.");
         }
@@ -171,7 +171,7 @@ class RoleController extends Controller
             abort(403, 'Accès non autorisé à ce rôle.');
         }
 
-        if ($role->code === 'admin' || $role->name === 'Super Admin') {
+        if ($role->code === 'admin' || $role->name === 'Super Admin' || $role->code === 'super_admin') {
             return redirect()->route('admin.roles.index')
                 ->with('error', "Ce rôle système ne peut pas être modifié.");
         }
@@ -181,13 +181,16 @@ class RoleController extends Controller
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('roles', 'name')
-                    ->where('church_id', $role->church_id)
-                    ->ignore($role->id)
+                Rule::unique('roles')->where(function ($query) use ($churchId) {
+                    return $query->where('church_id', $churchId);
+                })->ignore($role->id)
             ],
-            'description'   => ['nullable', 'string', 'max:255'],
+            'description'   => ['nullable', 'string', 'max:500'],
             'permissions'   => ['nullable', 'array'],
             'permissions.*' => ['string', 'exists:permissions,name'],
+        ], [
+            'name.required' => 'Le nom du rôle est obligatoire.',
+            'name.unique'   => 'Un rôle portant ce nom existe déjà pour cette église.',
         ]);
 
         $permissionNames = $data['permissions'] ?? [];
@@ -195,7 +198,7 @@ class RoleController extends Controller
         $this->permissionService->updateRole($role, $data['name'], $data['description'] ?? null, $permissionNames);
 
         return redirect()->route('admin.roles.index')
-            ->with('success', "Les permissions du rôle « {$role->name} » ont été mises à jour pour votre église.");
+            ->with('success', "Le rôle « {$role->name} » a été mis à jour avec succès.");
     }
 
     /**
@@ -208,6 +211,11 @@ class RoleController extends Controller
         $churchId = $this->getActiveChurchId();
         if ($role->church_id && $role->church_id !== $churchId && !auth()->user()->isSuperAdmin()) {
             abort(403, 'Accès non autorisé à ce rôle.');
+        }
+
+        if ($role->is_system || $role->code === 'admin' || $role->name === 'Super Admin' || $role->code === 'super_admin') {
+            return redirect()->route('admin.roles.index')
+                ->with('error', "Ce rôle système ne peut pas être supprimé.");
         }
 
         try {

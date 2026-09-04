@@ -153,8 +153,8 @@ class ActivityController extends Controller
             $settings = \App\Models\AppSetting::find(1);
         }
 
-        $logo1Path = $settings?->pdf_logo_1 ?: ($church?->logo_path ?: ($settings?->logo_dark ?: 'assets/images/Icone J-EBER.png'));
-        $logo2Path = $settings?->pdf_logo_2 ?: 'assets/images/logo-jeunesse-etoile-rouge.png';
+        $logo1Path = $settings?->pdf_logo_1 ?: ($church?->logo_path ?: ($settings?->logo_sm ?: 'assets/images/home/church-default.svg'));
+        $logo2Path = $settings?->pdf_logo_2 ?: ($settings?->logo_dark ?: 'assets/images/logo-dark.png');
 
         $logoUeebBase64 = $this->getLogoBase64($logo1Path);
         $logoJeunesseBase64 = $this->getLogoBase64($logo2Path);
@@ -187,8 +187,8 @@ class ActivityController extends Controller
             $settings = \App\Models\AppSetting::find(1);
         }
 
-        $logo1Path = $settings?->pdf_logo_1 ?: ($church?->logo_path ?: ($settings?->logo_dark ?: 'assets/images/Icone J-EBER.png'));
-        $logo2Path = $settings?->pdf_logo_2 ?: 'assets/images/logo-jeunesse-etoile-rouge.png';
+        $logo1Path = $settings?->pdf_logo_1 ?: ($church?->logo_path ?: ($settings?->logo_sm ?: 'assets/images/home/church-default.svg'));
+        $logo2Path = $settings?->pdf_logo_2 ?: ($settings?->logo_dark ?: 'assets/images/logo-dark.png');
 
         $logoUeebBase64 = $this->getLogoBase64($logo1Path);
         $logoJeunesseBase64 = $this->getLogoBase64($logo2Path);

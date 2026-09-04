@@ -35,16 +35,33 @@
                 <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
+                    @php
+                        $inSupportMode = session()->has('tenant_church_id');
+                        $isSuperAdmin = (auth()->user()?->isSuperAdmin() ?? false) && !$inSupportMode;
+                    @endphp
+
+                    @if($inSupportMode)
+                        <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4">
+                            <i class="ri-shield-flash-line fs-24 me-3 text-warning"></i>
+                            <div>
+                                <h6 class="alert-heading fw-bold mb-1">Mode Support Actif sur « {{ $church->name ?? 'cette église' }} »</h6>
+                                <p class="mb-0 fs-13">Vous personnalisez actuellement les paramètres et les documents de cette paroisse locale. Les logos globaux de la plateforme MeVoici sont masqués en mode support.</p>
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs nav-tabs-custom nav-success mb-3" role="tablist">
+                        @if($isSuperAdmin)
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#logos" role="tab">
+                                    <i class="ri-shield-user-line me-1 align-bottom"></i> Logos Plateforme MeVoici
+                                </a>
+                            </li>
+                        @endif
                         <li class="nav-item">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#logos" role="tab">
-                                <i class="ri-image-line me-1 align-bottom"></i> Logos & Favicon
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#pdfs" role="tab">
-                                <i class="ri-file-pdf-line me-1 align-bottom"></i> Logos PDF
+                            <a class="nav-link {{ !$isSuperAdmin ? 'active' : '' }}" data-bs-toggle="tab" href="#pdfs" role="tab">
+                                <i class="ri-file-pdf-line me-1 align-bottom"></i> Logos Documents & PDF
                             </a>
                         </li>
                         <li class="nav-item">
@@ -71,78 +88,96 @@
 
                     <!-- Tab panes -->
                     <div class="tab-content text-muted">
-                        {{-- TAB: Logos & Favicon --}}
-                        <div class="tab-pane active" id="logos" role="tabpanel">
-                            <div class="row">
-                                <div class="col-md-6 mb-4">
-                                    <label class="form-label">Favicon</label>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="me-3 bg-light p-2 rounded text-center" style="min-width: 80px;">
-                                            <img src="{{ $appSettings->favicon_url }}" alt="Favicon" style="max-height: 40px; max-width: 100%;">
-                                        </div>
-                                        <input type="file" name="favicon" class="form-control" accept="image/*">
+                        @if($isSuperAdmin)
+                            {{-- TAB: Logos Plateforme MeVoici (Super Admin Only) --}}
+                            <div class="tab-pane active" id="logos" role="tabpanel">
+                                <div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-4">
+                                    <i class="ri-information-line fs-20 me-2 text-info"></i>
+                                    <div>
+                                        <strong>Zone réservée au Super Administrateur :</strong> Ces visuels définissent l'identité globale de la plateforme MeVoici (Favicon, logos officiels sur fonds sombre et clair, logo réduit).
                                     </div>
-                                    <small class="text-muted d-block">L'icône du site affichée dans l'onglet du navigateur (Favicon). Valeur par défaut : Icone J-EBER.png.</small>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label fw-bold">Favicon MeVoici</label>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="me-3 bg-light p-2 rounded text-center" style="min-width: 80px;">
+                                                <img src="{{ $appSettings->favicon_url }}" alt="Favicon" style="max-height: 40px; max-width: 100%;">
+                                            </div>
+                                            <input type="file" name="favicon" class="form-control" accept="image/*">
+                                        </div>
+                                        <small class="text-muted d-block">L'icône de l'application affichée dans l'onglet du navigateur.</small>
+                                    </div>
 
-                                <div class="col-md-6 mb-4">
-                                    <label class="form-label">Logo Réduit (Logo SM)</label>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="me-3 bg-light p-2 rounded text-center" style="min-width: 80px;">
-                                            <img src="{{ $appSettings->logo_sm_url }}" alt="Logo SM" style="max-height: 40px; max-width: 100%;">
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label fw-bold">Logo Réduit (SM)</label>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="me-3 bg-light p-2 rounded text-center" style="min-width: 80px;">
+                                                <img src="{{ $appSettings->logo_sm_url }}" alt="Logo SM" style="max-height: 40px; max-width: 100%;">
+                                            </div>
+                                            <input type="file" name="logo_sm" class="form-control" accept="image/*">
                                         </div>
-                                        <input type="file" name="logo_sm" class="form-control" accept="image/*">
+                                        <small class="text-muted d-block">Logo carré ou réduit pour le menu rétracté et l'en-tête mobile.</small>
                                     </div>
-                                    <small class="text-muted d-block">Logo réduit (pour la sidebar réduite et le header mobile).</small>
-                                </div>
-                                
-                                <div class="col-md-6 mb-4">
-                                    <label class="form-label">Logo Principal (Pour Thème Sombre)</label>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="me-3 bg-dark p-2 rounded text-center" style="min-width: 150px;">
-                                            <img src="{{ $appSettings->logo_light_url }}" alt="Logo Thème Sombre" style="max-height: 40px; max-width: 100%;">
+                                    
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label fw-bold">Logo Principal (Pour Thème Sombre)</label>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="me-3 bg-dark p-2 rounded text-center" style="min-width: 150px;">
+                                                <img src="{{ $appSettings->logo_light_url }}" alt="Logo Thème Sombre" style="max-height: 40px; max-width: 100%;">
+                                            </div>
+                                            <input type="file" name="logo_light" class="form-control" accept="image/*">
                                         </div>
-                                        <input type="file" name="logo_light" class="form-control" accept="image/*">
+                                        <small class="text-muted d-block">Logo blanc/clair affiché sur les arrière-plans foncés et dans la barre de navigation d'accueil.</small>
                                     </div>
-                                    <small class="text-muted d-block">Il s'agit du logo de couleur claire (texte blanc). Il est affiché quand l'application ou le menu est en <b>thème sombre</b>.</small>
-                                </div>
 
-                                <div class="col-md-6 mb-4">
-                                    <label class="form-label">Logo Principal (Pour Thème Clair)</label>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="me-3 bg-light p-2 rounded text-center" style="min-width: 150px;">
-                                            <img src="{{ $appSettings->logo_dark_url }}" alt="Logo Thème Clair" style="max-height: 40px; max-width: 100%;">
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label fw-bold">Logo Principal (Pour Thème Clair)</label>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="me-3 bg-light p-2 rounded text-center" style="min-width: 150px;">
+                                                <img src="{{ $appSettings->logo_dark_url }}" alt="Logo Thème Clair" style="max-height: 40px; max-width: 100%;">
+                                            </div>
+                                            <input type="file" name="logo_dark" class="form-control" accept="image/*">
                                         </div>
-                                        <input type="file" name="logo_dark" class="form-control" accept="image/*">
+                                        <small class="text-muted d-block">Logo sombre affiché quand l'application ou le menu est en thème clair.</small>
                                     </div>
-                                    <small class="text-muted d-block">Il s'agit du logo de couleur sombre. Il est affiché quand l'application ou le menu est en <b>thème clair</b>.</small>
                                 </div>
                             </div>
-                        </div>
+                        @endif
 
-                        {{-- TAB: PDFs --}}
-                        <div class="tab-pane" id="pdfs" role="tabpanel">
+                        {{-- TAB: Logos Documents & PDF --}}
+                        <div class="tab-pane {{ !$isSuperAdmin ? 'active' : '' }}" id="pdfs" role="tabpanel">
                             <div class="row">
                                 <div class="col-md-6 mb-4">
-                                    <label class="form-label">Logo UEEB (Exports PDF)</label>
+                                    <label class="form-label fw-bold">Logo de l'Église locale (En-tête Gauche PDF)</label>
                                     <div class="d-flex align-items-center mb-2">
-                                        <div class="me-3 bg-light p-2 rounded text-center" style="min-width: 100px;">
-                                            <img src="{{ $appSettings->pdf_logo_1_url }}" alt="Logo PDF 1" style="max-height: 60px; max-width: 100%;">
+                                        <div class="me-3 bg-light p-2 rounded text-center border" style="min-width: 100px;">
+                                            @php
+                                                $logo1Preview = $setting->pdf_logo_1 
+                                                    ? asset('storage/' . $setting->pdf_logo_1) 
+                                                    : ($church?->logo_url ?? $appSettings->logo_sm_url);
+                                            @endphp
+                                            <img src="{{ $logo1Preview }}" alt="Logo Église locale" style="max-height: 60px; max-width: 100%;">
                                         </div>
                                         <input type="file" name="pdf_logo_1" class="form-control" accept="image/*">
                                     </div>
-                                    <small class="text-muted d-block">Logo UEEB utilisé dans les exports PDF (Présences, Utilisateurs).</small>
+                                    <small class="text-muted d-block">Logo de votre église locale imprimé en haut à gauche de toutes les fiches PDF (présences, cultes, cartes de membres). Par défaut : le logo de l'église.</small>
                                 </div>
 
                                 <div class="col-md-6 mb-4">
-                                    <label class="form-label">Logo Jeunesse Étoile Rouge (Exports PDF)</label>
+                                    <label class="form-label fw-bold">Logo MeVoici / Logo de la jeunesse (En-tête Droit PDF)</label>
                                     <div class="d-flex align-items-center mb-2">
-                                        <div class="me-3 bg-light p-2 rounded text-center" style="min-width: 100px;">
-                                            <img src="{{ $appSettings->pdf_logo_2_url }}" alt="Logo PDF 2" style="max-height: 60px; max-width: 100%;">
+                                        <div class="me-3 bg-light p-2 rounded text-center border" style="min-width: 100px;">
+                                            @php
+                                                $logo2Preview = $setting->pdf_logo_2 
+                                                    ? asset('storage/' . $setting->pdf_logo_2) 
+                                                    : ($appSettings->logo_dark_url ?? asset('assets/images/logo-dark.png'));
+                                            @endphp
+                                            <img src="{{ $logo2Preview }}" alt="Logo MeVoici / Jeunesse" style="max-height: 60px; max-width: 100%;">
                                         </div>
                                         <input type="file" name="pdf_logo_2" class="form-control" accept="image/*">
                                     </div>
-                                    <small class="text-muted d-block">Logo Jeunesse Étoile Rouge utilisé dans les exports PDF.</small>
+                                    <small class="text-muted d-block">Logo de la jeunesse ou de la plateforme MeVoici imprimé en haut à droite des exports PDF. Par défaut : logo officiel MeVoici (logo_dark).</small>
                                 </div>
                             </div>
                         </div>
