@@ -8,56 +8,61 @@
             <img src="{{ asset('assets/images/profile-bg.jpg') }}" alt="" class="profile-wid-img" />
         </div>
     </div>
-    <div class="pt-4 mb-4 mb-lg-3 pb-lg-4 profile-wrapper">
-        <div class="row g-4">
+    
+    {{-- En-tête profil compact & ultra-responsive --}}
+    <div class="pt-3 pt-md-4 mb-2 mb-md-3 profile-wrapper position-relative">
+        <div class="row g-2 g-md-4 align-items-center">
             <div class="col-auto">
-                <div class="avatar-lg">
-                    <img src="{{ $user->avatar_url }}" alt="user-img" class="img-thumbnail rounded-circle" style="width: 100%; height: 100%; object-fit: cover;" />
+                <div class="avatar-lg profile-avatar-box">
+                    <img src="{{ $user->avatar_url }}" alt="user-img" class="rounded-circle profile-header-avatar w-100 h-100" />
                 </div>
             </div>
             <!--end col-->
-            <div class="col">
-                <div class="p-2">
-                    <h3 class="text-white mb-1 text-break">{{ $user->first_name }} {{ $user->name }}</h3>
-                    <p class="text-white text-opacity-75">
+            <div class="col min-w-0">
+                <div class="p-1 p-md-2">
+                    <h3 class="text-white mb-1 fs-18 fs-md-22 fw-bold text-truncate">{{ $user->first_name }} {{ $user->name }}</h3>
+                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                         <span class="badge bg-{{ match($user->status->value) {
                             'ACTIVE' => 'success',
                             'PENDING' => 'warning',
                             'INACTIVE' => 'secondary',
                             'SUSPENDED' => 'danger',
                             default => 'primary'
-                        } }} fs-12">
+                        } }} fs-11 px-2 py-1">
                             {{ $user->status->label() }}
                         </span>
-                    </p>
-                    <div class="hstack flex-wrap text-white-50 gap-2">
-                        <div><i class="ri-mail-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>{{ $user->email ?? 'Email non renseigné' }}</div>
-                        <div>
-                            <i class="ri-phone-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>{{ $user->phone ?? 'Téléphone non renseigné' }}
-                        </div>
+                        <span class="text-white text-opacity-75 fs-12 fw-medium">{{ $user->roles->first()?->name ?? 'Membre' }}</span>
+                    </div>
+                    <div class="d-flex flex-wrap align-items-center gap-2 gap-md-3 text-white-50 fs-12 mt-1">
+                        @if($user->email)
+                            <div class="text-truncate text-white text-opacity-75" style="max-width: 240px;" title="{{ $user->email }}">
+                                <i class="ri-mail-line me-1 text-white text-opacity-75 fs-14 align-middle"></i>{{ $user->email }}
+                            </div>
+                        @endif
+                        @if($user->phone)
+                            <div class="text-white text-opacity-75">
+                                <i class="ri-phone-line me-1 text-white text-opacity-75 fs-14 align-middle"></i>{{ $user->phone }}
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
             <!--end col-->
-            <div class="col-12 col-lg-auto order-last order-lg-0">
-                <div class="row text text-white-50 text-center">
-                    <div class="col-lg-4 col-4">
-                        <div class="p-2">
-                            <h4 class="text-white mb-1">{{ $user->groups()->count() }}</h4>
-                            <p class="fs-14 mb-0">Groupes</p>
-                        </div>
+            <div class="col-12 col-lg-auto order-last order-lg-0 mt-2 mt-lg-0">
+                <div class="profile-stats-bar d-flex align-items-center justify-content-around py-1 px-2 rounded-3">
+                    <div class="stat-item text-center flex-fill px-2 px-md-3 py-1">
+                        <span class="d-block fw-bold text-white fs-15 fs-md-18 mb-0 lh-1">{{ $user->groups()->count() }}</span>
+                        <span class="d-block text-white text-opacity-75 text-uppercase fw-semibold stat-label mt-1">Groupes</span>
                     </div>
-                    <div class="col-lg-4 col-4">
-                        <div class="p-2">
-                            <h4 class="text-white mb-1">{{ $user->registrations()->count() }}</h4>
-                            <p class="fs-14 mb-0">Inscriptions</p>
-                        </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item text-center flex-fill px-2 px-md-3 py-1">
+                        <span class="d-block fw-bold text-white fs-15 fs-md-18 mb-0 lh-1">{{ $user->registrations()->count() }}</span>
+                        <span class="d-block text-white text-opacity-75 text-uppercase fw-semibold stat-label mt-1">Inscriptions</span>
                     </div>
-                    <div class="col-lg-4 col-4">
-                        <div class="p-2">
-                            <h4 class="text-white mb-1">{{ $user->attendances()->count() }}</h4>
-                            <p class="fs-14 mb-0">Présences</p>
-                        </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item text-center flex-fill px-2 px-md-3 py-1">
+                        <span class="d-block fw-bold text-white fs-15 fs-md-18 mb-0 lh-1">{{ $user->attendances()->count() }}</span>
+                        <span class="d-block text-white text-opacity-75 text-uppercase fw-semibold stat-label mt-1">Présences</span>
                     </div>
                 </div>
             </div>

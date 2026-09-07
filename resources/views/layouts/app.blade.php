@@ -81,6 +81,8 @@
         </div>
         <!-- end main content-->
 
+        @include('layouts.partials.mobile-bottom-nav')
+
     </div>
     <!-- END layout-wrapper -->
 

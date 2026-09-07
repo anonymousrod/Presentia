@@ -115,9 +115,18 @@ class ActivityController extends Controller
     {
         $user = Auth::user();
 
-        // Check if the activity is PUBLISHED
+        // Check if the activity is PUBLISHED (allow preview for admins, managers, and responsible)
         if ($activity->status !== ActivityStatus::PUBLISHED) {
-            abort(403, "Cette activité n'est pas disponible.");
+            $canPreview = $user && (
+                $user->hasRole('Administrateur') ||
+                $user->isSuperAdmin() ||
+                $user->can(\App\Enums\PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value) ||
+                $activity->responsible_id === $user->id
+            );
+
+            if (!$canPreview) {
+                abort(403, "Cette activité n'est pas disponible.");
+            }
         }
 
         $this->authorizeVisibility($activity, $user);
@@ -139,7 +148,7 @@ class ActivityController extends Controller
      */
     protected function authorizeVisibility(Activity $activity, $user)
     {
-        if ($user && $user->hasRole('Administrateur')) {
+        if ($user && ($user->hasRole('Administrateur') || $user->isSuperAdmin() || $activity->responsible_id === $user->id)) {
             return;
         }
 

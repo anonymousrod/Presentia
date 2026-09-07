@@ -3,64 +3,84 @@
 @section('title', 'Profil & Paramètres')
 
 @section('content')
-{{-- Cover image with overlay for the Change Cover button (exactly like Velzon) --}}<div class="profile-foreground position-relative mx-n4 mt-n4">
+{{-- Bannière de couverture avec action intégrée en haut à droite --}}
+<div class="profile-foreground position-relative mx-n4 mt-n4">
     <div class="profile-wid-bg">
         @if($user->cover_photo)
-            <img src="{{ asset('storage/' . $user->cover_photo) }}" alt="cover-img" class="profile-wid-img" style="object-fit: cover;" />
+            <img src="{{ asset('storage/' . $user->cover_photo) }}" alt="cover-img" class="profile-wid-img" />
         @else
-            <img src="{{ asset('assets/images/profile-bg.jpg') }}" alt="cover-img" class="profile-wid-img" style="object-fit: cover;" />
+            <img src="{{ asset('assets/images/profile-bg.jpg') }}" alt="cover-img" class="profile-wid-img" />
         @endif
+    </div>
+    
+    {{-- Bouton discret & élégant de modification de la couverture --}}
+    <div class="position-absolute top-0 end-0 p-3 z-3">
+        <form id="cover-form" action="{{ route('profile.cover') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <input id="profile-foreground-img-file-input" name="cover_photo" type="file" class="d-none" onchange="document.getElementById('cover-form').submit();">
+            <label for="profile-foreground-img-file-input" class="btn-profile-cover-action shadow-sm mb-0">
+                <i class="ri-camera-lens-line align-middle me-1"></i>
+                <span class="d-none d-sm-inline">Modifier la couverture</span>
+            </label>
+        </form>
     </div>
 </div>
 
-<div class="pt-4 mb-4 mb-lg-3 pb-lg-4 profile-wrapper">
-    <div class="row g-4 align-items-center">
+{{-- En-tête profil compact & ultra-responsive --}}
+<div class="pt-3 pt-md-4 mb-2 mb-md-3 profile-wrapper position-relative">
+    <div class="row g-2 g-md-4 align-items-center">
         <div class="col-auto">
-            <img src="{{ $user->avatar_url }}" alt="user-img" class="img-thumbnail rounded-circle avatar-lg" style="object-fit: cover;" />
+            <div class="avatar-lg profile-avatar-box">
+                <img src="{{ $user->avatar_url }}" alt="user-img" class="rounded-circle profile-header-avatar w-100 h-100" />
+            </div>
         </div>
-        <div class="col">
-            <div class="p-2">
-                <h3 class="text-white mb-1">{{ $user->full_name }}</h3>
-                <p class="text-white text-opacity-75">
+        <div class="col min-w-0">
+            <div class="p-1 p-md-2">
+                <h3 class="text-white mb-1 fs-18 fs-md-22 fw-bold text-truncate">{{ $user->full_name }}</h3>
+                <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                     <span class="badge bg-{{ match($user->status->value) {
                         'ACTIVE' => 'success',
                         'PENDING' => 'warning',
                         'INACTIVE' => 'secondary',
                         'SUSPENDED' => 'danger',
                         default => 'primary'
-                    } }} fs-12">
+                    } }} fs-11 px-2 py-1">
                         {{ $user->status->label() }}
                     </span>
-                    <span class="ms-2">{{ $user->roles->first()?->name ?? 'Membre' }}</span>
-                </p>
-                <div class="hstack text-white-50 gap-1">
-                    <div class="me-2"><i class="ri-mail-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>{{ $user->email ?? 'Email non renseigné' }}</div>
-                    <div>
-                        <i class="ri-phone-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>{{ $user->phone ?? 'Téléphone non renseigné' }}
-                    </div>
+                    <span class="text-white text-opacity-75 fs-12 fw-medium">{{ $user->roles->first()?->name ?? 'Membre' }}</span>
+                </div>
+                <div class="d-flex flex-wrap align-items-center gap-2 gap-md-3 text-white-50 fs-12 mt-1">
+                    @if($user->email)
+                        <div class="text-truncate text-white text-opacity-75" style="max-width: 240px;" title="{{ $user->email }}">
+                            <i class="ri-mail-line me-1 text-white text-opacity-75 fs-14 align-middle"></i>{{ $user->email }}
+                        </div>
+                    @endif
+                    @if($user->phone)
+                        <div class="text-white text-opacity-75">
+                            <i class="ri-phone-line me-1 text-white text-opacity-75 fs-14 align-middle"></i>{{ $user->phone }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
         <!--end col-->
-        <div class="col-12 col-lg-auto order-last order-lg-0">
-            <div class="row text text-white-50 text-center">
-                <div class="col-lg-4 col-4">
-                    <div class="p-2">
-                        <h4 class="text-white mb-1">{{ $user->groups()->count() }}</h4>
-                        <p class="fs-14 mb-0">Groupes</p>
-                    </div>
+
+        {{-- Barre de statistiques compacte (glassmorphism sur mobile, intégrée sur desktop) --}}
+        <div class="col-12 col-lg-auto order-last order-lg-0 mt-2 mt-lg-0">
+            <div class="profile-stats-bar d-flex align-items-center justify-content-around py-1 px-2 rounded-3">
+                <div class="stat-item text-center flex-fill px-2 px-md-3 py-1">
+                    <span class="d-block fw-bold text-white fs-15 fs-md-18 mb-0 lh-1">{{ $user->groups()->count() }}</span>
+                    <span class="d-block text-white text-opacity-75 text-uppercase fw-semibold stat-label mt-1">Groupes</span>
                 </div>
-                <div class="col-lg-4 col-4">
-                    <div class="p-2">
-                        <h4 class="text-white mb-1">{{ $user->registrations()->count() }}</h4>
-                        <p class="fs-14 mb-0">Inscriptions</p>
-                    </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item text-center flex-fill px-2 px-md-3 py-1">
+                    <span class="d-block fw-bold text-white fs-15 fs-md-18 mb-0 lh-1">{{ $user->registrations()->count() }}</span>
+                    <span class="d-block text-white text-opacity-75 text-uppercase fw-semibold stat-label mt-1">Inscriptions</span>
                 </div>
-                <div class="col-lg-4 col-4">
-                    <div class="p-2">
-                        <h4 class="text-white mb-1">{{ $user->attendances()->count() }}</h4>
-                        <p class="fs-14 mb-0">Présences</p>
-                    </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item text-center flex-fill px-2 px-md-3 py-1">
+                    <span class="d-block fw-bold text-white fs-15 fs-md-18 mb-0 lh-1">{{ $user->attendances()->count() }}</span>
+                    <span class="d-block text-white text-opacity-75 text-uppercase fw-semibold stat-label mt-1">Présences</span>
                 </div>
             </div>
         </div>
@@ -69,28 +89,7 @@
     <!--end row-->
 </div>
 
-<div class="row">
-    <div class="col-lg-12">
-        <div>
-            <div class="d-flex profile-wrapper">
-                <ul class="nav nav-pills animation-nav profile-nav gap-2 gap-lg-3 flex-grow-1" role="tablist">
-                    <!-- Vide pour pousser le bouton à droite -->
-                </ul>
-                <div class="flex-shrink-0 d-flex gap-2">
-                    <form id="cover-form" action="{{ route('profile.cover') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <input id="profile-foreground-img-file-input" name="cover_photo" type="file" class="d-none" onchange="document.getElementById('cover-form').submit();">
-                        <label for="profile-foreground-img-file-input" class="btn btn-success">
-                            <i class="ri-image-edit-line align-bottom me-1"></i> Modifier la couverture
-                        </label>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row pt-4">
+<div class="row pt-2 pt-md-3">
     <div class="col-xxl-3">
         <div class="card">
             <div class="card-body p-4">

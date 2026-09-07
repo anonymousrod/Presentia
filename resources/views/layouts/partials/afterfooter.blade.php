@@ -21,7 +21,7 @@
 </div>
 
 <!-- Theme Settings -->
-<div class="offcanvas offcanvas-end border-0" tabindex="-1" id="theme-settings-offcanvas">
+<div class="offcanvas offcanvas-end border-0 d-none d-md-flex" tabindex="-1" id="theme-settings-offcanvas">
     <div class="d-flex align-items-center bg-primary bg-gradient p-3 offcanvas-header">
         <h5 class="m-0 me-2 text-white">Personnalisation du thème</h5>
 
@@ -814,3 +814,25 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Garantir que la modale de personnalisation du thème ne s'ouvre jamais sur mobile
+    document.addEventListener('DOMContentLoaded', function() {
+        var themeOffcanvas = document.getElementById('theme-settings-offcanvas');
+        if (themeOffcanvas) {
+            themeOffcanvas.addEventListener('show.bs.offcanvas', function(e) {
+                if (window.innerWidth < 768) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+            // Si jamais la modale était déjà en cours d'affichage ou ouverte sur petit écran
+            if (window.innerWidth < 768) {
+                themeOffcanvas.classList.remove('show');
+                var backdrop = document.querySelector('.offcanvas-backdrop');
+                if (backdrop) backdrop.remove();
+            }
+        }
+    });
+</script>
+

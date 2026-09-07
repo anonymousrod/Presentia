@@ -246,23 +246,88 @@
 
                         <div class="row g-2 align-items-center">
                             @if(count($otherEligibleUsers) > 0)
-                            <div class="col-12 col-md-6 col-lg-7">
-                                <label class="form-label fw-semibold mb-1 fs-11 uppercase tracking-wider text-muted">
-                                    <i class="mdi mdi-account-plus-outline me-1"></i>Ajouter à la volée
+                            <div class="col-12 col-md-6 col-lg-7" x-show="otherEligibleUsers.length > 0">
+                                <label class="form-label fw-semibold mb-1 fs-11 uppercase tracking-wider text-muted d-flex align-items-center justify-content-between">
+                                    <span><i class="mdi mdi-account-plus-outline me-1"></i>Ajouter à la volée</span>
+                                    <span class="badge bg-light text-muted border fs-10" x-text="otherEligibleUsers.length + ' disponible' + (otherEligibleUsers.length > 1 ? 's' : '')"></span>
                                 </label>
-                                <div class="input-group input-group-sm">
-                                    <select class="form-select rounded-start-3" x-model="selectedUserId">
-                                        <option value="">— Sélectionner un membre —</option>
-                                        @foreach($otherEligibleUsers as $u)
-                                            <option value="{{ $u->id }}">{{ $u->first_name }} {{ $u->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    <button class="btn btn-primary rounded-end-3" type="button"
-                                            @click="addUnregisteredMember()"
-                                            :disabled="!selectedUserId || isClosed">
-                                        <i class="mdi mdi-plus"></i>
-                                        <span class="d-none d-sm-inline ms-1">Ajouter</span>
-                                    </button>
+                                
+                                <div class="position-relative" @click.outside="isAddDropdownOpen = false">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-light border-light-subtle text-muted">
+                                            <i class="mdi mdi-account-search-outline"></i>
+                                        </span>
+                                        <input type="text"
+                                               class="form-control bg-light border-light-subtle"
+                                               placeholder="Rechercher une personne à ajouter..."
+                                               x-model="searchAddQuery"
+                                               @focus="isAddDropdownOpen = true"
+                                               @input="isAddDropdownOpen = true"
+                                               @keydown.enter.prevent="addFirstFilteredEligible()"
+                                               @keydown.escape="isAddDropdownOpen = false"
+                                               :disabled="isClosed">
+                                        <template x-if="searchAddQuery">
+                                            <button class="btn btn-light border border-start-0 border-light-subtle text-muted px-2" type="button" @click="searchAddQuery = ''" title="Effacer la recherche">
+                                                <i class="mdi mdi-close"></i>
+                                            </button>
+                                        </template>
+                                        <button class="btn btn-primary rounded-end-3 d-flex align-items-center gap-1" type="button"
+                                                @click="isAddDropdownOpen = !isAddDropdownOpen"
+                                                :disabled="isClosed"
+                                                title="Ouvrir la liste des membres">
+                                            <i class="mdi mdi-chevron-down fs-14" :class="{ 'mdi-chevron-up': isAddDropdownOpen }"></i>
+                                            <span class="d-none d-sm-inline fs-12">Choisir</span>
+                                        </button>
+                                    </div>
+
+                                    {{-- Menu déroulant de résultats avec recherche en temps réel --}}
+                                    <div x-show="isAddDropdownOpen && !isClosed"
+                                         x-transition:enter="transition ease-out duration-150"
+                                         x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                                         x-transition:leave="transition ease-in duration-100"
+                                         x-transition:leave-start="opacity-100 transform translate-y-0"
+                                         x-transition:leave-end="opacity-0 transform -translate-y-2"
+                                         class="position-absolute start-0 end-0 mt-1 bg-body border border-light-subtle rounded-3 shadow-lg z-3 overflow-hidden"
+                                         style="max-height: 280px; overflow-y: auto; display: none;">
+                                        
+                                        <div class="px-3 py-2 border-bottom bg-light-subtle d-flex align-items-center justify-content-between">
+                                            <span class="fs-11 fw-semibold text-muted text-uppercase tracking-wider">
+                                                Membres disponibles (<span x-text="filteredEligibleUsers().length"></span>)
+                                            </span>
+                                            <span class="fs-11 text-muted">Cliquez pour ajouter</span>
+                                        </div>
+
+                                        <div class="list-group list-group-flush mb-0">
+                                            <template x-for="user in filteredEligibleUsers()" :key="user.user_id">
+                                                <button type="button"
+                                                        class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 px-3 border-0 border-bottom text-start"
+                                                        @click="addEligibleMember(user)">
+                                                    <div class="d-flex align-items-center gap-2 min-w-0">
+                                                        <div class="avatar-xs flex-shrink-0">
+                                                            <div class="avatar-title rounded-circle bg-primary-subtle text-primary fw-bold fs-12"
+                                                                 x-text="user.full_name.charAt(0).toUpperCase()">
+                                                            </div>
+                                                        </div>
+                                                        <div class="min-w-0">
+                                                            <div class="fw-medium fs-13 text-body text-truncate" x-text="user.full_name"></div>
+                                                            <small class="text-muted fs-11 text-truncate d-block" x-text="user.email || 'Sans adresse email'"></small>
+                                                        </div>
+                                                    </div>
+                                                    <span class="badge bg-primary-subtle text-primary rounded-pill px-2 py-1 fs-11 flex-shrink-0 ms-2">
+                                                        <i class="mdi mdi-plus me-1"></i>Ajouter
+                                                    </span>
+                                                </button>
+                                            </template>
+
+                                            <template x-if="filteredEligibleUsers().length === 0">
+                                                <div class="p-3 text-center text-muted fs-12">
+                                                    <i class="mdi mdi-account-off-outline fs-22 d-block mb-1 text-muted"></i>
+                                                    Aucun membre trouvé pour « <strong class="text-body" x-text="searchAddQuery"></strong> »
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             @endif
@@ -536,6 +601,8 @@
             searchQuery: '',
             statusFilterTab: '',
             selectedUserId: '',
+            searchAddQuery: '',
+            isAddDropdownOpen: false,
             otherEligibleUsers: [
                 @foreach($otherEligibleUsers as $u)
                 {
@@ -574,21 +641,48 @@
                     return matchesSearch && matchesStatus;
                 });
             },
+            filteredEligibleUsers() {
+                if (!this.searchAddQuery || !this.searchAddQuery.trim()) {
+                    return this.otherEligibleUsers;
+                }
+                const q = this.searchAddQuery.toLowerCase().trim();
+                return this.otherEligibleUsers.filter(u => {
+                    return (u.full_name && u.full_name.toLowerCase().includes(q)) ||
+                           (u.email && u.email.toLowerCase().includes(q));
+                });
+            },
+            addEligibleMember(user) {
+                if (this.isClosed || !user) return;
+                this.members.push({
+                    user_id: user.user_id,
+                    full_name: user.full_name,
+                    email: user.email,
+                    status: '',
+                    note: '',
+                    lastSavedNote: '',
+                    scan_source: '',
+                    isUpdating: false
+                });
+                this.otherEligibleUsers = this.otherEligibleUsers.filter(u => u.user_id != user.user_id);
+                this.searchAddQuery = '';
+                this.isAddDropdownOpen = false;
+
+                // Réinitialise la recherche principale pour afficher directement le nouveau membre
+                if (this.searchQuery) {
+                    this.searchQuery = '';
+                }
+            },
+            addFirstFilteredEligible() {
+                const list = this.filteredEligibleUsers();
+                if (list.length > 0) {
+                    this.addEligibleMember(list[0]);
+                }
+            },
             addUnregisteredMember() {
                 if (this.isClosed || !this.selectedUserId) return;
                 let user = this.otherEligibleUsers.find(u => u.user_id == this.selectedUserId);
                 if (user) {
-                    this.members.push({
-                        user_id: user.user_id,
-                        full_name: user.full_name,
-                        email: user.email,
-                        status: '',
-                        note: '',
-                        lastSavedNote: '',
-                        scan_source: '',
-                        isUpdating: false
-                    });
-                    this.otherEligibleUsers = this.otherEligibleUsers.filter(u => u.user_id != this.selectedUserId);
+                    this.addEligibleMember(user);
                     this.selectedUserId = '';
                 }
             },

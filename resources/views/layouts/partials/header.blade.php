@@ -24,7 +24,7 @@
                 </div>
 
                 <button type="button"
-                    class="btn btn-sm px-2 px-sm-3 fs-16 header-item vertical-menu-btn topnav-hamburger shadow-none"
+                    class="btn btn-sm px-2 px-sm-3 fs-16 header-item vertical-menu-btn topnav-hamburger shadow-none d-none d-md-inline-flex"
                     id="topnav-hamburger-icon">
                     <span class="hamburger-icon">
                         <span></span>
@@ -33,18 +33,19 @@
                     </span>
                 </button>
 
-                <!-- Logo Principal (Pour Thème Sombre) sur petit écran -->
-                <a href="{{ route('dashboard') }}" class="d-flex d-md-none align-items-center text-decoration-none ms-1 ms-sm-2 header-item py-0">
+                <!-- Logo Principal sur petit écran (sans le bouton flèche/hamburger) -->
+                <a href="{{ route('dashboard') }}" class="d-flex d-md-none align-items-center text-decoration-none ps-1 header-item py-0">
                     <img src="{{ $appSettings->logo_dark_url ?? asset('assets/images/logo-dark.png') }}" alt="{{ config('app.name') }}" height="22">
                 </a>
 
-                <!-- App Search-->
+                @if(auth()->check() && (auth()->user()->can('member.view') || auth()->user()->can('manage-users')))
+                <!-- App Search (Desktop) -->
                 <form class="app-search d-none d-md-block">
                     <div class="position-relative">
                         <input type="text" class="form-control" placeholder="Rechercher une activité, un membre..." autocomplete="off"
                             id="search-options" value="">
                         <span class="mdi mdi-magnify search-widget-icon"></span>
-                        <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none"
+                        <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none cursor-pointer"
                             id="search-close-options"></span>
                     </div>
                     <div class="dropdown-menu dropdown-menu-lg" id="search-dropdown">
@@ -57,30 +58,39 @@
                         </div>
                     </div>
                 </form>
+                @endif
             </div>
 
             <div class="d-flex align-items-center">
 
+                @if(auth()->check() && (auth()->user()->can('member.view') || auth()->user()->can('manage-users')))
+                <!-- App Search (Mobile) -->
                 <div class="dropdown d-md-none topbar-head-dropdown header-item">
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle shadow-none position-relative"
-                        id="page-header-search-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
+                        id="page-header-search-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true"
+                        aria-expanded="false" title="Rechercher">
                         <i class="bx bx-search fs-22"></i>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
-                        aria-labelledby="page-header-search-dropdown">
-                        <form class="p-3">
-                            <div class="form-group m-0">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search ..."
-                                        aria-label="Recipient's username">
-                                    <button class="btn btn-primary" type="submit"><i
-                                            class="mdi mdi-magnify"></i></button>
-                                </div>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0 shadow-lg border-0"
+                        aria-labelledby="page-header-search-dropdown" style="min-width: 320px; max-width: 95vw;">
+                        <div class="p-3 border-bottom bg-light">
+                            <div class="position-relative">
+                                <input type="text" class="form-control pe-4" placeholder="Rechercher une activité, un membre..." autocomplete="off"
+                                    id="search-options-mobile" value="">
+                                <span class="mdi mdi-magnify" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #878a99;"></span>
+                                <span class="mdi mdi-close-circle d-none cursor-pointer"
+                                    id="search-close-options-mobile" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); z-index: 5; color: #878a99;"></span>
                             </div>
-                        </form>
+                        </div>
+                        <div data-simplebar style="max-height: 320px;" id="search-results-container-mobile">
+                            <div class="p-3 text-center text-muted fs-13">
+                                <i class="mdi mdi-magnify fs-20 d-block mb-1 opacity-50"></i>
+                                Tapez au moins 2 caractères pour rechercher...
+                            </div>
+                        </div>
                     </div>
                 </div>
+                @endif
 
                 <div class="ms-1 header-item d-none d-sm-flex">
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle shadow-none position-relative"
@@ -307,14 +317,16 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('search-options');
-    const searchDropdown = document.getElementById('search-dropdown');
-    const searchResultsContainer = document.getElementById('search-results-container');
-    const closeOptionsBtn = document.getElementById('search-close-options');
-    
-    let searchTimeout = null;
+    function setupSearch(inputId, dropdownId, containerId, closeBtnId, isMobile = false) {
+        const searchInput = document.getElementById(inputId);
+        const searchDropdown = dropdownId ? document.getElementById(dropdownId) : null;
+        const searchResultsContainer = document.getElementById(containerId);
+        const closeOptionsBtn = document.getElementById(closeBtnId);
+        
+        if (!searchInput || !searchResultsContainer) return;
 
-    if (searchInput && searchDropdown && searchResultsContainer) {
+        let searchTimeout = null;
+
         searchInput.addEventListener('input', function(e) {
             const query = e.target.value.trim();
             
@@ -322,12 +334,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeOptionsBtn?.classList.remove('d-none');
             } else {
                 closeOptionsBtn?.classList.add('d-none');
-                searchDropdown.classList.remove('show');
+                if (searchDropdown) searchDropdown.classList.remove('show');
+                if (isMobile) {
+                    searchResultsContainer.innerHTML = `
+                        <div class="p-3 text-center text-muted fs-13">
+                            <i class="mdi mdi-magnify fs-20 d-block mb-1 opacity-50"></i>
+                            Tapez au moins 2 caractères pour rechercher...
+                        </div>
+                    `;
+                }
                 return;
             }
 
             if (query.length >= 2) {
-                searchDropdown.classList.add('show');
+                if (searchDropdown) searchDropdown.classList.add('show');
                 searchResultsContainer.innerHTML = `
                     <div class="text-center pt-3 pb-3">
                         <div class="spinner-border text-primary spinner-border-sm" role="status">
@@ -338,7 +358,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => {
-                    // Use a safe approach in case route() macro isn't available in standard js
                     const searchUrl = `{{ route('admin.global-search') }}?q=${encodeURIComponent(query)}`;
                     
                     fetch(searchUrl, {
@@ -393,16 +412,17 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         `;
                     });
-                }, 400); // 400ms debounce
+                }, 300); // 300ms debounce
             } else {
-                searchDropdown.classList.remove('show');
-            }
-        });
-
-        // Close when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
-                searchDropdown.classList.remove('show');
+                if (searchDropdown) searchDropdown.classList.remove('show');
+                if (isMobile) {
+                    searchResultsContainer.innerHTML = `
+                        <div class="p-3 text-center text-muted fs-13">
+                            <i class="mdi mdi-magnify fs-20 d-block mb-1 opacity-50"></i>
+                            Tapez au moins 2 caractères pour rechercher...
+                        </div>
+                    `;
+                }
             }
         });
 
@@ -411,9 +431,44 @@ document.addEventListener('DOMContentLoaded', function() {
             closeOptionsBtn.addEventListener('click', function() {
                 searchInput.value = '';
                 closeOptionsBtn.classList.add('d-none');
-                searchDropdown.classList.remove('show');
+                if (searchDropdown) searchDropdown.classList.remove('show');
+                if (isMobile) {
+                    searchResultsContainer.innerHTML = `
+                        <div class="p-3 text-center text-muted fs-13">
+                            <i class="mdi mdi-magnify fs-20 d-block mb-1 opacity-50"></i>
+                            Tapez au moins 2 caractères pour rechercher...
+                        </div>
+                    `;
+                }
+                searchInput.focus();
             });
         }
+
+        // Close desktop dropdown when clicking outside
+        if (!isMobile && searchDropdown) {
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                    searchDropdown.classList.remove('show');
+                }
+            });
+        }
+    }
+
+    // Initialize Desktop Search
+    setupSearch('search-options', 'search-dropdown', 'search-results-container', 'search-close-options', false);
+
+    // Initialize Mobile Search
+    setupSearch('search-options-mobile', null, 'search-results-container-mobile', 'search-close-options-mobile', true);
+
+    // Auto-focus mobile input when dropdown opens
+    const mobileSearchBtn = document.getElementById('page-header-search-dropdown');
+    if (mobileSearchBtn) {
+        mobileSearchBtn.addEventListener('shown.bs.dropdown', function () {
+            const mobileInput = document.getElementById('search-options-mobile');
+            if (mobileInput) {
+                setTimeout(() => mobileInput.focus(), 150);
+            }
+        });
     }
 });
 </script>

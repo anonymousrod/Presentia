@@ -32,7 +32,7 @@
     <!-- App Css-->
     <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
-    <link href="{{ asset('assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/custom.min.css') }}?v={{ filemtime(public_path('assets/css/custom.min.css')) }}" rel="stylesheet" type="text/css" />
 
     @php
         $authSettings = \App\Models\AppSetting::firstOrCreate(['id' => 1]);
@@ -48,6 +48,12 @@
 <body>
 
     <div class="auth-page-wrapper pt-5">
+        <!-- Bouton tactile retour accueil -->
+        <a href="{{ url('/') }}" class="auth-back-btn" title="Retour à l'accueil">
+            <i class="ri-arrow-left-line"></i>
+            <span>Accueil</span>
+        </a>
+
         <!-- auth page bg -->
         <div class="auth-one-bg-position auth-one-bg" id="auth-particles">
             <div class="bg-overlay"></div>

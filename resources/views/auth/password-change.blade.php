@@ -32,12 +32,18 @@
     <!-- App Css-->
     <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
-    <link href="{{ asset('assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/custom.min.css') }}?v={{ filemtime(public_path('assets/css/custom.min.css')) }}" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
 
     <div class="auth-page-wrapper pt-5">
+        <!-- Bouton tactile retour connexion -->
+        <a href="{{ route('login') }}" class="auth-back-btn" title="Retour à la connexion">
+            <i class="ri-arrow-left-line"></i>
+            <span>Connexion</span>
+        </a>
+
         <!-- auth page bg -->
         <div class="auth-one-bg-position auth-one-bg" id="auth-particles">
             <div class="bg-overlay"></div>

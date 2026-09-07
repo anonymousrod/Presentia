@@ -1663,21 +1663,20 @@
                     <p class="text-muted pe-4" style="line-height: 1.6;">
                         Une communauté chrétienne dynamique et engagée, unie par la foi et le désir de grandir ensemble dans l'amour du Christ.
                     </p>
-                    <div class="d-flex gap-2 mt-4">
-                        @if(!empty($settings->facebook_link))
-                            <a href="{{ $settings->facebook_link }}" target="_blank" class="footer-social-btn" title="Facebook" aria-label="Facebook">
-                                <i class="ri-facebook-fill fs-18"></i>
-                            </a>
-                        @endif
-                        @if(!empty($settings->tiktok_link))
-                            <a href="{{ $settings->tiktok_link }}" target="_blank" class="footer-social-btn" title="TikTok" aria-label="TikTok">
-                                <i class="ri-tiktok-fill fs-18"></i>
-                            </a>
-                        @endif
-                        <a href="tel:{{ str_replace(' ', '', $adminPhone) }}" class="footer-social-btn" title="Téléphone" aria-label="Appeler l'église">
-                            <i class="ri-phone-fill fs-16"></i>
-                        </a>
-                    </div>
+                    @if(!empty($settings->facebook_link) || !empty($settings->tiktok_link))
+                        <div class="d-flex gap-2 mt-4">
+                            @if(!empty($settings->facebook_link))
+                                <a href="{{ $settings->facebook_link }}" target="_blank" class="footer-social-btn" title="Facebook" aria-label="Facebook">
+                                    <i class="ri-facebook-fill fs-18"></i>
+                                </a>
+                            @endif
+                            @if(!empty($settings->tiktok_link))
+                                <a href="{{ $settings->tiktok_link }}" target="_blank" class="footer-social-btn" title="TikTok" aria-label="TikTok">
+                                    <i class="ri-tiktok-fill fs-18"></i>
+                                </a>
+                            @endif
+                        </div>
+                    @endif
                 </div>
                 <div class="col-lg-2 col-6 mb-4">
                     <h5>Navigation</h5>
