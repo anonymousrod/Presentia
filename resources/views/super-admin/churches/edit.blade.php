@@ -228,6 +228,7 @@
         .edit-hero { padding: 1.75rem 0 3.5rem 0; text-align: center; }
         .hero-back-wrap { justify-content: center !important; margin-top: 1rem; }
         .section-body { padding: 1.1rem; }
+        .action-bar { position: static !important; margin: 1.5rem 0 !important; }
     }
     @media (max-width: 575.98px) {
         .action-bar { padding: 1.1rem 1rem; }

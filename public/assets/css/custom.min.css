@@ -14,7 +14,7 @@
     -webkit-backdrop-filter: blur(14px);
     border-top: 1px solid rgba(0, 0, 0, 0.08);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
-    z-index: 1005;
+    z-index: 1035;
     padding-bottom: env(safe-area-inset-bottom, 0px);
     transition: all 0.25s ease;
 }
@@ -357,6 +357,15 @@
         visibility: hidden !important;
         pointer-events: none !important;
     }
+
+    /* 11. Protection permanente de la barre de navigation mobile */
+    .mobile-sticky-bar,
+    .mobile-save-bar {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
 }
+
 
 

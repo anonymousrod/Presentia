@@ -293,7 +293,7 @@
                         <div class="tab-pane" id="socials" role="tabpanel">
                             <div class="row">
                                 <div class="col-md-6 mb-4">
-                                    <label class="form-label">Lien Facebook de la jeunesse</label>
+                                    <label class="form-label fw-medium"><i class="ri-facebook-circle-fill text-primary me-1"></i> Lien Facebook de la jeunesse</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-primary text-white border-primary"><i class="ri-facebook-circle-fill"></i></span>
                                         <input type="url" name="facebook_link" class="form-control" placeholder="https://www.facebook.com/..." value="{{ old('facebook_link', $setting->facebook_link ?? '') }}">
@@ -301,12 +301,28 @@
                                     <small class="text-muted d-block mt-1">Ex: https://www.facebook.com/jeuneseber</small>
                                 </div>
                                 <div class="col-md-6 mb-4">
-                                    <label class="form-label">Lien TikTok de la jeunesse</label>
+                                    <label class="form-label fw-medium"><i class="ri-tiktok-fill text-dark me-1"></i> Lien TikTok de la jeunesse</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-dark text-white border-dark"><i class="ri-tiktok-fill"></i></span>
                                         <input type="url" name="tiktok_link" class="form-control" placeholder="https://www.tiktok.com/@..." value="{{ old('tiktok_link', $setting->tiktok_link ?? '') }}">
                                     </div>
                                     <small class="text-muted d-block mt-1">Ex: https://www.tiktok.com/@jeuneseber</small>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-medium"><i class="ri-youtube-fill text-danger me-1"></i> Lien YouTube de la jeunesse / église</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-danger text-white border-danger"><i class="ri-youtube-fill"></i></span>
+                                        <input type="url" name="youtube_link" class="form-control" placeholder="https://www.youtube.com/@..." value="{{ old('youtube_link', $setting->youtube_link ?? '') }}">
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Ex: https://www.youtube.com/@eglisedezogbo</small>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-medium"><i class="ri-instagram-fill text-danger me-1"></i> Lien Instagram de la jeunesse</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text text-white border-0" style="background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);"><i class="ri-instagram-fill"></i></span>
+                                        <input type="url" name="instagram_link" class="form-control" placeholder="https://www.instagram.com/..." value="{{ old('instagram_link', $setting->instagram_link ?? '') }}">
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Ex: https://www.instagram.com/jeunessezogbo</small>
                                 </div>
                             </div>
                         </div>

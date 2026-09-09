@@ -1663,7 +1663,7 @@
                     <p class="text-muted pe-4" style="line-height: 1.6;">
                         Une communauté chrétienne dynamique et engagée, unie par la foi et le désir de grandir ensemble dans l'amour du Christ.
                     </p>
-                    @if(!empty($settings->facebook_link) || !empty($settings->tiktok_link))
+                    @if(!empty($settings->facebook_link) || !empty($settings->tiktok_link) || !empty($settings->youtube_link) || !empty($settings->instagram_link) || !empty($settings->whatsapp_link))
                         <div class="d-flex gap-2 mt-4">
                             @if(!empty($settings->facebook_link))
                                 <a href="{{ $settings->facebook_link }}" target="_blank" class="footer-social-btn" title="Facebook" aria-label="Facebook">
@@ -1673,6 +1673,21 @@
                             @if(!empty($settings->tiktok_link))
                                 <a href="{{ $settings->tiktok_link }}" target="_blank" class="footer-social-btn" title="TikTok" aria-label="TikTok">
                                     <i class="ri-tiktok-fill fs-18"></i>
+                                </a>
+                            @endif
+                            @if(!empty($settings->youtube_link))
+                                <a href="{{ $settings->youtube_link }}" target="_blank" class="footer-social-btn" title="YouTube" aria-label="YouTube">
+                                    <i class="ri-youtube-fill fs-18"></i>
+                                </a>
+                            @endif
+                            @if(!empty($settings->instagram_link))
+                                <a href="{{ $settings->instagram_link }}" target="_blank" class="footer-social-btn" title="Instagram" aria-label="Instagram">
+                                    <i class="ri-instagram-fill fs-18"></i>
+                                </a>
+                            @endif
+                            @if(!empty($settings->whatsapp_link))
+                                <a href="{{ $settings->whatsapp_link }}" target="_blank" class="footer-social-btn" title="WhatsApp" aria-label="WhatsApp">
+                                    <i class="ri-whatsapp-fill fs-18"></i>
                                 </a>
                             @endif
                         </div>

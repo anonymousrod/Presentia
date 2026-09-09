@@ -63,6 +63,9 @@ class AppSettingController extends Controller
             'contact_phone',
             'facebook_link',
             'tiktok_link',
+            'youtube_link',
+            'instagram_link',
+            'whatsapp_link',
         ];
 
         foreach ($textFields as $field) {

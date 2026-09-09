@@ -42,6 +42,9 @@ class AppSetting extends Model
         'contact_phone',
         'facebook_link',
         'tiktok_link',
+        'youtube_link',
+        'instagram_link',
+        'whatsapp_link',
     ];
 
     public function getFaviconUrlAttribute()
