@@ -20,12 +20,18 @@ class AppServiceProvider extends ServiceProvider
                 \App\Services\WhatsAppServiceInterface::class,
                 \App\Services\FakeWhatsAppService::class
             );
+        } elseif (env('WHATSAPP_DRIVER') === 'meta') {
+            $this->app->bind(
+                \App\Services\WhatsAppServiceInterface::class,
+                \App\Services\MetaCloudWhatsAppService::class
+            );
         } elseif (env('WHATSAPP_DRIVER') === 'ultramsg') {
             $this->app->bind(
                 \App\Services\WhatsAppServiceInterface::class,
                 \App\Services\UltraMsgWhatsAppService::class
             );
         } else {
+            // Fallback : D7 Networks
             $this->app->bind(
                 \App\Services\WhatsAppServiceInterface::class,
                 \App\Services\D7NetworksWhatsAppService::class

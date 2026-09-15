@@ -43,4 +43,13 @@ return [
         'token'                => env('WHATSAPP_TOKEN'),
     ],
 
+    'meta_whatsapp' => [
+        // Phone Number ID trouvé dans : Meta Business Manager > Comptes WhatsApp > Numéros de téléphone
+        'phone_number_id' => env('META_WHATSAPP_PHONE_NUMBER_ID'),
+        // Token d'accès permanent (System User Token) ou token temporaire de 24h (développement)
+        'access_token'    => env('META_WHATSAPP_ACCESS_TOKEN'),
+        // Version de l'API Graph Meta — mettre à jour si Meta publie une nouvelle version LTS
+        'api_version'     => env('META_WHATSAPP_API_VERSION', 'v20.0'),
+    ],
+
 ];
