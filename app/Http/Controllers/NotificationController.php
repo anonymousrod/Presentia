@@ -72,7 +72,7 @@ class NotificationController extends Controller
             // Ne pas intercepter les sous-routes fonctionnelles
             if (!in_array($identifier, ['create', 'attendance', 'scan', 'success', 'download-registrations', 'download-attendance'])) {
                 $activityId = decode_id($identifier) ?? (is_numeric($identifier) ? (int) $identifier : null);
-                
+
                 $activity = $activityId ? \App\Models\Activity::find($activityId) : null;
 
                 // Si l'activité n'existe pas ou appartient à une autre église

@@ -16,8 +16,7 @@ use Illuminate\Support\Facades\DB;
  * Ce backfill fixe church_id = 1 (Eglise Eber) sur toutes les lignes NULL.
  * À ne jamais relancer si l'environnement est multi-tenant avec plusieurs églises réelles.
  */
-return new class extends Migration
-{
+return new class () extends Migration {
     /** ID de l'église par défaut (Eber — seule église en production) */
     private const CHURCH_ID = 1;
 
