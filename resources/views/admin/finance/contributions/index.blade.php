@@ -24,7 +24,7 @@
                 <span class="fs-15 fw-bold text-primary">{{ number_format($pendingAmount, 0, ',', ' ') }} <small class="fs-10">F</small></span>
             </div>
             @if($pendingAmount > 0)
-                @can('remittance.create')
+                @can('finance.remittance_create')
                 <button type="button" class="btn btn-success rounded-circle shadow-sm" data-bs-toggle="modal" data-bs-target="#remittanceModal" style="width:40px; height:40px;">
                     <i class="mdi mdi-cash-fast fs-18"></i>
                 </button>
@@ -81,7 +81,7 @@
             <div class="card-body p-3 p-md-4 border-top border-light-subtle">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
                     <form action="{{ route('admin.finance.contributions.index') }}" method="GET" class="d-flex flex-wrap align-items-end gap-3 flex-grow-1">
-                        @if(auth()->user()->can('finance.view_all') && isset($allGroups))
+                        @if(auth()->user()->can('remittance.view_all') && isset($allGroups))
                             <div>
                                 <label class="form-label fs-12 fw-semibold text-muted text-uppercase tracking-wider mb-1"><i class="mdi mdi-account-group-outline me-1"></i>Groupe</label>
                                 <select name="group_id" class="form-select bg-light border-light-subtle" onchange="this.form.submit()" style="min-width: 180px;">
@@ -117,7 +117,7 @@
                             <span class="fs-20 fw-bold text-primary" style="line-height: 1;">{{ number_format($pendingAmount, 0, ',', ' ') }} <small class="fs-12 text-muted fw-normal">FCFA</small></span>
                         </div>
                         @if($pendingAmount > 0)
-                            @can('remittance.create')
+                            @can('finance.remittance_create')
                             <button type="button" class="btn btn-success btn-lg rounded-pill shadow-sm px-4 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#remittanceModal">
                                 <i class="mdi mdi-cash-fast fs-18"></i>
                                 <span class="fw-medium">Verser à la trésorerie</span>

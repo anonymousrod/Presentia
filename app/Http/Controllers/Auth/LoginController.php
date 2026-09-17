@@ -25,6 +25,12 @@ class LoginController extends Controller
     {
         $request->authenticate();
 
+        $redirectUrl = $request->input('redirect') ?: $request->query('redirect');
+
+        if ($redirectUrl) {
+            return redirect()->to($redirectUrl);
+        }
+
         return redirect()->intended(config('fortify.home', '/dashboard'));
     }
 

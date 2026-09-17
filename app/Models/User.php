@@ -241,4 +241,12 @@ class User extends Authenticatable
             ->where('roles.name', 'Super Admin')
             ->exists();
     }
+
+    /**
+     * Appareils de confiance / badges enrôlés.
+     */
+    public function trustedDevices(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TrustedDevice::class);
+    }
 }

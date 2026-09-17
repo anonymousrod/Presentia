@@ -273,11 +273,13 @@
 
                         {{-- Action Buttons Cluster --}}
                         <div class="col-lg-5 d-flex justify-content-lg-end hero-actions-container">
-                            <div class="text-center text-lg-end d-flex flex-wrap gap-2 justify-content-center">
                                 {{-- Mode Support --}}
-                                <a href="{{ route('super-admin.churches.impersonate', $church) }}" class="saas-cta-btn">
-                                    <i class="ri-user-shared-line fs-18"></i> Mode Support
-                                </a>
+                                <form method="POST" action="{{ route('super-admin.churches.impersonate', $church) }}" class="d-inline m-0">
+                                    @csrf
+                                    <button type="submit" class="saas-cta-btn border-0">
+                                        <i class="ri-user-shared-line fs-18"></i> Mode Support
+                                    </button>
+                                </form>
 
                                 {{-- Renouveler --}}
                                 <a href="{{ route('super-admin.churches.renew.form', $church) }}" class="saas-secondary-btn">

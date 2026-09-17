@@ -20,10 +20,11 @@ class SendNewActivityNotification implements ShouldQueue
     public function handle(ActivityCreated $event): void
     {
         $activity = $event->activity;
+        $churchId = $activity->church_id ?? auth()->user()?->church_id;
 
         if ($activity->visibility === ActivityVisibility::ALL) {
-            // Envoyer à tous les utilisateurs
-            $users = User::all();
+            // Envoyer aux membres de l'église
+            $users = User::when($churchId, fn ($q) => $q->where('church_id', $churchId))->get();
             Notification::send($users, new NewActivityPublishedNotification($activity));
         } elseif ($activity->visibility === ActivityVisibility::GROUP && $activity->visibility_group_id) {
             // Envoyer au groupe spécifique
@@ -33,10 +34,12 @@ class SendNewActivityNotification implements ShouldQueue
                 Notification::send($users, new NewActivityPublishedNotification($activity));
             }
         } elseif ($activity->visibility === ActivityVisibility::ROLE && $activity->visibility_role_id) {
-            // Envoyer au rôle spécifique
+            // Envoyer au rôle spécifique au sein de l'église
             $role = \Spatie\Permission\Models\Role::find($activity->visibility_role_id);
             if ($role) {
-                $users = User::role($role->name)->get();
+                $users = User::when($churchId, fn ($q) => $q->where('church_id', $churchId))
+                    ->role($role->name)
+                    ->get();
                 Notification::send($users, new NewActivityPublishedNotification($activity));
             }
         }

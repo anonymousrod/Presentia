@@ -18,7 +18,7 @@ class ContributionController extends Controller
         $churchId = session('tenant_church_id') ?? $user->church_id ?? null;
 
         // Si l'utilisateur peut tout voir (Trésorier/Admin), il peut choisir le groupe
-        if ($user->can('finance.view_all')) {
+        if ($user->can('remittance.view_all')) {
             $groupIdHash = $request->input('group_id');
             $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
             if ($groupId) {
@@ -192,12 +192,12 @@ class ContributionController extends Controller
         $user = auth()->user();
         $churchId = session('tenant_church_id') ?? $user->church_id ?? null;
 
-        if ($user->can('finance.view_all')) {
+        if ($user->can('remittance.view_all')) {
             $groupIdHash = $request->input('group_id');
             $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
             $group = Group::find($groupId) ?? Group::when($churchId, fn ($q) => $q->where('church_id', $churchId))->first();
         } else {
-            $group = $user->collectedGroups()->first();
+            $group = $user->collectedGroups()->first() ?? $user->ledGroups()->first() ?? $user->groups()->first();
         }
 
         if (!$group) {

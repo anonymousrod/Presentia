@@ -7,12 +7,16 @@
             <i class="mdi mdi-arrow-left me-1"></i> Retour à la liste
         </a>
         <div class="d-flex flex-wrap gap-2">
+            @if(auth()->user()->hasRole('Administrateur') || auth()->user()->can(\App\Enums\PermissionEnum::REGISTRATION_DOWNLOAD->value))
             <a href="{{ route('admin.activities.download-registrations', $activity) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
                 <i class="mdi mdi-file-pdf-box me-1"></i> Inscriptions (PDF)
             </a>
+            @endif
+            @if(auth()->user()->hasRole('Administrateur') || auth()->user()->can(\App\Enums\PermissionEnum::ATTENDANCE_DOWNLOAD->value))
             <a href="{{ route('admin.activities.download-attendance', $activity) }}" class="btn btn-outline-success btn-sm rounded-pill px-3">
                 <i class="mdi mdi-file-pdf-box me-1"></i> Présence (PDF)
             </a>
+            @endif
         </div>
     </div>
 
@@ -83,6 +87,7 @@
             </div>
 
             <!-- Inscriptions -->
+            @if(auth()->user()->hasRole('Administrateur') || auth()->user()->can(\App\Enums\PermissionEnum::REGISTRATION_VIEW->value) || auth()->user()->can(\App\Enums\PermissionEnum::REGISTRATION_VIEW_OWN->value))
             <div class="card" x-data="{
                 search: '',
                 statusFilter: '',
@@ -96,7 +101,7 @@
                         date: '{{ $reg->created_at->format('d/m/Y H:i') }}',
                         status: '{{ $reg->is_waitlisted ? 'attente' : (($reg->status?->value ?? $reg->status) === 'PRESENT' ? 'inscrit' : (($reg->status?->value ?? $reg->status) === 'UNCERTAIN' ? 'incertain' : 'desinscrit')) }}',
                         justification: '{{ addslashes($reg->justification ?: '') }}',
-                        user_url: '{{ route('admin.users.show', encode_id($reg->user_id)) }}',
+                        user_url: {{ (auth()->user()->hasRole('Administrateur') || auth()->user()->can(\App\Enums\PermissionEnum::MEMBER_VIEW->value)) ? "'" . route('admin.users.show', encode_id($reg->user_id)) . "'" : 'null' }},
                         group_ids: [{{ $reg->user->groups->pluck('id')->join(',') }}]
                     },
                     @endforeach
@@ -112,7 +117,12 @@
                 }
             }">
                 <div class="card-header d-flex flex-column flex-md-row align-items-md-center gap-3">
-                    <h5 class="card-title mb-0 flex-grow-1">Inscriptions</h5>
+                    <h5 class="card-title mb-0 flex-grow-1">
+                        Inscriptions
+                        @if(isset($registrationListType))
+                            <span class="badge {{ $registrationListType === 'Globale' ? 'bg-primary' : 'bg-info' }} ms-2" style="font-size: 0.75rem;">{{ $registrationListType }}</span>
+                        @endif
+                    </h5>
                     <div class="d-flex flex-wrap gap-2">
                         <span class="badge bg-success-subtle text-success border border-success border-opacity-25">{{ $activity->registrations->where('status', \App\Enums\RegistrationStatus::PRESENT)->where('is_waitlisted', false)->count() }} Inscrit(s)</span>
                         <span class="badge bg-info-subtle text-info border border-info border-opacity-25">{{ $activity->registrations->where('status', \App\Enums\RegistrationStatus::UNCERTAIN)->where('is_waitlisted', false)->count() }} Incertain(s)</span>
@@ -125,7 +135,7 @@
                 <div class="card-body">
                     <!-- Filters row -->
                     <div class="row g-2 mb-3 align-items-center">
-                        <div class="col-12 col-md-{{ isset($listType) && $listType === 'Globale' ? '5' : '7' }}">
+                        <div class="col-12 col-md-{{ isset($registrationListType) && $registrationListType === 'Globale' ? '5' : '7' }}">
                             <div class="d-flex align-items-center gap-2">
                                 <div class="search-box position-relative flex-grow-1">
                                     <input type="text" x-model="search" class="form-control bg-light border-light" placeholder="Rechercher un membre...">
@@ -139,9 +149,9 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="col-12 col-md-{{ isset($listType) && $listType === 'Globale' ? '7' : '5' }} collapse d-md-block" id="registrationsFilterCollapse">
+                        <div class="col-12 col-md-{{ isset($registrationListType) && $registrationListType === 'Globale' ? '7' : '5' }} collapse d-md-block" id="registrationsFilterCollapse">
                             <div class="row g-2 align-items-center">
-                                @if(isset($listType) && $listType === 'Globale')
+                                @if(isset($registrationListType) && $registrationListType === 'Globale')
                                 <div class="col-6 col-md-5">
                                     <select x-model="groupFilter" class="form-select bg-light border-light">
                                         <option value="">Tous les groupes</option>
@@ -151,7 +161,7 @@
                                     </select>
                                 </div>
                                 @endif
-                                <div class="col-6 col-md-{{ isset($listType) && $listType === 'Globale' ? '4' : '8' }}">
+                                <div class="col-6 col-md-{{ isset($registrationListType) && $registrationListType === 'Globale' ? '4' : '8' }}">
                                     <select x-model="statusFilter" class="form-select bg-light border-light">
                                         <option value="">Tous les statuts</option>
                                         <option value="inscrit">Inscrit</option>
@@ -162,7 +172,7 @@
                                         <option value="desinscrit">Désinscrit</option>
                                     </select>
                                 </div>
-                                <div class="col-12 col-md-{{ isset($listType) && $listType === 'Globale' ? '3' : '4' }}">
+                                <div class="col-12 col-md-{{ isset($registrationListType) && $registrationListType === 'Globale' ? '3' : '4' }}">
                                     <button type="button" class="btn btn-soft-secondary w-100" @click="search = ''; statusFilter = ''; groupFilter = '';">
                                         <i class="mdi mdi-refresh me-1"></i>Reset
                                     </button>
@@ -177,30 +187,29 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-start mb-2">
                                         <div class="flex-grow-1">
-                                            <h6 class="fs-15 mb-1"><a :href="reg.user_url" class="text-body" x-text="reg.name"></a></h6>
-                                            <div class="text-muted fs-13"><i class="mdi mdi-email-outline me-1"></i><span x-text="reg.email"></span></div>
+                                            <template x-if="reg.user_url">
+                                                <h6 class="fs-15 mb-1"><a :href="reg.user_url" class="text-body fw-medium" x-text="reg.name"></a></h6>
+                                            </template>
+                                            <template x-if="!reg.user_url">
+                                                <h6 class="fs-15 mb-1 text-body fw-medium" x-text="reg.name"></h6>
+                                            </template>
+                                            <p class="text-muted mb-0 fs-12" x-text="reg.email"></p>
                                         </div>
-                                        <div class="flex-shrink-0 ms-2">
-                                            <span class="badge fs-11 px-2 py-1" 
-                                                  :class="{
-                                                      'bg-success-subtle text-success': reg.status === 'inscrit',
-                                                      'bg-info-subtle text-info': reg.status === 'incertain',
-                                                      'bg-warning-subtle text-warning': reg.status === 'attente',
-                                                      'bg-danger-subtle text-danger': reg.status === 'desinscrit'
-                                                  }"
-                                                  x-text="reg.status === 'inscrit' ? 'Inscrit' : (reg.status === 'incertain' ? 'Incertain' : (reg.status === 'attente' ? 'Liste d\'attente' : 'Désinscrit'))">
-                                            </span>
-                                        </div>
+                                        <span class="badge" 
+                                              :class="{
+                                                  'bg-success-subtle text-success': reg.status === 'inscrit',
+                                                  'bg-info-subtle text-info': reg.status === 'incertain',
+                                                  'bg-warning-subtle text-warning': reg.status === 'attente',
+                                                  'bg-danger-subtle text-danger': reg.status === 'desinscrit'
+                                              }"
+                                              x-text="reg.status === 'inscrit' ? 'Inscrit' : (reg.status === 'incertain' ? 'Incertain' : (reg.status === 'attente' ? 'Liste d\'attente' : 'Désinscrit'))">
+                                        </span>
                                     </div>
-                                    <div class="bg-light p-2 rounded mt-2">
-                                        <div class="d-flex justify-content-between fs-12 mb-1">
-                                            <span class="text-muted"><i class="mdi mdi-calendar-clock me-1"></i>Inscrit le:</span>
-                                            <span class="fw-medium" x-text="reg.date"></span>
-                                        </div>
-                                        <div class="fs-12" x-show="reg.status === 'desinscrit'">
-                                            <span class="text-muted d-block mb-1"><i class="mdi mdi-message-text-outline me-1"></i>Motif:</span>
-                                            <span class="fw-medium text-danger" x-text="reg.justification || 'Aucun motif renseigné'"></span>
-                                        </div>
+                                    <div class="d-flex justify-content-between text-muted fs-12 pt-2 border-top">
+                                        <span x-text="reg.date"></span>
+                                        <template x-if="reg.status === 'desinscrit' && reg.justification">
+                                            <span class="text-truncate ms-2" style="max-width: 150px;" :title="reg.justification" x-text="'Motif: ' + reg.justification"></span>
+                                        </template>
                                     </div>
                                 </div>
                             </div>
@@ -211,21 +220,26 @@
                     </div>
 
                     <div class="table-responsive d-none d-md-block">
-                        <table class="table table-hover table-striped mb-0">
+                        <table class="table table-hover align-middle table-nowrap mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Nom Complet</th>
+                                    <th>Nom & Prénoms</th>
                                     <th>Email</th>
                                     <th>Date d'inscription</th>
                                     <th>Statut</th>
-                                    <th>Motif / Justification</th>
+                                    <th>Motif (si désinscrit)</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <template x-for="reg in filteredRegistrations" :key="reg.id">
                                     <tr>
                                         <td>
-                                            <a :href="reg.user_url" class="fw-semibold text-body" x-text="reg.name"></a>
+                                            <template x-if="reg.user_url">
+                                                <a :href="reg.user_url" class="fw-medium text-body" x-text="reg.name"></a>
+                                            </template>
+                                            <template x-if="!reg.user_url">
+                                                <span class="fw-medium text-body" x-text="reg.name"></span>
+                                            </template>
                                         </td>
                                         <td x-text="reg.email"></td>
                                         <td x-text="reg.date"></td>
@@ -255,9 +269,10 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             <!-- Liste de présence -->
-            @if(auth()->user()->can('attendance.view') || auth()->user()->can('attendance.view_own'))
+            @if(auth()->user()->hasRole('Administrateur') || auth()->user()->can(\App\Enums\PermissionEnum::ATTENDANCE_VIEW->value) || auth()->user()->can(\App\Enums\PermissionEnum::ATTENDANCE_VIEW_OWN->value))
             <div class="card mt-4" x-data="{
                 search: '',
                 statusFilter: '',
@@ -272,7 +287,7 @@
                         status: '{{ $att->status->value }}',
                         source: '{{ $att->scan_source }}',
                         note: '{{ addslashes($att->note ?: '') }}',
-                        user_url: '{{ route('admin.users.show', encode_id($att->user_id)) }}',
+                        user_url: {{ (auth()->user()->hasRole('Administrateur') || auth()->user()->can(\App\Enums\PermissionEnum::MEMBER_VIEW->value)) ? "'" . route('admin.users.show', encode_id($att->user_id)) . "'" : 'null' }},
                         group_ids: [{{ $att->user->groups->pluck('id')->join(',') }}]
                     },
                     @endforeach
@@ -354,7 +369,12 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-start mb-2">
                                         <div class="flex-grow-1">
-                                            <h6 class="fs-15 mb-1"><a :href="att.user_url" class="text-body" x-text="att.name"></a></h6>
+                                            <template x-if="att.user_url">
+                                                <h6 class="fs-15 mb-1"><a :href="att.user_url" class="text-body fw-semibold" x-text="att.name"></a></h6>
+                                            </template>
+                                            <template x-if="!att.user_url">
+                                                <h6 class="fs-15 mb-1 text-body fw-semibold" x-text="att.name"></h6>
+                                            </template>
                                             <div class="text-muted fs-13"><i class="mdi mdi-email-outline me-1"></i><span x-text="att.email"></span></div>
                                         </div>
                                         <div class="flex-shrink-0 ms-2">
@@ -410,7 +430,12 @@
                                 <template x-for="att in filteredAttendances" :key="att.id">
                                     <tr>
                                         <td>
-                                            <a :href="att.user_url" class="fw-semibold text-body" x-text="att.name"></a>
+                                            <template x-if="att.user_url">
+                                                <a :href="att.user_url" class="fw-semibold text-body" x-text="att.name"></a>
+                                            </template>
+                                            <template x-if="!att.user_url">
+                                                <span class="fw-semibold text-body" x-text="att.name"></span>
+                                            </template>
                                         </td>
                                         <td x-text="att.email"></td>
                                         <td x-text="att.time"></td>
@@ -517,6 +542,21 @@
                     @php
                         $qrUrl = session("activity_qr_url_{$activity->id}");
                         $qrExpires = session("activity_qr_expires_{$activity->id}");
+
+                        if ($qrUrl && (str_contains($qrUrl, '127.0.0.1') || str_contains($qrUrl, 'localhost')) && !str_contains(config('app.url'), '127.0.0.1') && !str_contains(config('app.url'), 'localhost')) {
+                            if (config('app.url')) {
+                                \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
+                            }
+                            $expires = $activity->end_time;
+                            $qrUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+                                'attendance.validate',
+                                $expires,
+                                ['activity' => encode_id($activity->id), 'v' => $activity->qr_version]
+                            );
+                            session()->put("activity_qr_url_{$activity->id}", $qrUrl);
+                            session()->put("activity_qr_expires_{$activity->id}", $expires->timestamp);
+                        }
+
                         $qrSvg = null;
                         if ($qrUrl) {
                             try {

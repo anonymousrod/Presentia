@@ -41,6 +41,22 @@
         <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 @endif
+@if(session('warning'))
+    <div class="alert border-0 mb-4 d-flex align-items-center gap-3 p-3 shadow-sm alert-dismissible fade show"
+         style="background: rgba(var(--vz-warning-rgb), 0.12); border-left: 4px solid var(--vz-warning) !important; border-radius: 0.5rem;">
+        <i class="mdi mdi-alert-outline fs-20" style="color: var(--vz-warning);"></i>
+        <span>{{ session('warning') }}</span>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+@if(session('info'))
+    <div class="alert border-0 mb-4 d-flex align-items-center gap-3 p-3 shadow-sm alert-dismissible fade show"
+         style="background: rgba(var(--vz-info-rgb), 0.12); border-left: 4px solid var(--vz-info) !important; border-radius: 0.5rem;">
+        <i class="mdi mdi-information-outline fs-20" style="color: var(--vz-info);"></i>
+        <span>{{ session('info') }}</span>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+@endif
 @if(session('error'))
     <div class="alert border-0 mb-4 d-flex align-items-center gap-3 p-3 shadow-sm alert-dismissible fade show"
          style="background: rgba(var(--vz-danger-rgb), 0.12); border-left: 4px solid var(--vz-danger) !important; border-radius: 0.5rem;">

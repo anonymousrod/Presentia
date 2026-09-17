@@ -42,12 +42,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('activities/{activity}/attendance', [App\Http\Controllers\AttendanceManagementController::class, 'destroy'])->name('activities.attendance.destroy');
     Route::get('activities/{activity}/attendance/data', [App\Http\Controllers\AttendanceManagementController::class, 'getUpdates'])->name('activities.attendance.data');
 
-    // QR Code Scanning & Attendance
+    // QR Code Scanning & Attendance (Scanner caméra interne)
     Route::get('scan', [App\Http\Controllers\AttendanceScanController::class, 'scanner'])->name('scan.alias');
     Route::get('attendance/scan', [App\Http\Controllers\AttendanceScanController::class, 'scanner'])->name('attendance.scan');
     Route::get('attendance/success/{activity}', [App\Http\Controllers\AttendanceScanController::class, 'success'])->name('attendance.success');
-    Route::match(['get', 'post'], 'attendance/validate', [App\Http\Controllers\AttendanceController::class, 'validate'])
-        ->name('attendance.validate');
 
     // Profile & Settings
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
@@ -56,6 +54,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/avatar', [App\Http\Controllers\ProfileController::class, 'updateAvatar'])->name('profile.avatar');
     Route::post('/profile/cover', [App\Http\Controllers\ProfileController::class, 'updateCover'])->name('profile.cover');
 
+    // Appareil-Badge (Enrôlement & Révocation)
+    Route::post('/profile/device-badge/enroll', [App\Http\Controllers\DeviceBadgeController::class, 'enroll'])->name('profile.device-badge.enroll');
+    Route::delete('/profile/device-badge/{device}', [App\Http\Controllers\DeviceBadgeController::class, 'revoke'])->name('profile.device-badge.revoke');
+
     // Notifications
     Route::get('notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
     Route::delete('notifications/destroy-all', [App\Http\Controllers\NotificationController::class, 'destroyAll'])->name('notifications.destroy-all');
@@ -63,6 +65,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('notifications/read-all', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
 });
+
+// Validation de présence QR Code (Supporte le scan natif sans connexion préalable via Appareil-Badge)
+Route::match(['get', 'post'], 'attendance/validate', [App\Http\Controllers\AttendanceController::class, 'validate'])
+    ->name('attendance.validate');
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Global Search
@@ -97,7 +103,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::get('activities/{activity}/qr/pdf', [App\Http\Controllers\Admin\QrCodeController::class, 'downloadPdf'])->name('activities.qr.pdf');
         Route::get('activities/{activity}/download-registrations', [App\Http\Controllers\Admin\ActivityController::class, 'downloadRegistrationsPdf'])->name('activities.download-registrations');
         Route::get('activities/{activity}/download-attendance', [App\Http\Controllers\Admin\ActivityController::class, 'downloadAttendancePdf'])->name('activities.download-attendance');
-        Route::resource('activity-types', App\Http\Controllers\Admin\ActivityTypeController::class);
+        Route::resource('activity-types', App\Http\Controllers\Admin\ActivityTypeController::class)->except(['show']);
         Route::resource('activities', App\Http\Controllers\Admin\ActivityController::class);
     });
 
@@ -156,8 +162,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::post('contributions', [App\Http\Controllers\Admin\Finance\ContributionController::class, 'store'])->name('contributions.store')->middleware('can:finance.collect_own_group');
 
         // Versements à la trésorerie
-        Route::post('remittances', [App\Http\Controllers\Admin\Finance\RemittanceController::class, 'store'])->name('remittances.store')->middleware('can:remittance.create');
-        Route::get('treasury', [App\Http\Controllers\Admin\Finance\RemittanceController::class, 'index'])->name('treasury.index')->middleware('can:finance.view_all');
+        Route::post('remittances', [App\Http\Controllers\Admin\Finance\RemittanceController::class, 'store'])->name('remittances.store')->middleware('can:finance.remittance_create');
+        Route::get('treasury', [App\Http\Controllers\Admin\Finance\RemittanceController::class, 'index'])->name('treasury.index')->middleware('can:remittance.view_all');
         Route::post('remittances/{remittance}/validate', [App\Http\Controllers\Admin\Finance\RemittanceController::class, 'validateRemittance'])->name('remittances.validate')->middleware('can:remittance.validate');
     });
 });
@@ -190,6 +196,7 @@ Route::middleware(['auth', 'super_admin'])->prefix('super-admin')->name('super-a
 
     // Activer / Suspendre & Support
     Route::post('churches/{church}/toggle-status', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'toggleStatus'])->name('churches.toggle-status');
-    Route::get('churches/{church}/impersonate', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'impersonate'])->name('churches.impersonate');
-    Route::get('leave-impersonation', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'leaveImpersonation'])->name('leave-impersonation');
+    // F-14 : impersonate et leave-impersonation passés en POST pour exiger le CSRF
+    Route::post('churches/{church}/impersonate', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'impersonate'])->name('churches.impersonate');
+    Route::post('leave-impersonation', [App\Http\Controllers\SuperAdmin\ChurchController::class, 'leaveImpersonation'])->name('leave-impersonation');
 });

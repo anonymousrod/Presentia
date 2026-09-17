@@ -8,11 +8,19 @@ use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
-    /**
-     * Bypass global : l'Administrateur passe toutes les vérifications.
-     */
-    public function before(User $user, string $ability): ?bool
+    public function before(User $user, string $ability, ...$args): ?bool
     {
+        // F-4 : Interdire les actions cross-tenant même pour un Administrateur
+        if (!empty($args) && $args[0] instanceof User) {
+            $targetUser = $args[0];
+            $activeChurchId = session('tenant_church_id') ?? $user->church_id;
+            if (!$user->isSuperAdmin() || session()->has('tenant_church_id')) {
+                if ($activeChurchId && $targetUser->church_id && (int) $targetUser->church_id !== (int) $activeChurchId) {
+                    return false;
+                }
+            }
+        }
+
         if ($user->hasRole('Administrateur')) {
             return true;
         }

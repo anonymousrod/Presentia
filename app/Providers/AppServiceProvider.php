@@ -139,7 +139,12 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\Gate::define('access-group-management', function ($user) {
             return $user->hasRole('Administrateur')
                 || $user->hasPermissionTo('group.view')
-                || $user->hasPermissionTo('group.view_own');
+                || $user->hasPermissionTo('group.edit')
+                || $user->hasPermissionTo('group.edit_own')
+                || $user->hasPermissionTo('group.assign_member')
+                || $user->hasPermissionTo('group.assign_member_own')
+                || $user->ledGroups()->exists()
+                || $user->groups()->wherePivotNull('left_at')->exists();
         });
 
         // Enregistrement de l'Observer User

@@ -16,6 +16,8 @@
             font-size: 12px;
             color: #1a202c;
             background: #ffffff;
+            margin: 0;
+            padding: 0;
         }
 
         @page {
@@ -25,89 +27,76 @@
 
         /* ============ PAGE WRAPPER ============ */
         .page-wrapper {
-            width: 210mm;
-            min-height: 297mm;
+            width: 100%;
             background: #ffffff;
+            position: relative;
         }
 
         /* ============ HEADER ============ */
         .header-block {
             width: 100%;
-            background: #4338CA;
-            padding: 24px 48px 22px 40px;
+            background-color: #4338CA;
         }
 
         .header-table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         .header-logo-cell {
-            width: 55%;
+            width: 62%;
             vertical-align: middle;
+            padding: 20px 10px 18px 30px;
+            text-align: left;
         }
 
         .header-badge-cell {
-            width: 45%;
+            width: 38%;
             vertical-align: middle;
             text-align: right;
-            padding-right: 4px;
-        }
-
-        .org-name {
-            font-size: 26px;
-            font-weight: bold;
-            color: #ffffff;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .org-tagline {
-            font-size: 10px;
-            color: #c7d2fe;
-            margin-top: 4px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            padding: 20px 30px 18px 10px;
         }
 
         .badge-type {
             display: inline-block;
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.18);
             border: 1px solid rgba(255,255,255,0.35);
             color: #ffffff;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: bold;
-            padding: 6px 18px;
+            padding: 6px 14px;
             border-radius: 20px;
-            letter-spacing: 1.5px;
+            letter-spacing: 0.8px;
             text-transform: uppercase;
             white-space: nowrap;
         }
 
         .badge-version {
-            font-size: 9.5px;
-            color: #a5b4fc;
-            margin-top: 7px;
+            font-size: 9px;
+            color: #c7d2fe;
+            margin-top: 6px;
             text-align: right;
+            white-space: nowrap;
         }
 
         /* ============ ACCENT STRIPE ============ */
         .accent-stripe {
             width: 100%;
             height: 4px;
-            background: linear-gradient(to right, #6366f1, #8b5cf6, #ec4899);
+            background-color: #6366f1;
         }
 
         /* ============ MAIN CONTENT ============ */
         .content-area {
-            padding: 28px 40px 24px 40px;
+            padding: 26px 30px 20px 30px;
         }
 
         /* ============ ACTIVITY TITLE BLOCK ============ */
         .title-block {
             text-align: center;
-            margin-bottom: 26px;
-            padding-bottom: 20px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
             border-bottom: 1px solid #e2e8f0;
         }
 
@@ -121,7 +110,7 @@
         }
 
         .activity-title {
-            font-size: 21px;
+            font-size: 20px;
             font-weight: bold;
             color: #1e1b4b;
         }
@@ -173,7 +162,7 @@
         .qr-outer-border {
             display: inline-block;
             padding: 3px;
-            background: linear-gradient(135deg, #4338CA, #7c3aed);
+            background-color: #4338CA;
             border-radius: 16px;
         }
 
@@ -185,8 +174,8 @@
         }
 
         .qr-image {
-            width: 210px;
-            height: 210px;
+            width: 200px;
+            height: 200px;
             display: block;
             margin: 0 auto;
         }
@@ -226,34 +215,48 @@
             font-weight: bold;
         }
 
-        /* ============ INSTRUCTIONS ============ */
-        .instructions-box {
-            background: #eff6ff;
-            border-left: 4px solid #6366f1;
-            border-radius: 0 8px 8px 0;
-            padding: 13px 18px;
-            margin-top: 22px;
+        /* ============ STEPS BOX ============ */
+        .steps-wrapper {
+            margin-top: 18px;
         }
 
-        .instructions-title {
-            font-size: 9.5px;
+        .steps-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .step-cell {
+            vertical-align: top;
+        }
+
+        .step-card {
+            border-radius: 8px;
+            padding: 10px 11px;
+            min-height: 95px;
+        }
+
+        .step-badge {
+            display: inline-block;
+            color: #ffffff;
+            font-size: 8px;
             font-weight: bold;
-            color: #3730a3;
+            padding: 2.5px 7px;
+            border-radius: 4px;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 9px;
+            letter-spacing: 0.5px;
         }
 
-        .instructions-line {
+        .step-title {
             font-size: 10.5px;
-            color: #1e40af;
-            padding: 2.5px 0;
-            padding-left: 14px;
+            font-weight: bold;
+            margin-top: 6px;
+            margin-bottom: 4px;
         }
 
-        .bullet {
-            color: #6366f1;
-            font-weight: bold;
+        .step-desc {
+            font-size: 8.5px;
+            line-height: 1.35;
         }
 
         /* ============ SEPARATOR ============ */
@@ -265,46 +268,56 @@
 
         /* ============ FOOTER ============ */
         .footer-band {
-            background: #1e1b4b;
-            padding: 13px 48px 13px 40px;
-            margin-top: 30px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background-color: #4338CA;
+            border-top: 3px solid #6366f1;
         }
 
         .footer-table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         .footer-left {
-            width: 70%;
+            width: 75%;
             vertical-align: middle;
+            padding: 13px 10px 13px 30px;
         }
 
         .footer-right {
-            width: 30%;
+            width: 25%;
             vertical-align: middle;
             text-align: right;
+            padding: 13px 30px 13px 10px;
         }
 
         .footer-security {
-            font-size: 9px;
-            color: #818cf8;
+            font-size: 8.5px;
+            color: #ffffff;
             font-weight: bold;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
+            word-wrap: break-word;
         }
 
         .footer-meta {
-            font-size: 9px;
-            color: #6366f1;
+            font-size: 8.5px;
+            color: #c7d2fe;
+            word-wrap: break-word;
         }
 
         .watermark-badge {
-            background: #312e81;
-            color: #818cf8;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #ffffff;
             font-size: 8px;
             font-weight: bold;
             padding: 4px 12px;
-            border-radius: 4px;
+            border-radius: 12px;
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
@@ -318,29 +331,27 @@
         <table class="header-table">
             <tr>
                 <td class="header-logo-cell">
-                    <div class="org-name">
-                        <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
-                            <tr>
-                                @if(!empty($logoUeebBase64))
-                                <td style="padding: 0 10px 0 0; vertical-align: middle; line-height: 1;">
-                                    <img src="{{ $logoUeebBase64 }}" alt="Logo" height="32" style="vertical-align: middle;">
-                                </td>
-                                @else
-                                <td style="padding: 0 10px 0 0; vertical-align: middle; line-height: 1; font-size: 24px; color: #ffffff;">
-                                    &#9670;
-                                </td>
-                                @endif
-                                <td style="padding: 0; vertical-align: middle; line-height: 1.1;">
-                                    <div style="font-size: 17px; font-weight: bold; color: #ffffff; letter-spacing: 1px; text-transform: uppercase;">
-                                        {{ $church->name ?? ($activity->church->name ?? config('app.name')) }}
-                                    </div>
-                                    <div style="font-size: 9px; color: #c7d2fe; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px;">
-                                        {{ ($church->city ?? $activity->church?->city) ? ($church->city ?? $activity->church?->city) . ' — ' : '' }}Système de Gestion des Présences
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                    <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                        <tr>
+                            @if(!empty($logoUeebBase64))
+                            <td style="padding: 0 12px 0 0; vertical-align: middle; line-height: 1;">
+                                <img src="{{ $logoUeebBase64 }}" alt="Logo" height="34" style="vertical-align: middle; max-width: 38px;">
+                            </td>
+                            @else
+                            <td style="padding: 0 10px 0 0; vertical-align: middle; line-height: 1; font-size: 24px; color: #ffffff;">
+                                &#9670;
+                            </td>
+                            @endif
+                            <td style="padding: 0; vertical-align: middle; line-height: 1.2;">
+                                <div style="font-size: 15px; font-weight: bold; color: #ffffff; letter-spacing: 0.5px; text-transform: uppercase; word-wrap: break-word;">
+                                    {{ $church->name ?? ($activity->church->name ?? config('app.name')) }}
+                                </div>
+                                <div style="font-size: 8.5px; color: #c7d2fe; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 3px;">
+                                    {{ ($church->city ?? $activity->church?->city) ? ($church->city ?? $activity->church?->city) . ' — ' : '' }}Système de Gestion des Présences
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
                 <td class="header-badge-cell">
                     <div class="badge-type">&#10003; Fiche d'Émargement</div>
@@ -437,13 +448,34 @@
             </tr>
         </table>
 
-        <!-- INSTRUCTIONS -->
-        <div class="instructions-box">
-            <div class="instructions-title">&#128161; Instructions de scan</div>
-            <div class="instructions-line"><span class="bullet">&#9656;</span> Ouvrez l'application {{ config('app.name') }} sur votre smartphone et connectez-vous.</div>
-            <div class="instructions-line"><span class="bullet">&#9656;</span> Pointez l'appareil photo vers ce QR Code pour enregistrer votre présence.</div>
-            <div class="instructions-line"><span class="bullet">&#9656;</span> Un message de confirmation apparaîtra une fois votre présence validée.</div>
-            <div class="instructions-line"><span class="bullet">&#9656;</span> Ce QR Code est personnel à cette session — toute copie ou modification est inutile.</div>
+        <!-- ÉTAPES DE POINTAGE EXPRESS -->
+        <div class="steps-wrapper">
+            <div class="section-heading">&#9632; Comment marquer votre présence ? (En 3 étapes)</div>
+            <table class="steps-table">
+                <tr>
+                    <td class="step-cell" style="width: 33.33%; padding-right: 6px;">
+                        <div class="step-card" style="background: #f5f3ff; border: 1px solid #ddd6fe; border-top: 3px solid #6366f1;">
+                            <span class="step-badge" style="background: #4f46e5;">Étape 1</span>
+                            <div class="step-title" style="color: #312e81;">Enrôlement (1 fois)</div>
+                            <div class="step-desc" style="color: #4338ca;">Cliquez sur le bouton ci-dessus pour faire de ce navigateur votre badge sécurisé.</div>
+                        </div>
+                    </td>
+                    <td class="step-cell" style="width: 33.33%; padding-left: 3px; padding-right: 3px;">
+                        <div class="step-card" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-top: 3px solid #10b981;">
+                            <span class="step-badge" style="background: #059669;">Étape 2</span>
+                            <div class="step-title" style="color: #065f46;">Scan à l'église</div>
+                            <div class="step-desc" style="color: #047857;">Ouvrez simplement l'appareil photo ou le scanner de votre smartphone et visez le QR Code de l'activité.</div>
+                        </div>
+                    </td>
+                    <td class="step-cell" style="width: 33.33%; padding-left: 6px;">
+                        <div class="step-card" style="background: #f0f9ff; border: 1px solid #bae6fd; border-top: 3px solid #0284c7;">
+                            <span class="step-badge" style="background: #0284c7;">Étape 3</span>
+                            <div class="step-title" style="color: #075985;">Validation Express</div>
+                            <div class="step-desc" style="color: #0369a1;">Le système vous identifie automatiquement et affiche immédiatement l'écran vert de confirmation !</div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
 
     </div>

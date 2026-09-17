@@ -43,10 +43,15 @@ class NotificationController extends Controller
             'group_id' => decode_id($request->input('group_id'))
         ]);
 
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
+
         $data = $request->validate([
             'title'   => 'required|string|max:255',
             'message' => 'required|string',
-            'group_id' => 'required|exists:groups,id',
+            'group_id' => [
+                'required',
+                \Illuminate\Validation\Rule::exists('groups', 'id')->when($churchId, fn ($q) => $q->where('church_id', $churchId)),
+            ],
         ]);
 
         $group = Group::findOrFail($data['group_id']);
@@ -72,10 +77,15 @@ class NotificationController extends Controller
             'role_id' => decode_id($request->input('role_id'))
         ]);
 
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
+
         $data = $request->validate([
             'title'   => 'required|string|max:255',
             'message' => 'required|string',
-            'role_id'  => 'required|exists:roles,id',
+            'role_id'  => [
+                'required',
+                \Illuminate\Validation\Rule::exists('roles', 'id')->when($churchId, fn ($q) => $q->where('church_id', $churchId)),
+            ],
         ]);
 
         $role = Role::findOrFail($data['role_id']);
@@ -90,7 +100,11 @@ class NotificationController extends Controller
 
     public function showSendIndividualForm()
     {
-        $users = User::orderBy('name')->get();
+        // F-9 : Restreindre l'annuaire à l'église active
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
+        $users = User::when($churchId, fn ($q) => $q->where('church_id', $churchId))
+            ->orderBy('name')
+            ->get();
         return view('admin.notifications.send-individual', compact('users'));
     }
 
@@ -100,10 +114,17 @@ class NotificationController extends Controller
             'user_id' => decode_id($request->input('user_id'))
         ]);
 
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
+
         $data = $request->validate([
             'title'   => 'required|string|max:255',
             'message' => 'required|string',
-            'user_id'  => 'required|exists:users,id',
+            // F-9 : S'assurer que le destinataire appartient à l'église active
+            'user_id' => [
+                'required',
+                \Illuminate\Validation\Rule::exists('users', 'id')
+                    ->when($churchId, fn ($q) => $q->where('church_id', $churchId)),
+            ],
         ]);
 
         $user = User::findOrFail($data['user_id']);

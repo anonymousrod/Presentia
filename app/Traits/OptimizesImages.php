@@ -29,11 +29,10 @@ trait OptimizesImages
         $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'jpg');
         $mimeType = $file->getMimeType() ?: '';
 
-        // 1. Formats vectoriels ou spécifiques (SVG, ICO) qui ne doivent pas être convertis en bitmap/WebP
+        // F-12 : Bloquer les SVG — un SVG contenant <script> constitue un XSS stocké
+        // lorsqu'il est servi depuis /storage (même origine que l'app).
         if (in_array($extension, ['svg', 'ico', 'svgz']) || str_contains($mimeType, 'svg') || str_contains($mimeType, 'x-icon') || str_contains($mimeType, 'vnd.microsoft.icon')) {
-            $filename = uniqid() . '_' . time() . '.' . $extension;
-            $file->move($fullDirectoryPath, $filename);
-            return $path . '/' . $filename;
+            throw new \InvalidArgumentException('Les fichiers SVG et ICO ne sont pas autorisés pour des raisons de sécurité.');
         }
 
         // 2. Traitement et optimisation WebP via Intervention Image

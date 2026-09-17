@@ -99,237 +99,328 @@
                             <!-- Left Column: Personal, Professional, Residence info -->
                             <div class="col-xxl-4 col-xl-5">
                                 
+<style>
+    /* Collapsible Sidebar Ribbon Cards */
+    .profile-collapse-trigger {
+        cursor: pointer;
+        user-select: none;
+        min-height: 28px;
+        transition: all 0.2s ease;
+    }
+    .profile-collapse-trigger .ribbon {
+        cursor: pointer;
+        transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+    }
+    .profile-collapse-trigger:hover .ribbon {
+        filter: brightness(1.08);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
+    .profile-collapse-trigger .collapse-chevron {
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, color 0.2s ease;
+    }
+    .profile-collapse-trigger[aria-expanded="true"] .collapse-chevron {
+        transform: rotate(180deg);
+        background-color: #E5E7EB !important;
+        color: #111827 !important;
+    }
+    .profile-collapse-trigger:hover .collapse-chevron {
+        background-color: #E5E7EB !important;
+        color: #111827 !important;
+    }
+</style>
+
                                 <!-- Card: Finances & Rôles -->
-                                <div class="card ribbon-box border shadow-none mb-4">
+                                <div class="card ribbon-box border shadow-none mb-3">
                                     <div class="card-body">
-                                        <div class="ribbon ribbon-warning round-shape">Finances & Rôles</div>
-                                        <div class="mt-4">
-                                            <ul class="list-unstyled vstack gap-3 mb-0">
-                                                <li>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title rounded bg-warning-subtle text-warning">
-                                                                <i class="ri-money-dollar-circle-line"></i>
+                                        <div class="profile-collapse-trigger d-flex align-items-center justify-content-between" 
+                                             data-bs-toggle="collapse" 
+                                             href="#collapseAdminFinances" 
+                                             role="button" 
+                                             aria-expanded="false" 
+                                             aria-controls="collapseAdminFinances"
+                                             title="Cliquer pour afficher / masquer">
+                                            <div class="ribbon ribbon-warning round-shape">
+                                                <i class="ri-money-dollar-circle-line me-1 align-middle"></i>Finances & Rôles
+                                            </div>
+                                            <span class="collapse-chevron badge bg-light text-muted rounded-circle p-1 d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 26px; height: 26px; margin-left: auto;">
+                                                <i class="ri-arrow-down-s-line fs-16"></i>
+                                            </span>
+                                        </div>
+                                        <div class="collapse" id="collapseAdminFinances">
+                                            <div class="mt-4 pt-2">
+                                                <ul class="list-unstyled vstack gap-3 mb-0">
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-warning-subtle text-warning">
+                                                                    <i class="ri-money-dollar-circle-line"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">Cotisation hebdomadaire</h6>
+                                                                <p class="text-muted mb-0">{{ $user->weekly_contribution ? number_format($user->weekly_contribution, 0, ',', ' ') . ' FCFA' : 'Non renseignée' }}</p>
                                                             </div>
                                                         </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 fs-14">Cotisation hebdomadaire</h6>
-                                                            <p class="text-muted mb-0">{{ $user->weekly_contribution ? number_format($user->weekly_contribution, 0, ',', ' ') . ' FCFA' : 'Non renseignée' }}</p>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title rounded bg-success-subtle text-success">
-                                                                <i class="ri-wallet-3-line"></i>
+                                                    </li>
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-success-subtle text-success">
+                                                                    <i class="ri-wallet-3-line"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">Avancement des cotisations</h6>
+                                                                <p class="text-muted mb-1">
+                                                                    <strong>{{ number_format($paidContribution, 0, ',', ' ') }} FCFA</strong> / {{ number_format($expectedContribution, 0, ',', ' ') }} FCFA
+                                                                </p>
+                                                                @php
+                                                                    $percent = $expectedContribution > 0 ? min(100, round(($paidContribution / $expectedContribution) * 100)) : 0;
+                                                                @endphp
+                                                                <div class="progress animated-progress" style="height: 6px;">
+                                                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ $percent }}%" aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 fs-14">Avancement des cotisations</h6>
-                                                            <p class="text-muted mb-1">
-                                                                <strong>{{ number_format($paidContribution, 0, ',', ' ') }} FCFA</strong> / {{ number_format($expectedContribution, 0, ',', ' ') }} FCFA
-                                                            </p>
-                                                            @php
-                                                                $percent = $expectedContribution > 0 ? min(100, round(($paidContribution / $expectedContribution) * 100)) : 0;
-                                                            @endphp
-                                                            <div class="progress animated-progress" style="height: 6px;">
-                                                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ $percent }}%" aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-info-subtle text-info">
+                                                                    <i class="ri-shield-user-line"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">Rôles attribués</h6>
+                                                                <div class="d-flex flex-wrap gap-1 mt-1">
+                                                                    @forelse($user->getRoleNames() as $role)
+                                                                        <span class="badge bg-info-subtle text-info">{{ $role }}</span>
+                                                                    @empty
+                                                                        <span class="text-muted">Aucun rôle</span>
+                                                                    @endforelse
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title rounded bg-info-subtle text-info">
-                                                                <i class="ri-shield-user-line"></i>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 fs-14">Rôles attribués</h6>
-                                                            <div class="d-flex flex-wrap gap-1 mt-1">
-                                                                @forelse($user->getRoleNames() as $role)
-                                                                    <span class="badge bg-info-subtle text-info">{{ $role }}</span>
-                                                                @empty
-                                                                    <span class="text-muted">Aucun rôle</span>
-                                                                @endforelse
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            </ul>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Card: Informations Personnelles -->
-                                <div class="card ribbon-box border shadow-none mb-4">
+                                <div class="card ribbon-box border shadow-none mb-3">
                                     <div class="card-body">
-                                        <div class="ribbon ribbon-primary round-shape">Infos Personnelles</div>
-                                        <div class="mt-4">
-                                            <ul class="list-unstyled vstack gap-2 mb-0">
-                                                <li>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title rounded bg-primary-subtle text-primary">
-                                                                <i class="ri-user-3-line"></i>
+                                        <div class="profile-collapse-trigger d-flex align-items-center justify-content-between" 
+                                             data-bs-toggle="collapse" 
+                                             href="#collapseAdminInfosPerso" 
+                                             role="button" 
+                                             aria-expanded="false" 
+                                             aria-controls="collapseAdminInfosPerso"
+                                             title="Cliquer pour afficher / masquer">
+                                            <div class="ribbon ribbon-primary round-shape">
+                                                <i class="ri-user-3-line me-1 align-middle"></i>Infos Personnelles
+                                            </div>
+                                            <span class="collapse-chevron badge bg-light text-muted rounded-circle p-1 d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 26px; height: 26px; margin-left: auto;">
+                                                <i class="ri-arrow-down-s-line fs-16"></i>
+                                            </span>
+                                        </div>
+                                        <div class="collapse" id="collapseAdminInfosPerso">
+                                            <div class="mt-4 pt-2">
+                                                <ul class="list-unstyled vstack gap-2 mb-0">
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-primary-subtle text-primary">
+                                                                    <i class="ri-user-3-line"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">Nom complet</h6>
+                                                                <p class="text-muted mb-0">{{ $user->full_name }}</p>
                                                             </div>
                                                         </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 fs-14">Nom complet</h6>
-                                                            <p class="text-muted mb-0">{{ $user->full_name }}</p>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title rounded bg-success-subtle text-success">
-                                                                <i class="ri-calendar-event-line"></i>
+                                                    </li>
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-success-subtle text-success">
+                                                                    <i class="ri-calendar-event-line"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">Date de naissance</h6>
+                                                                <p class="text-muted mb-0">{{ $user->birth_date?->format('d/m/Y') ?? 'Non renseignée' }}</p>
                                                             </div>
                                                         </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 fs-14">Date de naissance</h6>
-                                                            <p class="text-muted mb-0">{{ $user->birth_date?->format('d/m/Y') ?? 'Non renseignée' }}</p>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title rounded bg-info-subtle text-info">
-                                                                <i class="ri-men-line"></i>
+                                                    </li>
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-info-subtle text-info">
+                                                                    <i class="ri-men-line"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">Sexe</h6>
+                                                                <p class="text-muted mb-0">
+                                                                    @if($user->gender === 'M')
+                                                                        Masculin
+                                                                    @elseif($user->gender === 'F')
+                                                                        Féminin
+                                                                    @else
+                                                                        Non renseigné
+                                                                    @endif
+                                                                </p>
                                                             </div>
                                                         </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 fs-14">Sexe</h6>
-                                                            <p class="text-muted mb-0">
-                                                                @if($user->gender === 'M')
-                                                                    Masculin
-                                                                @elseif($user->gender === 'F')
-                                                                    Féminin
-                                                                @else
-                                                                    Non renseigné
-                                                                @endif
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            </ul>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Card: Académique & Pro -->
-                                <div class="card ribbon-box border shadow-none mb-4">
+                                <div class="card ribbon-box border shadow-none mb-3">
                                     <div class="card-body">
-                                        <div class="ribbon ribbon-success round-shape">Académique & Pro</div>
-                                        <div class="mt-4">
-                                            <ul class="list-unstyled vstack gap-2 mb-0">
-                                                <li>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title rounded bg-secondary-subtle text-secondary">
-                                                                <i class="ri-book-open-line"></i>
+                                        <div class="profile-collapse-trigger d-flex align-items-center justify-content-between" 
+                                             data-bs-toggle="collapse" 
+                                             href="#collapseAdminAcademique" 
+                                             role="button" 
+                                             aria-expanded="false" 
+                                             aria-controls="collapseAdminAcademique"
+                                             title="Cliquer pour afficher / masquer">
+                                            <div class="ribbon ribbon-success round-shape">
+                                                <i class="ri-graduation-cap-line me-1 align-middle"></i>Académique & Pro
+                                            </div>
+                                            <span class="collapse-chevron badge bg-light text-muted rounded-circle p-1 d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 26px; height: 26px; margin-left: auto;">
+                                                <i class="ri-arrow-down-s-line fs-16"></i>
+                                            </span>
+                                        </div>
+                                        <div class="collapse" id="collapseAdminAcademique">
+                                            <div class="mt-4 pt-2">
+                                                <ul class="list-unstyled vstack gap-2 mb-0">
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-secondary-subtle text-secondary">
+                                                                    <i class="ri-book-open-line"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">Niveau d'études</h6>
+                                                                <p class="text-muted mb-0">{{ $user->education_level ?? 'Non renseigné' }}</p>
                                                             </div>
                                                         </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 fs-14">Niveau d'études</h6>
-                                                            <p class="text-muted mb-0">{{ $user->education_level ?? 'Non renseigné' }}</p>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title rounded bg-secondary-subtle text-secondary">
-                                                                <i class="ri-microscope-line"></i>
+                                                    </li>
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-secondary-subtle text-secondary">
+                                                                    <i class="ri-microscope-line"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">Domaine d'études</h6>
+                                                                <p class="text-muted mb-0">{{ $user->education_field ?? 'Non renseigné' }}</p>
                                                             </div>
                                                         </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 fs-14">Domaine d'études</h6>
-                                                            <p class="text-muted mb-0">{{ $user->education_field ?? 'Non renseigné' }}</p>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title rounded bg-warning-subtle text-warning">
-                                                                <i class="ri-briefcase-line"></i>
+                                                    </li>
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-warning-subtle text-warning">
+                                                                    <i class="ri-briefcase-line"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">Statut professionnel</h6>
+                                                                <p class="text-muted mb-0">{{ $user->professional_status ?? 'Non renseigné' }}</p>
                                                             </div>
                                                         </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 fs-14">Statut professionnel</h6>
-                                                            <p class="text-muted mb-0">{{ $user->professional_status ?? 'Non renseigné' }}</p>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title rounded bg-warning-subtle text-warning">
-                                                                <i class="ri-building-4-line"></i>
+                                                    </li>
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-warning-subtle text-warning">
+                                                                    <i class="ri-building-4-line"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">Profession actuelle</h6>
+                                                                <p class="text-muted mb-0">{{ $user->current_profession ?? 'Non renseigné' }}</p>
                                                             </div>
                                                         </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 fs-14">Profession actuelle</h6>
-                                                            <p class="text-muted mb-0">{{ $user->current_profession ?? 'Non renseigné' }}</p>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title rounded bg-primary-subtle text-primary">
-                                                                <i class="bx bxs-church fs-16"></i>
+                                                    </li>
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-primary-subtle text-primary">
+                                                                    <i class="bx bxs-church fs-16"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">Service à l'église</h6>
+                                                                <p class="text-muted mb-0">{{ $user->church_service ?? 'Non renseigné' }}</p>
                                                             </div>
                                                         </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 fs-14">Service à l'église</h6>
-                                                            <p class="text-muted mb-0">{{ $user->church_service ?? 'Non renseigné' }}</p>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            </ul>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Card: Résidence -->
-                                <div class="card ribbon-box border shadow-none mb-4">
+                                <div class="card ribbon-box border shadow-none mb-3">
                                     <div class="card-body">
-                                        <div class="ribbon ribbon-info round-shape">Résidence</div>
-                                        <div class="mt-4">
-                                            <ul class="list-unstyled vstack gap-2 mb-0">
-                                                <li>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title rounded bg-info-subtle text-info">
-                                                                <i class="ri-map-pin-line"></i>
+                                        <div class="profile-collapse-trigger d-flex align-items-center justify-content-between" 
+                                             data-bs-toggle="collapse" 
+                                             href="#collapseAdminResidence" 
+                                             role="button" 
+                                             aria-expanded="false" 
+                                             aria-controls="collapseAdminResidence"
+                                             title="Cliquer pour afficher / masquer">
+                                            <div class="ribbon ribbon-info round-shape">
+                                                <i class="ri-map-pin-line me-1 align-middle"></i>Résidence
+                                            </div>
+                                            <span class="collapse-chevron badge bg-light text-muted rounded-circle p-1 d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 26px; height: 26px; margin-left: auto;">
+                                                <i class="ri-arrow-down-s-line fs-16"></i>
+                                            </span>
+                                        </div>
+                                        <div class="collapse" id="collapseAdminResidence">
+                                            <div class="mt-4 pt-2">
+                                                <ul class="list-unstyled vstack gap-2 mb-0">
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-info-subtle text-info">
+                                                                    <i class="ri-map-pin-line"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">Commune</h6>
+                                                                <p class="text-muted mb-0">{{ $user->residence_municipality ?? 'Non renseignée' }}</p>
                                                             </div>
                                                         </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 fs-14">Commune</h6>
-                                                            <p class="text-muted mb-0">{{ $user->residence_municipality ?? 'Non renseignée' }}</p>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title rounded bg-info-subtle text-info">
-                                                                <i class="ri-community-line"></i>
+                                                    </li>
+                                                    <li>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-xs">
+                                                                <div class="avatar-title rounded bg-info-subtle text-info">
+                                                                    <i class="ri-community-line"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h6 class="mb-1 fs-14">Quartier</h6>
+                                                                <p class="text-muted mb-0">{{ $user->residence_neighborhood ?? 'Non renseigné' }}</p>
                                                             </div>
                                                         </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 fs-14">Quartier</h6>
-                                                            <p class="text-muted mb-0">{{ $user->residence_neighborhood ?? 'Non renseigné' }}</p>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            </ul>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -339,29 +430,44 @@
                                 @endphp
                                 @if(!empty($additionalInfos) && is_array($additionalInfos))
                                 <!-- Card: Informations Complémentaires -->
-                                <div class="card ribbon-box border shadow-none mb-4">
+                                <div class="card ribbon-box border shadow-none mb-3">
                                     <div class="card-body">
-                                        <div class="ribbon ribbon-dark round-shape">Notes & Remarques</div>
-                                        <div class="mt-4">
-                                            <ul class="list-unstyled vstack gap-2 mb-0">
-                                                @foreach($additionalInfos as $info)
-                                                    @if(is_array($info))
-                                                    <li>
-                                                        <div class="d-flex">
-                                                            <div class="flex-shrink-0 avatar-xs">
-                                                                <div class="avatar-title rounded bg-secondary-subtle text-body border">
-                                                                    <i class="ri-information-line"></i>
+                                        <div class="profile-collapse-trigger d-flex align-items-center justify-content-between" 
+                                             data-bs-toggle="collapse" 
+                                             href="#collapseAdminNotes" 
+                                             role="button" 
+                                             aria-expanded="false" 
+                                             aria-controls="collapseAdminNotes"
+                                             title="Cliquer pour afficher / masquer">
+                                            <div class="ribbon ribbon-dark round-shape">
+                                                <i class="ri-file-text-line me-1 align-middle"></i>Notes & Remarques
+                                            </div>
+                                            <span class="collapse-chevron badge bg-light text-muted rounded-circle p-1 d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 26px; height: 26px; margin-left: auto;">
+                                                <i class="ri-arrow-down-s-line fs-16"></i>
+                                            </span>
+                                        </div>
+                                        <div class="collapse" id="collapseAdminNotes">
+                                            <div class="mt-4 pt-2">
+                                                <ul class="list-unstyled vstack gap-2 mb-0">
+                                                    @foreach($additionalInfos as $info)
+                                                        @if(is_array($info))
+                                                        <li>
+                                                            <div class="d-flex">
+                                                                <div class="flex-shrink-0 avatar-xs">
+                                                                    <div class="avatar-title rounded bg-secondary-subtle text-body border">
+                                                                        <i class="ri-information-line"></i>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex-grow-1 ms-3">
+                                                                    <h6 class="mb-1 fs-14">{{ $info['title'] ?? 'Info' }}</h6>
+                                                                    <p class="text-muted mb-0">{{ $info['value'] ?? '' }}</p>
                                                                 </div>
                                                             </div>
-                                                            <div class="flex-grow-1 ms-3">
-                                                                <h6 class="mb-1 fs-14">{{ $info['title'] ?? 'Info' }}</h6>
-                                                                <p class="text-muted mb-0">{{ $info['value'] ?? '' }}</p>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                    @endif
-                                                @endforeach
-                                            </ul>
+                                                        </li>
+                                                        @endif
+                                                    @endforeach
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

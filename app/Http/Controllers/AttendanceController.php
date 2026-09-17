@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Activity;
 use App\Models\Attendance;
 use App\Enums\AttendanceStatus;
+use App\Services\DeviceBadgeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,11 +13,38 @@ class AttendanceController extends Controller
 {
     /**
      * Valide la présence via un QR Code (URL signée).
-     * Supporte AJAX POST (scanner interne) et GET (scanner natif).
+     * Supporte :
+     * 1. Session active classique (Auth::user())
+     * 2. Appareil-Badge (Scan direct via appareil photo natif sans login manuel)
+     * 3. AJAX POST (Scanner interne dans l'application)
      */
-    public function validate(Request $request)
+    public function validate(Request $request, DeviceBadgeService $badgeService)
     {
-        // Validation personnalisée de la signature pour supporter ngrok / localhost
+        // 1. Identification de l'utilisateur (Session ou Appareil-Badge)
+        $user = Auth::user();
+
+        if (!$user) {
+            $user = $badgeService->resolveUserFromCookie($request);
+            if ($user) {
+                Auth::login($user);
+            }
+        }
+
+        if (!$user) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Authentification requise pour valider votre présence.',
+                ], 401);
+            }
+
+            session()->put('url.intended', $request->fullUrl());
+
+            return redirect()->route('login', ['redirect' => $request->fullUrl()])
+                ->with('info', '👋 Bonjour ! Veuillez vous connecter pour enregistrer votre présence. Vous pourrez ensuite faire de ce téléphone votre badge automatique en 1 clic !');
+        }
+
+        // 2. Validation personnalisée de la signature pour supporter ngrok / localhost
         $isValid = $request->hasValidSignature();
 
         if (!$isValid) {
@@ -24,14 +52,26 @@ class AttendanceController extends Controller
             $query = $request->query();
             unset($query['signature']);
 
+            // F-19 : Vérifier l'expiration AVANT de recalculer la signature.
+            $expires = (int) ($query['expires'] ?? 0);
+            if ($expires > 0 && $expires < now()->timestamp) {
+                if ($request->ajax()) {
+                    return response()->json(['status' => 'error', 'message' => 'Ce QR code a expiré.'], 403);
+                }
+                return redirect()->route('activities.index')->with('warning', 'Ce QR code a expiré.');
+            }
+
             $queryString = http_build_query($query);
             $urlPath = $request->path();
 
-            $possibleHosts = [
-                'http://127.0.0.1:8000',
-                'http://localhost:8000',
-                config('app.url')
-            ];
+            // F-19 : Hôtes localhost retirés en production pour éviter la falsification.
+            $possibleHosts = [config('app.url')];
+            if (app()->environment('local', 'testing')) {
+                $possibleHosts = array_merge($possibleHosts, [
+                    'http://127.0.0.1:8000',
+                    'http://localhost:8000',
+                ]);
+            }
 
             $matched = false;
             foreach ($possibleHosts as $host) {
@@ -45,9 +85,9 @@ class AttendanceController extends Controller
 
             if (!$matched) {
                 if ($request->ajax()) {
-                    return response()->json(['status' => 'error', 'message' => 'Lien expiré ou signature invalide (Problème de domaine ngrok/localhost).'], 403);
+                    return response()->json(['status' => 'error', 'message' => 'Lien expiré ou signature invalide.'], 403);
                 }
-                abort(403, 'Lien expiré ou signature invalide.');
+                return redirect()->route('activities.index')->with('warning', 'Lien de présence expiré ou invalide.');
             }
         }
 
@@ -55,19 +95,26 @@ class AttendanceController extends Controller
         $activityId = decode_id($activityIdHash);
         $version = $request->query('v');
 
-        $activity = Activity::findOrFail($activityId);
+        $activity = Activity::find($activityId);
 
-        // Vérifier si l'utilisateur connecté est inscrit à l'activité
-        $registration = \App\Models\Registration::where('user_id', Auth::id())
+        if (!$activity) {
+            if ($request->ajax()) {
+                return response()->json(['status' => 'error', 'message' => 'Activité introuvable.'], 404);
+            }
+            return redirect()->route('activities.index')->with('info', 'L\'activité demandée n\'est plus disponible.');
+        }
+
+        // Vérifier si l'utilisateur connecté est inscrit à l'activité (si inscription requise)
+        $registration = \App\Models\Registration::where('user_id', $user->id)
             ->where('activity_id', $activity->id)
             ->first();
 
         $isRegistered = $registration && $registration->status !== 'ABSENT_JUSTIFIED';
 
         if ($activity->is_registration_required && !$isRegistered) {
-            $errorMessage = "Vous ne pouvez pas valider votre présence sans être inscrit à cette activité.";
+            $errorMessage = "Vous ne pouvez pas valider votre présence sans être préalablement inscrit à cette activité.";
             if ($activity->start_time->lte(now())) {
-                $errorMessage .= " Vous ne pouvez plus vous inscrire à cette activité. Veuillez contacter votre responsable de groupe ou le Président de la jeunesse afin qu'il puisse marquer votre présence.";
+                $errorMessage .= " L'inscription est désormais clôturée. Veuillez contacter votre responsable de groupe ou un membre du bureau.";
             }
 
             if ($request->ajax()) {
@@ -76,7 +123,7 @@ class AttendanceController extends Controller
                     'message' => $errorMessage
                 ], 403);
             }
-            abort(403, $errorMessage);
+            return redirect()->route('activities.show', $activity)->with('warning', $errorMessage);
         }
 
         // Vérification de la version du QR Code
@@ -87,11 +134,11 @@ class AttendanceController extends Controller
                     'message' => 'Ce QR Code a été révoqué ou mis à jour.'
                 ], 403);
             }
-            abort(403, 'Ce QR Code a été révoqué ou mis à jour.');
+            return redirect()->route('activities.show', $activity)->with('warning', 'Ce QR Code a été révoqué ou mis à jour.');
         }
 
         // Vérifier si la présence est déjà enregistrée
-        $existingAttendance = Attendance::where('user_id', Auth::id())
+        $existingAttendance = Attendance::where('user_id', $user->id)
             ->where('activity_id', $activity->id)
             ->first();
 
@@ -106,10 +153,10 @@ class AttendanceController extends Controller
                         'status' => $existingAttendance->status->value,
                         'scanned_at' => $existingAttendance->scanned_at->format('H:i:s'),
                     ]
-                ], 200); // On renvoie 200 pour que le JS gère l'affichage "déjà fait" proprement
+                ], 200);
             }
-            return redirect()->route('attendance.success', $activity->id)
-                ->with('info', 'Votre présence était déjà enregistrée.');
+            return redirect()->route('attendance.success', $activity)
+                ->with('info', 'Votre présence était déjà enregistrée à ' . $existingAttendance->scanned_at->format('H\hi') . '.');
         }
 
         // Calcul du statut (PRESENT ou LATE)
@@ -122,12 +169,12 @@ class AttendanceController extends Controller
 
         // Création de la présence
         $attendance = Attendance::create([
-            'user_id' => Auth::id(),
+            'user_id'     => $user->id,
             'activity_id' => $activity->id,
-            'status' => $status,
+            'status'      => $status,
             'scan_source' => 'qr_code',
-            'scanned_at' => $now,
-            'ip_address' => $request->ip(),
+            'scanned_at'  => $now,
+            'ip_address'  => $request->ip(),
         ]);
 
         $wasRecentlyCreated = $attendance->wasRecentlyCreated;
@@ -145,8 +192,8 @@ class AttendanceController extends Controller
             ]);
         }
 
-        // Pour un scan via navigateur (GET), on redirige vers la page de succès
-        return redirect()->route('attendance.success', $activity->id)
-            ->with('success', $wasRecentlyCreated ? 'Votre présence a été validée.' : 'Votre présence était déjà enregistrée.');
+        // Pour un scan via navigateur (GET), redirection fluide vers la page de succès
+        return redirect()->route('attendance.success', $activity)
+            ->with('success', $wasRecentlyCreated ? "Votre présence a été validée avec succès !" : 'Votre présence était déjà enregistrée.');
     }
 }

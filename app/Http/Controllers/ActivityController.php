@@ -125,11 +125,13 @@ class ActivityController extends Controller
             );
 
             if (!$canPreview) {
-                abort(403, "Cette activité n'est pas disponible.");
+                return redirect()->route('activities.index')->with('warning', 'Cette activité n\'est plus disponible ou a été annulée.');
             }
         }
 
-        $this->authorizeVisibility($activity, $user);
+        if (!$this->isActivityVisible($activity, $user)) {
+            return redirect()->route('activities.index')->with('warning', 'Vous n\'avez pas accès à cette activité.');
+        }
 
         $myRegistration = Registration::where('user_id', $user->id)
             ->where('activity_id', $activity->id)
@@ -146,32 +148,31 @@ class ActivityController extends Controller
     /**
      * Helper: check if user has access to see/register for this activity.
      */
-    protected function authorizeVisibility(Activity $activity, $user)
+    protected function isActivityVisible(Activity $activity, $user): bool
     {
-        if ($user && ($user->hasRole('Administrateur') || $user->isSuperAdmin() || $activity->responsible_id === $user->id)) {
-            return;
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->hasRole('Administrateur') || $user->isSuperAdmin() || $activity->responsible_id === $user->id) {
+            return true;
         }
 
         if ($activity->visibility === ActivityVisibility::ALL) {
-            return;
+            return true;
         }
 
         if ($activity->visibility === ActivityVisibility::GROUP) {
-            $isMember = $user->groups()
+            return $user->groups()
                 ->where('groups.id', $activity->visibility_group_id)
                 ->wherePivotNull('left_at')
                 ->exists();
-            if ($isMember) {
-                return;
-            }
         }
 
         if ($activity->visibility === ActivityVisibility::ROLE) {
-            if ($user->roles()->where('roles.id', $activity->visibility_role_id)->exists()) {
-                return;
-            }
+            return $user->roles()->where('roles.id', $activity->visibility_role_id)->exists();
         }
 
-        abort(403, "Vous n'avez pas accès à cette activité.");
+        return false;
     }
 }

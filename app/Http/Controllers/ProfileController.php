@@ -38,12 +38,20 @@ class ProfileController extends Controller
         $expectedContribution = $user->weekly_contribution ? $user->weekly_contribution * $totalSundaysInYear : 0;
         $paidContribution = $user->contributions()->whereBetween('date', [$startOfYear, $endOfYear])->sum('amount');
 
+        $badgeService = app(\App\Services\DeviceBadgeService::class);
+        $trustedDevices = $user->trustedDevices()->orderBy('created_at', 'desc')->get();
+        $currentEnrolledDevice = $badgeService->getCurrentEnrolledDevice($user, $request);
+        $browserGuidance = $badgeService->getBrowserGuidance($request);
+
         return view('profile.edit', [
-            'user' => $user,
-            'completionPercentage' => $completionPercentage,
-            'expectedContribution' => $expectedContribution,
-            'paidContribution' => $paidContribution,
-            'totalSundaysInYear' => $totalSundaysInYear
+            'user'                  => $user,
+            'completionPercentage'  => $completionPercentage,
+            'expectedContribution'  => $expectedContribution,
+            'paidContribution'      => $paidContribution,
+            'totalSundaysInYear'    => $totalSundaysInYear,
+            'trustedDevices'        => $trustedDevices,
+            'currentEnrolledDevice' => $currentEnrolledDevice,
+            'browserGuidance'       => $browserGuidance,
         ]);
     }
 
@@ -103,7 +111,7 @@ class ProfileController extends Controller
     public function updateAvatar(Request $request)
     {
         $request->validate([
-            'photo' => ['required', 'image', 'max:51200'] // 50MB max
+            'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'] // 5MB max
         ]);
 
         $user = $request->user();
@@ -124,7 +132,7 @@ class ProfileController extends Controller
     public function updateCover(Request $request)
     {
         $request->validate([
-            'cover_photo' => ['required', 'image', 'max:51200']
+            'cover_photo' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120']
         ]);
 
         $user = $request->user();

@@ -69,12 +69,12 @@
                                 <a href="{{ route('admin.groups.show', $group) }}" class="btn btn-sm btn-info" title="Voir">
                                     <i class="mdi mdi-eye"></i>
                                 </a>
-                                @can('group.edit')
+                                @can('update', $group)
                                 <a href="{{ route('admin.groups.edit', $group) }}" class="btn btn-sm btn-primary" title="Modifier">
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
                                 @endcan
-                                @can('group.delete')
+                                @can('delete', $group)
                                 <form action="{{ route('admin.groups.destroy', $group) }}" method="POST" class="d-inline confirm-archive-group" data-group-name="{{ $group->name }}">
                                     @csrf
                                     @method('DELETE')
@@ -126,12 +126,12 @@
                                 <a href="{{ route('admin.groups.show', $group) }}" class="btn btn-sm btn-info flex-grow-1" title="Voir">
                                     <i class="mdi mdi-eye me-1"></i>Voir
                                 </a>
-                                @can('group.edit')
+                                @can('update', $group)
                                 <a href="{{ route('admin.groups.edit', $group) }}" class="btn btn-sm btn-primary flex-grow-1" title="Modifier">
                                     <i class="mdi mdi-pencil me-1"></i>Modif
                                 </a>
                                 @endcan
-                                @can('group.delete')
+                                @can('delete', $group)
                                 <form action="{{ route('admin.groups.destroy', $group) }}" method="POST" class="d-flex confirm-archive-group m-0" data-group-name="{{ $group->name }}" style="flex-grow: 1;">
                                     @csrf
                                     @method('DELETE')

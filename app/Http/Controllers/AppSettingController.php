@@ -50,6 +50,13 @@ class AppSettingController extends Controller
             $fileFields = array_merge(['favicon', 'logo_sm', 'logo_dark', 'logo_light'], $fileFields);
         }
 
+        // Validation des fichiers
+        $validationRules = [];
+        foreach ($fileFields as $field) {
+            $validationRules[$field] = ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'];
+        }
+        $request->validate($validationRules);
+
         $data = [];
 
         // Save text fields

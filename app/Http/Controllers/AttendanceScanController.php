@@ -34,6 +34,6 @@ class AttendanceScanController extends Controller
             return app(AttendanceController::class)->validate($request);
         }
 
-        return redirect()->route('attendance.scanner');
+        return redirect()->route('attendance.scan');
     }
 }

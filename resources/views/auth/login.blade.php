@@ -92,6 +92,34 @@
                                     <p class="text-muted">Connectez-vous pour continuer sur {{ config('app.name') }}.</p>
                                 </div>
                                 
+                                @if (session('info'))
+                                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                        <i class="ri-information-line me-1 align-middle"></i> {{ session('info') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+
+                                @if (session('status'))
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        <i class="ri-check-line me-1 align-middle"></i> {{ session('status') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+
+                                @if (session('success'))
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        <i class="ri-check-line me-1 align-middle"></i> {{ session('success') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+
+                                @if (session('warning'))
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                        <i class="ri-alert-line me-1 align-middle"></i> {{ session('warning') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+
                                 @if ($errors->any())
                                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                         <ul class="mb-0">
@@ -106,6 +134,10 @@
                                 <div class="p-2 mt-4">
                                     <form action="{{ route('login') }}" method="POST">
                                         @csrf
+
+                                        @if(request('redirect') || old('redirect'))
+                                            <input type="hidden" name="redirect" value="{{ request('redirect') ?? old('redirect') }}">
+                                        @endif
 
                                         <div class="mb-3">
                                             <label for="identifiant" class="form-label">Adresse Email ou Numéro de téléphone</label>

@@ -63,6 +63,29 @@ class RoleController extends Controller
     }
 
     /**
+     * Ordre logique d'affichage des catégories de permissions.
+     */
+    protected function getCategoryOrder(): array
+    {
+        return [
+            'member',
+            'group',
+            'activity',
+            'attendance',
+            'registration',
+            'finance',
+            'remittance',
+            'notification',
+            'stats',
+            'report',
+            'role',
+            'permission',
+            'qrcode',
+            'audit',
+        ];
+    }
+
+    /**
      * Formulaire de création d'un rôle.
      */
     public function create()
@@ -71,10 +94,13 @@ class RoleController extends Controller
 
         $permissions = Permission::orderBy('name')->get();
 
-        // Grouper les permissions par catégorie (ressource)
+        $categoryOrder = $this->getCategoryOrder();
         $groupedPermissions = $permissions->groupBy(function ($permission) {
             $parts = explode('.', $permission->name);
             return count($parts) > 1 ? $parts[0] : 'other';
+        })->sortBy(function ($items, $key) use ($categoryOrder) {
+            $index = array_search($key, $categoryOrder);
+            return $index !== false ? $index : 999;
         });
 
         return view('admin.roles.create', compact('groupedPermissions'));
@@ -122,9 +148,13 @@ class RoleController extends Controller
         }
 
         $rolePermissions = $role->permissions()->orderBy('name')->get();
+        $categoryOrder = $this->getCategoryOrder();
         $groupedPermissions = $rolePermissions->groupBy(function ($permission) {
             $parts = explode('.', $permission->name);
             return count($parts) > 1 ? $parts[0] : 'other';
+        })->sortBy(function ($items, $key) use ($categoryOrder) {
+            $index = array_search($key, $categoryOrder);
+            return $index !== false ? $index : 999;
         });
 
         return view('admin.roles.show', compact('role', 'groupedPermissions'));
@@ -150,10 +180,14 @@ class RoleController extends Controller
         $permissions = Permission::orderBy('name')->get();
         $rolePermissionNames = $role->permissions->pluck('name')->toArray();
 
-        // Grouper toutes les permissions par catégorie (ressource)
+        // Grouper toutes les permissions par catégorie (ressource) avec ordre logique
+        $categoryOrder = $this->getCategoryOrder();
         $groupedPermissions = $permissions->groupBy(function ($permission) {
             $parts = explode('.', $permission->name);
             return count($parts) > 1 ? $parts[0] : 'other';
+        })->sortBy(function ($items, $key) use ($categoryOrder) {
+            $index = array_search($key, $categoryOrder);
+            return $index !== false ? $index : 999;
         });
 
         return view('admin.roles.edit', compact('role', 'groupedPermissions', 'rolePermissionNames'));

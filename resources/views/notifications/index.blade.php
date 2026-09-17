@@ -185,6 +185,36 @@
     </div>
 </div>
 
+{{-- ── Alertes flash ── --}}
+@if(session('success'))
+    <div class="alert alert-success border-0 mb-3 d-flex align-items-center gap-2 p-3 shadow-sm alert-dismissible fade show">
+        <i class="mdi mdi-check-circle fs-18"></i>
+        <span>{{ session('success') }}</span>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+@if(session('info'))
+    <div class="alert alert-info border-0 mb-3 d-flex align-items-center gap-2 p-3 shadow-sm alert-dismissible fade show">
+        <i class="mdi mdi-information-outline fs-18"></i>
+        <span>{{ session('info') }}</span>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+@if(session('warning'))
+    <div class="alert alert-warning border-0 mb-3 d-flex align-items-center gap-2 p-3 shadow-sm alert-dismissible fade show">
+        <i class="mdi mdi-alert-outline fs-18"></i>
+        <span>{{ session('warning') }}</span>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+@if(session('error'))
+    <div class="alert alert-danger border-0 mb-3 d-flex align-items-center gap-2 p-3 shadow-sm alert-dismissible fade show">
+        <i class="mdi mdi-alert-circle fs-18"></i>
+        <span>{{ session('error') }}</span>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
 {{-- ── Liste des notifications ── --}}
 <div class="notif-list">
     @forelse($notifications as $notification)

@@ -171,7 +171,7 @@
                                 <label class="form-label fw-medium text-body">Statut <span class="text-danger">*</span></label>
                                 <div class="status-radio-container">
                                     @foreach(\App\Enums\ActivityStatus::cases() as $status)
-                                        @if($status->value === 'ARCHIVED')
+                                        @if(in_array($status->value, ['ARCHIVED', 'CANCELLED']))
                                             @continue
                                         @endif
                                         <input type="radio" class="btn-check" name="status" id="status_{{ $status->value }}" value="{{ $status->value }}" {{ old('status', \App\Enums\ActivityStatus::PUBLISHED->value) === $status->value ? 'checked' : '' }}>
@@ -182,14 +182,6 @@
                                     <div class="text-danger mt-1 fs-12">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
-                        
-                        <div class="mt-4 d-none p-3 rounded bg-soft-danger border border-danger-subtle" id="cancellation-reason-container">
-                            <label for="cancellation_reason" class="form-label fw-medium text-danger">Motif d'annulation <span class="text-danger">*</span></label>
-                            <textarea class="form-control premium-input @error('cancellation_reason') is-invalid @enderror" id="cancellation_reason" name="cancellation_reason" rows="2" placeholder="Pourquoi cette activité est-elle annulée ?">{{ old('cancellation_reason') }}</textarea>
-                            @error('cancellation_reason')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
                     </div>
                 </div>
@@ -365,26 +357,9 @@
         }
     }
 
-    function toggleCancellationReason() {
-        const statusElement = document.querySelector('input[name="status"]:checked');
-        const status = statusElement ? statusElement.value : null;
-        const container = document.getElementById('cancellation-reason-container');
-        if (status === 'CANCELLED') {
-            container.classList.remove('d-none');
-        } else {
-            container.classList.add('d-none');
-        }
-    }
-
     document.getElementById('visibility').addEventListener('change', toggleVisibilityFields);
-    
-    // Add event listeners to radio buttons
-    document.querySelectorAll('input[name="status"]').forEach((elem) => {
-        elem.addEventListener('change', toggleCancellationReason);
-    });
 
     // Run on load
     toggleVisibilityFields();
-    toggleCancellationReason();
 </script>
 @endpush

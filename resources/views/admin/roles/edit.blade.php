@@ -11,6 +11,8 @@
         'activity'     => ['label' => 'Activités',     'icon' => 'ri-calendar-event-line', 'color' => 'success'],
         'attendance'   => ['label' => 'Présences',     'icon' => 'ri-checkbox-circle-line','color' => 'warning'],
         'registration' => ['label' => 'Inscriptions',  'icon' => 'ri-file-list-3-line',    'color' => 'danger'],
+        'finance'      => ['label' => 'Finances (Cotisations)', 'icon' => 'ri-money-dollar-circle-line', 'color' => 'success'],
+        'remittance'   => ['label' => 'Versements & Trésorerie', 'icon' => 'ri-bank-card-line', 'color' => 'warning'],
         'notification' => ['label' => 'Notifications', 'icon' => 'ri-notification-3-line', 'color' => 'primary'],
         'stats'        => ['label' => 'Statistiques',  'icon' => 'ri-bar-chart-line',      'color' => 'info'],
         'report'       => ['label' => 'Rapports',      'icon' => 'ri-file-chart-line',     'color' => 'success'],

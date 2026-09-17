@@ -17,8 +17,9 @@
         'role'         => ['label' => 'Rôles',         'icon' => 'ri-shield-star-line',    'color' => 'warning'],
         'permission'   => ['label' => 'Permissions',   'icon' => 'ri-key-2-line',          'color' => 'danger'],
         'audit'        => ['label' => 'Audit & Logs',  'icon' => 'ri-file-search-line',    'color' => 'secondary'],
+        'finance'      => ['label' => 'Finances (Cotisations)', 'icon' => 'ri-money-dollar-circle-line', 'color' => 'success'],
+        'remittance'   => ['label' => 'Versements & Trésorerie', 'icon' => 'ri-bank-card-line', 'color' => 'warning'],
         'qrcode'       => ['label' => 'Codes QR',      'icon' => 'ri-qr-code-line',        'color' => 'primary'],
-        'finance'      => ['label' => 'Finances',      'icon' => 'ri-money-dollar-circle-line', 'color' => 'success'],
     ];
 
     $allPermNames     = collect($groupedPermissions)->flatten()->pluck('name')->toArray();

@@ -235,13 +235,22 @@ class UserController extends Controller
             ]);
         }
 
+        $churchId = session('tenant_church_id') ?? auth()->user()?->church_id;
+
         $request->validate([
             'user_ids' => 'required|array',
-            'user_ids.*' => 'exists:users,id',
+            // F-5 : Restreindre les IDs à l'église active pour empêcher la modification cross-tenant
+            'user_ids.*' => [
+                'required',
+                \Illuminate\Validation\Rule::exists('users', 'id')
+                    ->when($churchId, fn ($q) => $q->where('church_id', $churchId)),
+            ],
             'status' => 'required|in:PENDING,ACTIVE,INACTIVE,SUSPENDED'
         ]);
 
-        User::whereIn('id', $request->user_ids)->update(['status' => $request->status]);
+        User::whereIn('id', $request->user_ids)
+            ->when($churchId, fn ($q) => $q->where('church_id', $churchId))
+            ->update(['status' => $request->status]);
 
         return redirect()->back()->with('success', 'Statut mis à jour pour les utilisateurs sélectionnés.');
     }

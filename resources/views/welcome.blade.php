@@ -1621,8 +1621,8 @@
             </div>
         </section>
 
-        <!-- 8. APPEL A L'ACTION -->
-        <section class="cta-section shadow-lg reveal-on-scroll">
+        <!-- 8. APPEL A L'ACTION / CONTACT -->
+        <section id="contact" class="cta-section shadow-lg reveal-on-scroll">
             <div class="container px-3 position-relative" style="z-index: 2;">
                 <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold fs-12 mb-3 shadow-sm">
                     <i class="ri-heart-pulse-line me-1"></i> VOUS ÊTES LES BIENVENUS

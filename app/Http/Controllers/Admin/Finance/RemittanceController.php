@@ -57,7 +57,7 @@ class RemittanceController extends Controller
         $user = auth()->user();
         $churchId = session('tenant_church_id') ?? $user->church_id ?? null;
 
-        if ($user->can('finance.view_all')) {
+        if ($user->can('remittance.view_all')) {
             $groupIdHash = $request->input('group_id');
             $groupId = $groupIdHash ? decode_id($groupIdHash) : null;
             $group = Group::find($groupId) ?? Group::when($churchId, fn ($q) => $q->where('church_id', $churchId))->first();

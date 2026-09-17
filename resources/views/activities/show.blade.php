@@ -257,122 +257,174 @@
                     </h4>
                 </div>
 
-                @if($isLocked)
-                    <div class="alert alert-warning border-0 p-3" role="alert">
-                        <div class="d-flex">
+                @if($hasFinished)
+                    <div class="alert alert-secondary border-0 p-3 mb-3 rounded-3" role="alert">
+                        <div class="d-flex align-items-center">
                             <div class="flex-shrink-0">
-                                <i class="mdi mdi-alert-circle text-warning fs-18"></i>
+                                <i class="mdi mdi-check-circle-outline text-secondary fs-20"></i>
                             </div>
                             <div class="flex-grow-1 ms-2">
-                                <h6 class="alert-heading fw-bold mb-1">Inscriptions verrouillées</h6>
-                                <p class="text-muted mb-0 fs-13">L'activité commence dans moins de 2 heures (ou a déjà commencé). Vous ne pouvez plus vous inscrire ou modifier votre statut.</p>
+                                <h6 class="alert-heading fw-bold mb-1 text-dark">Activité terminée</h6>
+                                <p class="text-muted mb-0 fs-13">Cette activité a pris fin le {{ $activity->end_time->translatedFormat('d/m/Y à H:i') }}. Les inscriptions et modifications sont closes.</p>
                             </div>
                         </div>
                     </div>
-                @endif
 
-                <form action="{{ $formRoute }}" method="POST" 
-                      x-data="{ 
-                          status: '{{ old('status', $currentStatusVal ?: 'PRESENT') }}', 
-                          isLocked: {{ $isLocked ? 'true' : 'false' }} 
-                      }">
-                    @csrf
-                    @if($formMethod === 'PUT')
-                        @method('PUT')
-                    @endif
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold mb-3">Sélectionnez votre statut :</label>
-
-                        <!-- PRESENT option -->
-                        <div class="mb-2">
-                            <input class="status-option-input d-none" 
-                                   type="radio" 
-                                   name="status" 
-                                   id="status-present" 
-                                   value="PRESENT" 
-                                   x-model="status"
-                                   :disabled="isLocked">
-                            <label class="status-option-card d-block w-100" for="status-present">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1">
-                                        <h6 class="fw-bold mb-1 text-success"><i class="mdi mdi-checkbox-marked-circle-outline me-2"></i>Je participe</h6>
-                                        <small class="text-muted">Je serai présent à cette activité</small>
-                                    </div>
-                                    <div class="flex-shrink-0 ms-2" x-show="status === 'PRESENT'">
-                                        <span class="badge bg-success rounded-circle p-1"><i class="mdi mdi-check"></i></span>
-                                    </div>
-                                </div>
-                            </label>
+                    @if($myRegistration)
+                        <div class="p-3 bg-light rounded-3 text-center mb-0">
+                            <p class="mb-2 text-muted fs-12">Votre statut enregistré pour cet événement :</p>
+                            @if($currentStatusVal === 'PRESENT')
+                                <span class="badge bg-success-subtle text-success fs-13 px-3 py-2 rounded-pill">
+                                    <i class="mdi mdi-checkbox-marked-circle-outline me-1"></i> Participation confirmée
+                                </span>
+                            @elseif($currentStatusVal === 'UNCERTAIN')
+                                <span class="badge bg-warning-subtle text-warning fs-13 px-3 py-2 rounded-pill">
+                                    <i class="mdi mdi-help-circle-outline me-1"></i> Participation incertaine
+                                </span>
+                            @elseif($currentStatusVal === 'ABSENT_JUSTIFIED')
+                                <span class="badge bg-danger-subtle text-danger fs-13 px-3 py-2 rounded-pill">
+                                    <i class="mdi mdi-close-circle-outline me-1"></i> Absence déclarée
+                                </span>
+                                @if($myRegistration->justification)
+                                    <p class="mt-2 mb-0 text-muted fs-12 fst-italic">« {{ $myRegistration->justification }} »</p>
+                                @endif
+                            @endif
                         </div>
-
-                        <!-- UNCERTAIN option -->
-                        <div class="mb-2">
-                            <input class="status-option-input d-none" 
-                                   type="radio" 
-                                   name="status" 
-                                   id="status-uncertain" 
-                                   value="UNCERTAIN" 
-                                   x-model="status"
-                                   :disabled="isLocked">
-                            <label class="status-option-card d-block w-100" for="status-uncertain">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1">
-                                        <h6 class="fw-bold mb-1 text-warning"><i class="mdi mdi-help-circle-outline me-2"></i>Incertain(e)</h6>
-                                        <small class="text-muted">Je ne suis pas encore sûr(e) d'y assister</small>
-                                    </div>
-                                    <div class="flex-shrink-0 ms-2" x-show="status === 'UNCERTAIN'">
-                                        <span class="badge bg-warning rounded-circle p-1"><i class="mdi mdi-check"></i></span>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-
-                        <!-- ABSENT_JUSTIFIED option -->
-                        <div class="mb-2">
-                            <input class="status-option-input d-none" 
-                                   type="radio" 
-                                   name="status" 
-                                   id="status-absent" 
-                                   value="ABSENT_JUSTIFIED" 
-                                   x-model="status"
-                                   :disabled="isLocked">
-                            <label class="status-option-card d-block w-100" for="status-absent">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1">
-                                        <h6 class="fw-bold mb-1 text-danger"><i class="mdi mdi-close-circle-outline me-2"></i>Je n'y vais pas / Absent</h6>
-                                        <small class="text-muted">Se désinscrire ou déclarer son absence</small>
-                                    </div>
-                                    <div class="flex-shrink-0 ms-2" x-show="status === 'ABSENT_JUSTIFIED'">
-                                        <span class="badge bg-danger rounded-circle p-1"><i class="mdi mdi-check"></i></span>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Justification block, animated using Alpine -->
-                    <div class="mb-4" x-show="status === 'ABSENT_JUSTIFIED'" x-transition:enter="fade-in">
-                        <label for="justification" class="form-label fw-bold">Motif d'absence / désinscription <span class="text-danger">*</span></label>
-                        <textarea class="form-control" 
-                                  name="justification" 
-                                  id="justification" 
-                                  rows="3" 
-                                  placeholder="Veuillez renseigner le motif de votre absence (min. 5 caractères)"
-                                  :required="status === 'ABSENT_JUSTIFIED'"
-                                  :disabled="isLocked">{{ old('justification', $myRegistration ? $myRegistration->justification : '') }}</textarea>
-                    </div>
-
-                    @if(!$isLocked)
-                        <button type="submit" class="btn btn-primary w-100 btn-lg shadow-sm">
-                            <i class="mdi mdi-content-save-outline me-1"></i> Enregistrer mon choix
-                        </button>
                     @else
-                        <button type="button" class="btn btn-secondary w-100 btn-lg shadow-sm" disabled>
-                            <i class="mdi mdi-lock-outline me-1"></i> Inscriptions fermées
-                        </button>
+                        <div class="p-3 bg-light rounded-3 text-center text-muted fs-13 mb-0">
+                            <i class="mdi mdi-account-off-outline me-1 fs-16 align-middle"></i> Vous n'étiez pas inscrit(e) à cette activité.
+                        </div>
                     @endif
-                </form>
+                @else
+                    @if($isOngoing)
+                        <div class="alert alert-info border-0 p-3 mb-3 rounded-3" role="alert">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="mdi mdi-play-circle-outline text-info fs-20"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-2">
+                                    <h6 class="alert-heading fw-bold mb-1 text-dark">Activité en cours</h6>
+                                    <p class="text-muted mb-0 fs-13">L'activité a débuté. Les inscriptions et modifications sont désormais closes.</p>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($isLocked)
+                        <div class="alert alert-warning border-0 p-3 mb-3 rounded-3" role="alert">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="mdi mdi-lock-clock text-warning fs-20"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-2">
+                                    <h6 class="alert-heading fw-bold mb-1 text-dark">Inscriptions verrouillées</h6>
+                                    <p class="text-muted mb-0 fs-13">L'activité commence dans moins de 2 heures. Vous ne pouvez plus vous inscrire ou modifier votre statut.</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <form action="{{ $formRoute }}" method="POST" 
+                          x-data="{ 
+                              status: '{{ old('status', $currentStatusVal ?: 'PRESENT') }}', 
+                              isLocked: {{ $isLocked ? 'true' : 'false' }} 
+                          }">
+                        @csrf
+                        @if($formMethod === 'PUT')
+                            @method('PUT')
+                        @endif
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold mb-3">Sélectionnez votre statut :</label>
+
+                            <!-- PRESENT option -->
+                            <div class="mb-2">
+                                <input class="status-option-input d-none" 
+                                       type="radio" 
+                                       name="status" 
+                                       id="status-present" 
+                                       value="PRESENT" 
+                                       x-model="status"
+                                       :disabled="isLocked">
+                                <label class="status-option-card d-block w-100" for="status-present">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1">
+                                            <h6 class="fw-bold mb-1 text-success"><i class="mdi mdi-checkbox-marked-circle-outline me-2"></i>Je participe</h6>
+                                            <small class="text-muted">Je serai présent à cette activité</small>
+                                        </div>
+                                        <div class="flex-shrink-0 ms-2" x-show="status === 'PRESENT'">
+                                            <span class="badge bg-success rounded-circle p-1"><i class="mdi mdi-check"></i></span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- UNCERTAIN option -->
+                            <div class="mb-2">
+                                <input class="status-option-input d-none" 
+                                       type="radio" 
+                                       name="status" 
+                                       id="status-uncertain" 
+                                       value="UNCERTAIN" 
+                                       x-model="status"
+                                       :disabled="isLocked">
+                                <label class="status-option-card d-block w-100" for="status-uncertain">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1">
+                                            <h6 class="fw-bold mb-1 text-warning"><i class="mdi mdi-help-circle-outline me-2"></i>Incertain(e)</h6>
+                                            <small class="text-muted">Je ne suis pas encore sûr(e) d'y assister</small>
+                                        </div>
+                                        <div class="flex-shrink-0 ms-2" x-show="status === 'UNCERTAIN'">
+                                            <span class="badge bg-warning rounded-circle p-1"><i class="mdi mdi-check"></i></span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- ABSENT_JUSTIFIED option -->
+                            <div class="mb-2">
+                                <input class="status-option-input d-none" 
+                                       type="radio" 
+                                       name="status" 
+                                       id="status-absent" 
+                                       value="ABSENT_JUSTIFIED" 
+                                       x-model="status"
+                                       :disabled="isLocked">
+                                <label class="status-option-card d-block w-100" for="status-absent">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1">
+                                            <h6 class="fw-bold mb-1 text-danger"><i class="mdi mdi-close-circle-outline me-2"></i>Je n'y vais pas / Absent</h6>
+                                            <small class="text-muted">Se désinscrire ou déclarer son absence</small>
+                                        </div>
+                                        <div class="flex-shrink-0 ms-2" x-show="status === 'ABSENT_JUSTIFIED'">
+                                            <span class="badge bg-danger rounded-circle p-1"><i class="mdi mdi-check"></i></span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Justification block, animated using Alpine -->
+                        <div class="mb-4" x-show="status === 'ABSENT_JUSTIFIED'" x-transition:enter="fade-in">
+                            <label for="justification" class="form-label fw-bold">Motif d'absence / désinscription <span class="text-danger">*</span></label>
+                            <textarea class="form-control" 
+                                      name="justification" 
+                                      id="justification" 
+                                      rows="3" 
+                                      placeholder="Veuillez renseigner le motif de votre absence (min. 5 caractères)"
+                                      :required="status === 'ABSENT_JUSTIFIED'"
+                                      :disabled="isLocked">{{ old('justification', $myRegistration ? $myRegistration->justification : '') }}</textarea>
+                        </div>
+
+                        @if(!$isLocked)
+                            <button type="submit" class="btn btn-primary w-100 btn-lg shadow-sm">
+                                <i class="mdi mdi-content-save-outline me-1"></i> Enregistrer mon choix
+                            </button>
+                        @else
+                            <button type="button" class="btn btn-secondary w-100 btn-lg shadow-sm" disabled>
+                                <i class="mdi mdi-lock-outline me-1"></i> Inscriptions fermées
+                            </button>
+                        @endif
+                    </form>
+                @endif
             </div>
         </div>
         @endif

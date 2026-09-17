@@ -9,11 +9,19 @@ use Illuminate\Auth\Access\Response;
 
 class GroupPolicy
 {
-    /**
-     * Bypass global : l'Administrateur passe toutes les vérifications.
-     */
-    public function before(User $user, string $ability): ?bool
+    public function before(User $user, string $ability, ...$args): ?bool
     {
+        // F-4 : Interdire les actions cross-tenant même pour un Administrateur
+        if (!empty($args) && $args[0] instanceof Group) {
+            $targetGroup = $args[0];
+            $activeChurchId = session('tenant_church_id') ?? $user->church_id;
+            if (!$user->isSuperAdmin() || session()->has('tenant_church_id')) {
+                if ($activeChurchId && $targetGroup->church_id && (int) $targetGroup->church_id !== (int) $activeChurchId) {
+                    return false;
+                }
+            }
+        }
+
         if ($user->hasRole('Administrateur')) {
             return true;
         }
@@ -22,7 +30,7 @@ class GroupPolicy
     }
 
     /**
-     * Voir la liste de tous les groupes.
+     * Voir la liste des groupes.
      */
     public function viewAny(User $user): Response
     {
@@ -30,8 +38,8 @@ class GroupPolicy
             return Response::allow();
         }
 
-        // Le chef de groupe peut voir mais uniquement son propre groupe (group.view_own)
-        if ($user->can(PermissionEnum::GROUP_VIEW_OWN->value)) {
+        // Le chef de groupe ou membre d'un groupe peut accéder à la liste (filtrée à son groupe dans le contrôleur)
+        if ($user->ledGroups()->exists() || $user->groups()->wherePivotNull('left_at')->exists() || $user->can(PermissionEnum::GROUP_ASSIGN_MEMBER_OWN->value)) {
             return Response::allow();
         }
 
@@ -40,7 +48,7 @@ class GroupPolicy
 
     /**
      * Voir un groupe précis.
-     * Règle contextuelle : le chef ne peut voir QUE son propre groupe.
+     * Règle contextuelle : permission globale group.view OU être chef / membre du groupe concerné.
      */
     public function view(User $user, Group $group): Response
     {
@@ -48,14 +56,11 @@ class GroupPolicy
             return Response::allow();
         }
 
-        // Règle contextuelle chef de groupe ou membre du groupe
-        if ($user->can(PermissionEnum::GROUP_VIEW_OWN->value)) {
-            $isLeader = $group->leader_id === $user->id;
-            $isMember = $group->members()->wherePivotNull('left_at')->where('users.id', $user->id)->exists();
+        $isLeader = $group->leader_id === $user->id;
+        $isMember = $group->members()->wherePivotNull('left_at')->where('users.id', $user->id)->exists();
 
-            if ($isLeader || $isMember) {
-                return Response::allow();
-            }
+        if ($isLeader || $isMember) {
+            return Response::allow();
         }
 
         return Response::deny("Vous n'avez pas la permission de voir ce groupe.");
@@ -73,20 +78,26 @@ class GroupPolicy
 
     /**
      * Modifier un groupe.
-     * Règle contextuelle : le chef ne peut modifier QUE son propre groupe.
+     * - group.edit : modifier n'importe quel groupe de son église (Administrateurs / Gestionnaires).
+     * - group.edit_own : modifier uniquement son propre groupe (Chef de groupe).
      */
     public function update(User $user, Group $group): Response
     {
+        // 1. Permission globale pour tous les groupes
         if ($user->can(PermissionEnum::GROUP_EDIT->value)) {
             return Response::allow();
         }
 
-        // 2. Si le rôle 'Chef de groupe' est assigné, il ne peut modifier que SON groupe
-        if ($user->hasRole('Chef de groupe') && $group->leader_id === $user->id) {
-            return Response::allow();
+        // 2. Permission pour son propre groupe uniquement (Chef de groupe)
+        if ($user->can(PermissionEnum::GROUP_EDIT_OWN->value)) {
+            if ($group->leader_id === $user->id) {
+                return Response::allow();
+            }
+
+            return Response::deny("Vous ne pouvez modifier que votre propre groupe.");
         }
 
-        return Response::deny("Vous n'avez pas la permission de modifier ce groupe. Seul le chef de ce groupe peut le modifier.");
+        return Response::deny("Vous n'avez pas la permission de modifier ce groupe.");
     }
 
     /**
@@ -101,16 +112,26 @@ class GroupPolicy
 
     /**
      * Assigner un membre à un groupe.
-     * Règle contextuelle : un chef de groupe peut uniquement assigner dans SON groupe.
+     * - group.assign_member : assigner dans n'importe quel groupe de son église (Administrateurs / Gestionnaires).
+     * - group.assign_member_own : assigner uniquement dans son propre groupe (Chef de groupe / Membre).
      */
     public function assignMember(User $user, Group $group): Response
     {
+        // 1. Permission globale pour tous les groupes
         if ($user->can(PermissionEnum::GROUP_ASSIGN_MEMBER->value)) {
             return Response::allow();
         }
 
-        if ($user->hasRole('Chef de groupe') && $group->leader_id === $user->id) {
-            return Response::allow();
+        // 2. Permission pour son propre groupe
+        if ($user->can(PermissionEnum::GROUP_ASSIGN_MEMBER_OWN->value)) {
+            $isLeader = $group->leader_id === $user->id;
+            $isMember = $group->members()->wherePivotNull('left_at')->where('users.id', $user->id)->exists();
+
+            if ($isLeader || $isMember) {
+                return Response::allow();
+            }
+
+            return Response::deny("Vous ne pouvez assigner des membres que dans votre propre groupe.");
         }
 
         return Response::deny("Vous n'avez pas la permission d'assigner un membre à ce groupe.");

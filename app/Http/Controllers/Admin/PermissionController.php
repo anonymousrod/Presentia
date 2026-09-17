@@ -86,7 +86,18 @@ class PermissionController extends Controller
     {
         $this->authorize('permission.manage');
 
-        $churchId = $user->church_id ?? session('tenant_church_id') ?? auth()->user()?->church_id;
+        $authUser    = auth()->user();
+        $authChurchId = session('tenant_church_id') ?? $authUser?->church_id;
+
+        // F-6 : Empêcher l'escalade de privilèges cross-tenant.
+        // Un admin ne peut modifier les permissions que d'un utilisateur de SA propre église.
+        if (!$authUser?->isSuperAdmin() || session()->has('tenant_church_id')) {
+            if ($authChurchId && $user->church_id && $user->church_id !== $authChurchId) {
+                abort(403, 'Vous ne pouvez pas modifier les permissions d\'un utilisateur d\'une autre église.');
+            }
+        }
+
+        $churchId = $authChurchId ?? $user->church_id;
         if (function_exists('setPermissionsTeamId') && $churchId) {
             setPermissionsTeamId($churchId);
         }

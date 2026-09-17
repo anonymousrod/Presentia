@@ -7,6 +7,7 @@ use App\Models\Activity;
 use Illuminate\Support\Facades\URL;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Support\Str;
 
 class QrCodeController extends Controller
 {
@@ -16,6 +17,10 @@ class QrCodeController extends Controller
     public function generate(Activity $activity)
     {
         $this->authorize('qrcode.generate');
+
+        if (config('app.url')) {
+            URL::forceRootUrl(config('app.url'));
+        }
 
         $expires = $activity->end_time;
 
@@ -55,7 +60,16 @@ class QrCodeController extends Controller
     {
         $this->authorize('qrcode.generate');
 
+        if (config('app.url')) {
+            URL::forceRootUrl(config('app.url'));
+        }
+
         $url = session("activity_qr_url_{$activity->id}");
+
+        // Si l'URL en session contient localhost/127.0.0.1 alors que app.url est configuré sur une IP LAN, on regénère
+        if ($url && (str_contains($url, '127.0.0.1') || str_contains($url, 'localhost')) && !str_contains(config('app.url'), '127.0.0.1') && !str_contains(config('app.url'), 'localhost')) {
+            $url = null;
+        }
 
         if (!$url) {
             $expires = $activity->end_time;
@@ -91,7 +105,8 @@ class QrCodeController extends Controller
         $logoUeebBase64 = $this->getLogoBase64($logo1Path);
 
         $pdf = Pdf::loadView('admin.activities.qr-pdf', compact('activity', 'qrCodeDataUri', 'logoUeebBase64', 'church'));
-        return $pdf->download("QR_Code_{$activity->id}_{$activity->title}.pdf");
+        $safeTitle = Str::slug($activity->title, '_');
+        return $pdf->download("QR_Code_{$activity->id}_{$safeTitle}.pdf");
     }
 
     private function getLogoBase64(?string $path): string

@@ -273,9 +273,12 @@
                                 </span>
                                 <h6 class="mb-0 fw-bold text-dark fs-13 text-truncate">{{ $supportChurch->name }}</h6>
                                 <p class="text-muted fs-11 mb-2">Profil Admin : {{ $displayUser->full_name }}</p>
-                                <a href="{{ route('super-admin.leave-impersonation') }}" class="btn btn-danger btn-sm rounded-pill w-100 fs-11 fw-semibold">
-                                    <i class="mdi mdi-logout-variant me-1"></i> Quitter le support
-                                </a>
+                                <form method="POST" action="{{ route('super-admin.leave-impersonation') }}" class="m-0">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger btn-sm rounded-pill w-100 fs-11 fw-semibold">
+                                        <i class="mdi mdi-logout-variant me-1"></i> Quitter le support
+                                    </button>
+                                </form>
                             </div>
                         @else
                             <h6 class="dropdown-header">Bienvenue {{ auth()->user()->first_name }} !</h6>

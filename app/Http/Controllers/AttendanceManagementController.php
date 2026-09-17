@@ -54,7 +54,10 @@ class AttendanceManagementController extends Controller
         $isClosed = $activity->end_time->addHour()->lt(now());
 
         // Retrieve all other eligible users to be added to the list
-        $allEligibleQuery = User::whereNull('deleted_at');
+        // F-7 : Restreindre à l'église de l'activité pour éviter les émargements cross-tenant
+        $activityChurchId = $activity->church_id ?? (session('tenant_church_id') ?? auth()->user()?->church_id);
+        $allEligibleQuery = User::whereNull('deleted_at')
+            ->when($activityChurchId, fn ($q) => $q->where('church_id', $activityChurchId));
         if ($activity->visibility_group_id) {
             $allEligibleQuery->whereIn('id', function ($q) use ($activity) {
                 $q->select('user_id')
@@ -81,7 +84,8 @@ class AttendanceManagementController extends Controller
         $validationScopeType = 'info'; // info, primary, warning
 
         if ($activity->visibility_group_id) {
-            $validationScopeMessage = "Vous validez actuellement les présences pour le groupe spécifique associé à cette activité : <strong>{$activity->group->name}</strong>.";
+            $groupName = e($activity->group?->name ?? '');
+            $validationScopeMessage = "Vous validez actuellement les présences pour le groupe spécifique associé à cette activité : <strong>{$groupName}</strong>.";
             $validationScopeType = 'primary';
         } else {
             if ($user->can(\App\Enums\PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value)) {
@@ -114,6 +118,8 @@ class AttendanceManagementController extends Controller
 
         // Check if the user is eligible for this activity
         $belongs = false;
+        $activityChurchId = $activity->church_id ?? (session('tenant_church_id') ?? Auth::user()?->church_id);
+
         if ($activity->visibility_group_id) {
             $belongs = $activity->group->members()
                 ->wherePivotNull('left_at')
@@ -122,8 +128,11 @@ class AttendanceManagementController extends Controller
         } else {
             // Global or Role activity
             if (Auth::user()->can(\App\Enums\PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value)) {
-                // Global permission can manage any active user
-                $belongs = User::where('id', $userId)->whereNull('deleted_at')->exists();
+                // Global permission can manage any active user in the activity's church
+                $belongs = User::where('id', $userId)
+                    ->when($activityChurchId, fn ($q) => $q->where('church_id', $activityChurchId))
+                    ->whereNull('deleted_at')
+                    ->exists();
             } else {
                 // Chef de groupe can manage members of their led groups
                 $ledGroupIds = Auth::user()->ledGroups()->pluck('groups.id')->toArray();
@@ -190,13 +199,16 @@ class AttendanceManagementController extends Controller
             $membersQuery = $group->members()->wherePivotNull('left_at');
         } else {
             // Global activity: retrieve registered users
+            $activityChurchId = $activity->church_id ?? (session('tenant_church_id') ?? $user?->church_id);
             $membersQuery = User::whereIn('id', function ($query) use ($activity) {
                 $query->select('user_id')
                       ->from('registrations')
                       ->where('activity_id', $activity->id)
                       ->where('is_waitlisted', false)
                       ->where('status', '!=', \App\Enums\RegistrationStatus::ABSENT_JUSTIFIED->value);
-            })->whereNull('deleted_at');
+            })
+            ->when($activityChurchId, fn ($q) => $q->where('church_id', $activityChurchId))
+            ->whereNull('deleted_at');
 
             // If the user does not have global validation permission, filter to members of groups led by this user
             if (!$user->can(\App\Enums\PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value)) {
@@ -245,6 +257,8 @@ class AttendanceManagementController extends Controller
 
         // Check if the user is eligible for this activity
         $belongs = false;
+        $activityChurchId = $activity->church_id ?? (session('tenant_church_id') ?? Auth::user()?->church_id);
+
         if ($activity->visibility_group_id) {
             $belongs = $activity->group->members()
                 ->wherePivotNull('left_at')
@@ -253,7 +267,10 @@ class AttendanceManagementController extends Controller
         } else {
             // Global or Role activity
             if (Auth::user()->can(\App\Enums\PermissionEnum::ATTENDANCE_VALIDATE_MANUAL_ALL->value)) {
-                $belongs = User::where('id', $userId)->whereNull('deleted_at')->exists();
+                $belongs = User::where('id', $userId)
+                    ->when($activityChurchId, fn ($q) => $q->where('church_id', $activityChurchId))
+                    ->whereNull('deleted_at')
+                    ->exists();
             } else {
                 $ledGroupIds = Auth::user()->ledGroups()->pluck('groups.id')->toArray();
                 $belongs = User::where('id', $userId)

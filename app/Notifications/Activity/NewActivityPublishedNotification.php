@@ -4,9 +4,10 @@ namespace App\Notifications\Activity;
 
 use App\Models\Activity;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class NewActivityPublishedNotification extends Notification
+class NewActivityPublishedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 

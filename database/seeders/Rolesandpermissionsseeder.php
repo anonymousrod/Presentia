@@ -31,8 +31,14 @@ class RolesAndPermissionsSeeder extends Seeder
         );
         $superAdmin->syncPermissions(Permission::all());
 
-        // 3. SEED DES RÔLES POUR L'ÉGLISE PAR DÉFAUT (ID 1 : Éber)
-        self::seedRolesForChurch(1);
+        // 3. SEED DES RÔLES POUR TOUTES LES ÉGLISES EXISTANTES
+        $churchIds = \App\Models\Church::pluck('id')->toArray();
+        if (empty($churchIds)) {
+            $churchIds = [1];
+        }
+        foreach ($churchIds as $cId) {
+            self::seedRolesForChurch($cId);
+        }
     }
 
     /**
@@ -57,7 +63,6 @@ class RolesAndPermissionsSeeder extends Seeder
                 'is_system'   => true,
                 'permissions' => [
                     'attendance.scan_qr',
-                    'group.view_own',
                     'registration.cancel_own',
                     'registration.create',
                     'registration.edit_own',
@@ -69,14 +74,18 @@ class RolesAndPermissionsSeeder extends Seeder
                 'description' => 'Responsable de la gestion et du suivi des membres de son groupe.',
                 'is_system'   => true,
                 'permissions' => [
+                    'attendance.download',
                     'attendance.scan_qr',
                     'attendance.validate_manual_own',
                     'attendance.view_own',
-                    'group.view_own',
+                    'group.assign_member_own',
+                    'group.edit_own',
                     'registration.cancel_own',
                     'registration.create',
+                    'registration.download',
                     'registration.edit_own',
-                    'remittance.create',
+                    'registration.view_own',
+                    'finance.remittance_create',
                     'stats.view_own_group',
                 ],
             ],
@@ -87,7 +96,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'is_system'   => true,
                 'permissions' => [
                     'finance.collect_own_group',
-                    'remittance.create',
+                    'finance.remittance_create',
                 ],
             ],
             [
@@ -97,10 +106,9 @@ class RolesAndPermissionsSeeder extends Seeder
                 'is_system'   => true,
                 'permissions' => [
                     'finance.collect_own_group',
-                    'finance.view_all',
-                    'group.view_own',
-                    'remittance.create',
+                    'finance.remittance_create',
                     'remittance.validate',
+                    'remittance.view_all',
                     'stats.view_global',
                 ],
             ],
@@ -113,9 +121,9 @@ class RolesAndPermissionsSeeder extends Seeder
                     'activity.create',
                     'activity.edit',
                     'activity.view',
+                    'attendance.download',
                     'attendance.scan_qr',
                     'attendance.view',
-                    'finance.view_all',
                     'group.view',
                     'member.export',
                     'member.view',
@@ -125,7 +133,10 @@ class RolesAndPermissionsSeeder extends Seeder
                     'notification.send_role',
                     'registration.cancel_own',
                     'registration.create',
+                    'registration.download',
                     'registration.edit_own',
+                    'registration.view',
+                    'remittance.view_all',
                     'stats.view_global',
                 ],
             ],
@@ -138,9 +149,9 @@ class RolesAndPermissionsSeeder extends Seeder
                     'activity.create',
                     'activity.edit',
                     'activity.view',
+                    'attendance.download',
                     'attendance.scan_qr',
                     'attendance.view',
-                    'finance.view_all',
                     'group.view',
                     'member.export',
                     'member.view',
@@ -150,7 +161,10 @@ class RolesAndPermissionsSeeder extends Seeder
                     'notification.send_role',
                     'registration.cancel_own',
                     'registration.create',
+                    'registration.download',
                     'registration.edit_own',
+                    'registration.view',
+                    'remittance.view_all',
                     'stats.view_global',
                 ],
             ],
@@ -163,9 +177,9 @@ class RolesAndPermissionsSeeder extends Seeder
                     'activity.create',
                     'activity.edit',
                     'activity.view',
+                    'attendance.download',
                     'attendance.scan_qr',
                     'attendance.view',
-                    'finance.view_all',
                     'group.view',
                     'member.view',
                     'notification.send_all',
@@ -174,7 +188,10 @@ class RolesAndPermissionsSeeder extends Seeder
                     'notification.send_role',
                     'registration.cancel_own',
                     'registration.create',
+                    'registration.download',
                     'registration.edit_own',
+                    'registration.view',
+                    'remittance.view_all',
                     'stats.view_global',
                 ],
             ],

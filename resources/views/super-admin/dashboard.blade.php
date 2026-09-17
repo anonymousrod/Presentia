@@ -547,10 +547,13 @@
                                                 <span class="text-muted fs-11">
                                                     <i class="ri-team-line me-1"></i>{{ $church->users_count }} membre(s)
                                                 </span>
-                                                <div class="d-flex gap-1">
-                                                    <a href="{{ route('super-admin.churches.impersonate', $church) }}" class="btn btn-sm btn-soft-warning rounded-pill px-2 py-0 fs-11">
-                                                        Support
-                                                    </a>
+                                                <div class="d-flex gap-1 align-items-center">
+                                                    <form method="POST" action="{{ route('super-admin.churches.impersonate', $church) }}" class="d-inline m-0">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm btn-soft-warning rounded-pill px-2 py-0 fs-11">
+                                                            Support
+                                                        </button>
+                                                    </form>
                                                     <a href="{{ route('super-admin.churches.show', $church) }}" class="btn btn-sm btn-soft-primary rounded-pill px-2 py-0 fs-11">
                                                         Détails
                                                     </a>
@@ -607,10 +610,13 @@
                                                     {{ $church->users_count }}
                                                 </td>
                                                 <td class="text-end pe-4">
-                                                    <div class="d-inline-flex gap-1 justify-content-end">
-                                                        <a href="{{ route('super-admin.churches.impersonate', $church) }}" class="btn btn-sm btn-soft-warning rounded-pill px-2 py-1 fs-11" title="Mode Support">
-                                                            <i class="ri-customer-service-2-line"></i>
-                                                        </a>
+                                                    <div class="d-inline-flex gap-1 justify-content-end align-items-center">
+                                                        <form method="POST" action="{{ route('super-admin.churches.impersonate', $church) }}" class="d-inline m-0">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-sm btn-soft-warning rounded-pill px-2 py-1 fs-11" title="Mode Support">
+                                                                <i class="ri-customer-service-2-line"></i>
+                                                            </button>
+                                                        </form>
                                                         <a href="{{ route('super-admin.churches.show', $church) }}" class="btn btn-sm btn-soft-primary rounded-pill px-2 py-1 fs-11" title="Voir fiche">
                                                             <i class="ri-arrow-right-line"></i>
                                                         </a>

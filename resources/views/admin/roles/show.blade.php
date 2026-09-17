@@ -136,9 +136,10 @@
             'report' => 'Rapports',
             'role' => 'Rôles',
             'permission' => 'Permissions',
-            'audit' => 'Audit & Logs',
+            'finance' => 'Finances (Cotisations)',
+            'remittance' => 'Versements & Trésorerie',
             'qrcode' => 'Codes QR',
-            'finance' => 'Finances'
+            'audit' => 'Audit & Logs'
         ];
     @endphp
 

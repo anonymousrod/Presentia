@@ -753,9 +753,12 @@
                                                 <a href="{{ route('super-admin.churches.renew.form', $church) }}" class="action-btn action-btn-renew" title="Renouveler 1 An">
                                                     <i class="ri-refresh-line"></i>
                                                 </a>
-                                                <a href="{{ route('super-admin.churches.impersonate', $church) }}" class="action-btn action-btn-support" title="Mode Support">
-                                                    <i class="ri-customer-service-2-line"></i>
-                                                </a>
+                                                <form method="POST" action="{{ route('super-admin.churches.impersonate', $church) }}" class="d-inline m-0">
+                                                    @csrf
+                                                    <button type="submit" class="action-btn action-btn-support" title="Mode Support">
+                                                        <i class="ri-customer-service-2-line"></i>
+                                                    </button>
+                                                </form>
                                                 <a href="{{ route('super-admin.churches.edit', $church) }}" class="action-btn action-btn-edit" title="Modifier">
                                                     <i class="ri-pencil-line"></i>
                                                 </a>
@@ -891,10 +894,12 @@
                                                        class="action-btn action-btn-renew" title="Renouveler 1 An">
                                                         <i class="ri-refresh-line"></i>
                                                     </a>
-                                                    <a href="{{ route('super-admin.churches.impersonate', $church) }}"
-                                                       class="action-btn action-btn-support" title="Mode Support">
-                                                        <i class="ri-customer-service-2-line"></i>
-                                                    </a>
+                                                    <form method="POST" action="{{ route('super-admin.churches.impersonate', $church) }}" class="d-inline m-0">
+                                                        @csrf
+                                                        <button type="submit" class="action-btn action-btn-support" title="Mode Support">
+                                                            <i class="ri-customer-service-2-line"></i>
+                                                        </button>
+                                                    </form>
                                                     <a href="{{ route('super-admin.churches.edit', $church) }}"
                                                        class="action-btn action-btn-edit" title="Modifier coordonnées">
                                                         <i class="ri-pencil-line"></i>

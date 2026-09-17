@@ -81,7 +81,7 @@
                 </a>
             @endif
 
-            {{-- 4. Membres (si admin) ou Groupes (si fidèle / jeune) --}}
+            {{-- 4. Membres (si admin) ou Groupes / Mes Groupes (renvoie sur l'onglet Groupes du profil) --}}
             @if(auth()->user()->can('member.view'))
                 <a href="{{ route('admin.users.index') }}" class="mobile-nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                     <div class="mobile-nav-icon-box">
@@ -90,7 +90,7 @@
                     <span class="mobile-nav-label">Membres</span>
                 </a>
             @else
-                <a href="{{ route('admin.groups.index') }}" class="mobile-nav-item {{ request()->routeIs('admin.groups.*') ? 'active' : '' }}">
+                <a href="{{ route('profile.edit', ['tab' => 'groups']) }}#groups" class="mobile-nav-item {{ (request()->routeIs('profile.edit') && request('tab') === 'groups') ? 'active' : '' }}">
                     <div class="mobile-nav-icon-box">
                         <i class="ri-group-line"></i>
                     </div>

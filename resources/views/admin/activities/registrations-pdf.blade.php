@@ -45,6 +45,7 @@
         .header-table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         .header-logo-left {
@@ -72,6 +73,7 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 2px;
+            word-wrap: break-word;
         }
 
         .dept-name {
@@ -176,21 +178,26 @@
             padding: 4mm 15mm 0 15mm;
         }
 
+        .table-section {
+            padding: 4mm 15mm;
+        }
+
         .section-heading {
             font-size: 9px;
             font-weight: bold;
+            color: #1a1a2e;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #888;
-            margin-bottom: 4px;
-            border-bottom: 1px solid #dde3ea;
-            padding-bottom: 3px;
+            margin-bottom: 3mm;
+            border-left: 3px solid #1a1a2e;
+            padding-left: 3mm;
         }
 
         .data-table {
             width: 100%;
             border-collapse: collapse;
             page-break-inside: auto;
+            table-layout: fixed;
         }
 
         .data-table tr {
@@ -205,11 +212,11 @@
         .data-table thead tr th {
             background-color: #1a1a2e;
             color: #ffffff;
-            font-size: 9px;
+            font-size: 8.5px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding: 7px 6px;
+            padding: 6px 5px;
             text-align: center;
             border: 1px solid #1a1a2e;
         }
@@ -224,32 +231,91 @@
 
         .data-table tbody td {
             border: 1px solid #dde3ea;
-            padding: 6px 6px;
-            font-size: 9px;
+            padding: 5px 5px;
+            font-size: 8.5px;
             color: #2c2c2c;
             vertical-align: middle;
+            word-wrap: break-word;
         }
 
         .data-table td.center {
             text-align: center;
         }
 
-        .badge-ok {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-size: 8px;
+        .user-name {
             font-weight: bold;
+            color: #1a1a2e;
+            display: block;
         }
 
-        .badge-justified {
-            background-color: #fff3e0;
-            color: #e65100;
-            padding: 2px 5px;
-            border-radius: 3px;
+        .user-profession {
+            font-size: 7.5px;
+            color: #666;
+            display: block;
+        }
+
+        .font-mono {
             font-size: 8px;
+        }
+
+        .badge-confirmed {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 7.5px;
             font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-uncertain {
+            background-color: #fff8e1;
+            color: #f57f17;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 7.5px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-excused {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 7.5px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-pending {
+            background-color: #f5f5f5;
+            color: #616161;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 7.5px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-attended {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 7.5px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-not-attended {
+            background-color: #fce4ec;
+            color: #c2185b;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 7.5px;
+            font-weight: bold;
+            display: inline-block;
         }
 
         /* ═══════════════════════════════════════
@@ -269,6 +335,7 @@
         .footer-inner {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         .footer-left {
@@ -372,17 +439,18 @@
     </div>
 
     <!-- TABLEAU DES INSCRIPTIONS -->
-    <div class="table-wrapper">
-        <table class="registrations-table">
+    <div class="table-section">
+        <div class="section-heading">Inscriptions enregistrées</div>
+        <table class="data-table">
             <thead>
                 <tr>
                     <th style="width: 5%;">#</th>
                     <th style="width: 25%;">Nom &amp; Prénom(s)</th>
                     <th style="width: 20%;">Email</th>
-                    <th style="width: 15%;">Téléphone</th>
-                    <th style="width: 15%;">Statut</th>
-                    <th style="width: 10%;">Présence</th>
-                    <th style="width: 10%;" class="center">Inscrit le</th>
+                    <th style="width: 14%;">Téléphone</th>
+                    <th style="width: 13%;">Statut</th>
+                    <th style="width: 11%;">Présence</th>
+                    <th style="width: 12%;" class="center">Inscrit le</th>
                 </tr>
             </thead>
             <tbody>

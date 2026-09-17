@@ -45,6 +45,7 @@
         .header-table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         .header-logo-left {
@@ -72,6 +73,7 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 2px;
+            word-wrap: break-word;
         }
 
         .dept-name {
@@ -183,6 +185,7 @@
             width: 100%;
             border-collapse: collapse;
             page-break-inside: auto;
+            table-layout: fixed;
         }
 
         .data-table tr {
@@ -197,11 +200,11 @@
         .data-table thead tr th {
             background-color: #1a3a6e;
             color: #ffffff;
-            font-size: 9px;
+            font-size: 8.5px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding: 7px 6px;
+            padding: 6px 5px;
             text-align: center;
             border: 1px solid #1a3a6e;
         }
@@ -216,10 +219,11 @@
 
         .data-table tbody td {
             border: 1px solid #dde3ea;
-            padding: 6px 6px;
-            font-size: 9px;
+            padding: 5px 5px;
+            font-size: 8.5px;
             color: #2c2c2c;
             vertical-align: middle;
+            word-wrap: break-word;
         }
 
         .data-table td.center {
@@ -286,6 +290,7 @@
         .footer-inner {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         .footer-left {

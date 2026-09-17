@@ -48,6 +48,48 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
+    @if(session('info'))
+        <div class="alert border-0 mb-4 d-flex align-items-center gap-3 p-3 shadow-sm rounded-3"
+             style="background: rgba(var(--vz-info-rgb), 0.12); border-left: 4px solid var(--vz-info) !important;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                 style="width:40px; height:40px; background: rgba(var(--vz-info-rgb), 0.2);">
+                <i class="mdi mdi-information-outline fs-20" style="color: var(--vz-info);"></i>
+            </div>
+            <div class="flex-grow-1">
+                <h6 class="mb-0 fw-bold text-info">Information</h6>
+                <span class="fs-13 text-body">{{ session('info') }}</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    @if(session('warning'))
+        <div class="alert border-0 mb-4 d-flex align-items-center gap-3 p-3 shadow-sm rounded-3"
+             style="background: rgba(var(--vz-warning-rgb), 0.12); border-left: 4px solid var(--vz-warning) !important;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                 style="width:40px; height:40px; background: rgba(var(--vz-warning-rgb), 0.2);">
+                <i class="mdi mdi-alert-outline fs-20" style="color: var(--vz-warning);"></i>
+            </div>
+            <div class="flex-grow-1">
+                <h6 class="mb-0 fw-bold text-warning">Attention</h6>
+                <span class="fs-13 text-body">{{ session('warning') }}</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert border-0 mb-4 d-flex align-items-center gap-3 p-3 shadow-sm rounded-3"
+             style="background: rgba(var(--vz-danger-rgb), 0.12); border-left: 4px solid var(--vz-danger) !important;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                 style="width:40px; height:40px; background: rgba(var(--vz-danger-rgb), 0.2);">
+                <i class="mdi mdi-alert-circle fs-20" style="color: var(--vz-danger);"></i>
+            </div>
+            <div class="flex-grow-1">
+                <h6 class="mb-0 fw-bold text-danger">Erreur</h6>
+                <span class="fs-13 text-body">{{ session('error') }}</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
     {{-- =================== FILTRES =================== --}}
     <div class="card border-0 shadow-sm mb-4 rounded-3 overflow-hidden">

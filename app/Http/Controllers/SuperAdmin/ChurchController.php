@@ -82,7 +82,7 @@ class ChurchController extends Controller
             'phone'               => 'nullable|string|max:50',
             'address'             => 'nullable|string|max:255',
             'city'                => 'nullable|string|max:100',
-            'logo'                => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:4096',
+            'logo'                => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
             'subscription_amount' => 'required|numeric|min:0',
             'payment_method'      => 'required|string|max:100',
             'payment_reference'   => 'nullable|string|max:100',
@@ -309,7 +309,7 @@ class ChurchController extends Controller
             'phone'               => 'nullable|string|max:50',
             'address'             => 'nullable|string|max:255',
             'city'                => 'nullable|string|max:100',
-            'logo'                => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:4096',
+            'logo'                => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
             'notes'               => 'nullable|string',
 
             // Infos Administrateur

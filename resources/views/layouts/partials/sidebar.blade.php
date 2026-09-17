@@ -39,8 +39,10 @@
                             @if(session()->has('tenant_church_id'))
                                 <li class="nav-item px-3 mb-2">
                                     <div class="alert alert-warning border-0 p-2 mb-0 rounded-3 fs-11">
-                                        <i class="mdi mdi-information-outline me-1"></i>Mode Support Église
-                                        <a href="{{ route('super-admin.leave-impersonation') }}" class="btn btn-xs btn-dark d-block mt-1 rounded-pill w-100 fs-10">Quitter le support</a>
+                                        <form method="POST" action="{{ route('super-admin.leave-impersonation') }}" class="mt-1 mb-0">
+                                            @csrf
+                                            <button type="submit" class="btn btn-xs btn-dark d-block rounded-pill w-100 fs-10">Quitter le support</button>
+                                        </form>
                                     </div>
                                 </li>
                             @endif
@@ -129,12 +131,14 @@
                                                 Toutes les activités
                                             </a>
                                         </li>
+                                        @endcan
+                                        @hasrole('Administrateur')
                                         <li class="nav-item">
                                             <a href="{{ route('admin.activity-types.index') }}" class="nav-link {{ request()->routeIs('admin.activity-types.*') ? 'active' : '' }}">
                                                 Types d'activités
                                             </a>
                                         </li>
-                                        @endcan
+                                        @endhasrole
                                         @canany(['attendance.validate_manual_own', 'attendance.validate_manual_all'])
                                         <li class="nav-item">
                                             <a href="{{ route('activities.index', ['manageable' => 1]) }}" class="nav-link {{ request()->routeIs('activities.index') && request()->has('manageable') ? 'active' : '' }}">
@@ -183,7 +187,7 @@
                         {{-- Mes Groupes (Profil) --}}
                         @if(auth()->check())
                         <li class="nav-item">
-                            <a class="nav-link menu-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}" href="{{ route('profile.edit') }}#groups">
+                            <a class="nav-link menu-link {{ (request()->routeIs('profile.edit') && request('tab') === 'groups') ? 'active' : '' }}" href="{{ route('profile.edit', ['tab' => 'groups']) }}#groups">
                                 <i class="mdi mdi-account-group-outline"></i> <span>Mes Groupes</span>
                             </a>
                         </li>
@@ -250,7 +254,7 @@
                         @endcanany
 
                         {{-- Finances (Cotisations et Trésorerie) --}}
-                        @canany(['finance.collect_own_group', 'finance.view_all'])
+                        @canany(['finance.collect_own_group', 'remittance.view_all', 'finance.remittance_create', 'remittance.validate'])
                         <li class="nav-item">
                             <a class="nav-link menu-link {{ request()->routeIs('admin.finance.*') ? 'active' : '' }}" href="#sidebarFinance" data-bs-toggle="collapse"
                                 role="button" aria-expanded="{{ request()->routeIs('admin.finance.*') ? 'true' : 'false' }}" aria-controls="sidebarFinance">
@@ -263,7 +267,7 @@
                                         <a href="{{ route('admin.finance.contributions.index') }}" class="nav-link {{ request()->routeIs('admin.finance.contributions.index') ? 'active' : '' }}">Suivi des contributions</a>
                                     </li>
                                     @endcan
-                                    @can('finance.view_all')
+                                    @can('remittance.view_all')
                                     <li class="nav-item">
                                         <a href="{{ route('admin.finance.treasury.index') }}" class="nav-link {{ request()->routeIs('admin.finance.treasury.index') ? 'active' : '' }}">Trésorerie Générale</a>
                                     </li>

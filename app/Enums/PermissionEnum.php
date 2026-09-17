@@ -24,11 +24,12 @@ enum PermissionEnum: string
     // Groupes
     // ----------------------------------------------------------------
     case GROUP_VIEW          = 'group.view';
-    case GROUP_VIEW_OWN      = 'group.view_own';      // Chef : son groupe uniquement
     case GROUP_CREATE        = 'group.create';
-    case GROUP_EDIT          = 'group.edit';
+    case GROUP_EDIT          = 'group.edit';              // Tous les groupes (Admin)
+    case GROUP_EDIT_OWN      = 'group.edit_own';          // Son propre groupe uniquement (Chef)
     case GROUP_DELETE        = 'group.delete';
-    case GROUP_ASSIGN_MEMBER = 'group.assign_member';
+    case GROUP_ASSIGN_MEMBER     = 'group.assign_member';     // Tous les groupes (Admin)
+    case GROUP_ASSIGN_MEMBER_OWN = 'group.assign_member_own'; // Son propre groupe uniquement (Chef)
 
     // ----------------------------------------------------------------
     // Activités
@@ -45,13 +46,17 @@ enum PermissionEnum: string
     case ATTENDANCE_VALIDATE_MANUAL_ALL  = 'attendance.validate_manual_all';
     case ATTENDANCE_VALIDATE_MANUAL_OWN  = 'attendance.validate_manual_own';
     case ATTENDANCE_SCAN_QR          = 'attendance.scan_qr';
+    case ATTENDANCE_DOWNLOAD         = 'attendance.download';
 
     // ----------------------------------------------------------------
     // Inscriptions
     // ----------------------------------------------------------------
+    case REGISTRATION_VIEW       = 'registration.view';
+    case REGISTRATION_VIEW_OWN   = 'registration.view_own';  // Chef : son groupe uniquement
     case REGISTRATION_CREATE     = 'registration.create';
     case REGISTRATION_EDIT_OWN   = 'registration.edit_own';
     case REGISTRATION_CANCEL_OWN = 'registration.cancel_own';
+    case REGISTRATION_DOWNLOAD   = 'registration.download';
 
     // ----------------------------------------------------------------
     // Notifications
@@ -62,12 +67,16 @@ enum PermissionEnum: string
     case NOTIFICATION_SEND_INDIVIDUAL = 'notification.send_individual';
 
     // ----------------------------------------------------------------
-    // Finances (Cotisations & Trésorerie)
+    // Finances (Cotisations)
     // ----------------------------------------------------------------
-    case FINANCE_VIEW_ALL         = 'finance.view_all';
     case FINANCE_COLLECT_OWN_GROUP = 'finance.collect_own_group';
-    case REMITTANCE_CREATE        = 'remittance.create';
-    case REMITTANCE_VALIDATE      = 'remittance.validate';
+    case FINANCE_REMITTANCE_CREATE = 'finance.remittance_create';
+
+    // ----------------------------------------------------------------
+    // Versements & Trésorerie
+    // ----------------------------------------------------------------
+    case REMITTANCE_VIEW_ALL       = 'remittance.view_all';
+    case REMITTANCE_VALIDATE       = 'remittance.validate';
 
     // ----------------------------------------------------------------
     // Statistiques & Rapports
@@ -119,11 +128,12 @@ enum PermissionEnum: string
             self::MEMBER_RESTORE           => 'Restaurer un membre',
             self::MEMBER_EXPORT            => 'Exporter la liste des membres',
             self::GROUP_VIEW               => 'Voir tous les groupes',
-            self::GROUP_VIEW_OWN           => 'Voir son propre groupe',
             self::GROUP_CREATE             => 'Créer un groupe',
-            self::GROUP_EDIT               => 'Modifier un groupe',
+            self::GROUP_EDIT               => 'Modifier un groupe (Tous les groupes)',
+            self::GROUP_EDIT_OWN           => 'Modifier son propre groupe',
             self::GROUP_DELETE             => 'Supprimer un groupe',
-            self::GROUP_ASSIGN_MEMBER      => 'Assigner un membre à un groupe',
+            self::GROUP_ASSIGN_MEMBER      => 'Assigner un membre à un groupe (Tous les groupes)',
+            self::GROUP_ASSIGN_MEMBER_OWN  => 'Assigner un membre à son propre groupe',
             self::ACTIVITY_VIEW            => 'Voir toutes les activités (publiées ou non)',
             self::ACTIVITY_CREATE          => 'Créer une activité',
             self::ACTIVITY_EDIT            => 'Modifier une activité',
@@ -132,17 +142,21 @@ enum PermissionEnum: string
             self::ATTENDANCE_VALIDATE_MANUAL_ALL => 'Valider manuellement la présence de tout le monde',
             self::ATTENDANCE_VALIDATE_MANUAL_OWN => 'Valider manuellement la présence pour mon groupe',
             self::ATTENDANCE_SCAN_QR       => 'Scanner un QR code',
+            self::ATTENDANCE_DOWNLOAD      => 'Télécharger la liste des présences',
+            self::REGISTRATION_VIEW        => 'Voir toutes les inscriptions',
+            self::REGISTRATION_VIEW_OWN    => 'Voir les inscriptions de son groupe',
             self::REGISTRATION_CREATE      => 'S\'inscrire à une activité',
             self::REGISTRATION_EDIT_OWN    => 'Modifier sa propre inscription',
             self::REGISTRATION_CANCEL_OWN  => 'Annuler sa propre inscription',
+            self::REGISTRATION_DOWNLOAD    => 'Télécharger la liste des inscrits',
             self::NOTIFICATION_SEND_ALL       => 'Envoyer une notification globale',
             self::NOTIFICATION_SEND_GROUP     => 'Envoyer une notification à un groupe',
             self::NOTIFICATION_SEND_ROLE      => 'Envoyer une notification à un rôle',
             self::NOTIFICATION_SEND_INDIVIDUAL => 'Envoyer une notification individuelle',
-            self::FINANCE_VIEW_ALL         => 'Voir toutes les finances',
             self::FINANCE_COLLECT_OWN_GROUP => 'Collecter les fonds de son groupe',
-            self::REMITTANCE_CREATE        => 'Déclarer un versement à la trésorerie',
-            self::REMITTANCE_VALIDATE      => 'Valider un versement reçu',
+            self::FINANCE_REMITTANCE_CREATE => 'Déclarer un versement à la trésorerie',
+            self::REMITTANCE_VIEW_ALL       => 'Voir toutes les finances',
+            self::REMITTANCE_VALIDATE       => 'Valider un versement reçu',
             self::STATS_VIEW_GLOBAL        => 'Voir les statistiques globales',
             self::STATS_VIEW_OWN_GROUP     => 'Voir les statistiques de son groupe',
             self::ROLE_MANAGE              => 'Gérer les rôles',

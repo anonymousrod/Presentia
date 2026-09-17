@@ -73,14 +73,17 @@ class GroupController extends Controller
     {
         $this->authorize('create', Group::class);
 
+        $churchId = $this->getActiveChurchId();
+
         $data = $request->validate([
             'name'        => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'category'    => ['nullable', 'string', 'max:255'],
             'color'       => ['nullable', 'string', 'max:7'],
-            'leader_id'   => ['nullable', 'exists:users,id'],
-            'collector_id' => ['nullable', 'exists:users,id'],
-            'image'       => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:51200'],
+            // F-8 : Restreindre leader_id/collector_id à l'église active
+            'leader_id'   => ['nullable', \Illuminate\Validation\Rule::exists('users', 'id')->when($churchId, fn ($q) => $q->where('church_id', $churchId))],
+            'collector_id' => ['nullable', \Illuminate\Validation\Rule::exists('users', 'id')->when($churchId, fn ($q) => $q->where('church_id', $churchId))],
+            'image'       => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
         ]);
 
         if ($request->hasFile('image')) {
@@ -148,14 +151,17 @@ class GroupController extends Controller
     {
         $this->authorize('update', $group);
 
+        $churchId = $this->getActiveChurchId();
+
         $data = $request->validate([
             'name'        => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'category'    => ['nullable', 'string', 'max:255'],
             'color'       => ['nullable', 'string', 'max:7'],
-            'leader_id'   => ['nullable', 'exists:users,id'],
-            'collector_id' => ['nullable', 'exists:users,id'],
-            'image'       => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:51200'],
+            // F-8 : Restreindre leader_id/collector_id à l'église active
+            'leader_id'   => ['nullable', \Illuminate\Validation\Rule::exists('users', 'id')->when($churchId, fn ($q) => $q->where('church_id', $churchId))],
+            'collector_id' => ['nullable', \Illuminate\Validation\Rule::exists('users', 'id')->when($churchId, fn ($q) => $q->where('church_id', $churchId))],
+            'image'       => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
         ]);
 
         if ($request->hasFile('image')) {
@@ -222,8 +228,15 @@ class GroupController extends Controller
     {
         $this->authorize('assignMember', $group);
 
+        $churchId = $this->getActiveChurchId();
+
         $request->validate([
-            'user_id' => ['required', 'exists:users,id'],
+            // F-8 : Restreindre l'assignation de membres à l'église du groupe
+            'user_id' => [
+                'required',
+                \Illuminate\Validation\Rule::exists('users', 'id')
+                    ->when($churchId, fn ($q) => $q->where('church_id', $churchId)),
+            ],
         ]);
 
         $userId = $request->user_id;

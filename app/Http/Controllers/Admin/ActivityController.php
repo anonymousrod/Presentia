@@ -15,6 +15,7 @@ use App\Enums\ActivityStatus;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\OptimizesImages;
+use Illuminate\Support\Str;
 
 class ActivityController extends Controller
 {
@@ -105,26 +106,59 @@ class ActivityController extends Controller
     {
         $this->authorize('view', $activity);
         $user = auth()->user();
-        $listType = '';
+        $isAdmin = $user->hasRole('Administrateur');
 
-        if ($user->hasRole('Administrateur') || $user->can(\App\Enums\PermissionEnum::ATTENDANCE_VIEW->value)) {
-            $activity->load(['responsible', 'group', 'role', 'registrations.user.groups', 'attendances.user.groups']);
+        $listType = null;
+        $registrationListType = null;
+
+        // Permissions Présences
+        $canViewAllAttendances = $isAdmin || $user->can(\App\Enums\PermissionEnum::ATTENDANCE_VIEW->value);
+        $canViewOwnAttendances = $user->can(\App\Enums\PermissionEnum::ATTENDANCE_VIEW_OWN->value);
+
+        // Permissions Inscriptions
+        $canViewAllRegistrations = $isAdmin || $user->can(\App\Enums\PermissionEnum::REGISTRATION_VIEW->value);
+        $canViewOwnRegistrations = $user->can(\App\Enums\PermissionEnum::REGISTRATION_VIEW_OWN->value);
+
+        $userGroupIds = $user->ledGroups()->pluck('groups.id')
+            ->merge($user->groups()->wherePivotNull('left_at')->pluck('groups.id'))
+            ->unique()
+            ->filter()
+            ->values()
+            ->toArray();
+
+        $relationsToLoad = ['responsible', 'group', 'role'];
+
+        // Load Attendances
+        if ($canViewAllAttendances) {
+            $relationsToLoad[] = 'attendances.user.groups';
             $listType = 'Globale';
-        } else {
-            // Filter attendances for user's own group
-            $ledGroupIds = $user->ledGroups()->pluck('groups.id')->toArray();
-            $activity->load(['responsible', 'group', 'role', 'registrations.user.groups']);
-            $activity->load(['attendances' => function ($query) use ($ledGroupIds) {
-                $query->whereHas('user.groups', function ($q) use ($ledGroupIds) {
-                    $q->whereIn('groups.id', $ledGroupIds);
-                });
-            }, 'attendances.user.groups']);
+        } elseif ($canViewOwnAttendances) {
+            $relationsToLoad['attendances'] = function ($query) use ($userGroupIds) {
+                $query->whereHas('user.groups', function ($q) use ($userGroupIds) {
+                    $q->whereIn('groups.id', $userGroupIds);
+                })->with('user.groups');
+            };
             $listType = 'Mon Groupe';
         }
 
+        // Load Registrations
+        if ($canViewAllRegistrations) {
+            $relationsToLoad[] = 'registrations.user.groups';
+            $registrationListType = 'Globale';
+        } elseif ($canViewOwnRegistrations) {
+            $relationsToLoad['registrations'] = function ($query) use ($userGroupIds) {
+                $query->whereHas('user.groups', function ($q) use ($userGroupIds) {
+                    $q->whereIn('groups.id', $userGroupIds);
+                })->with('user.groups');
+            };
+            $registrationListType = 'Mon Groupe';
+        }
+
+        $activity->load($relationsToLoad);
+
         $allGroups = \App\Models\Group::orderBy('name')->get();
 
-        return view('admin.activities.show', compact('activity', 'listType', 'allGroups'));
+        return view('admin.activities.show', compact('activity', 'listType', 'registrationListType', 'allGroups'));
     }
 
     /**
@@ -133,18 +167,40 @@ class ActivityController extends Controller
     public function downloadRegistrationsPdf(Activity $activity)
     {
         $this->authorize('view', $activity);
+        $user = auth()->user();
 
-        $activity->load(['responsible', 'group', 'role', 'registrations.user.groups']);
+        $isAdmin = $user->hasRole('Administrateur');
+        $canDownload = $isAdmin || $user->can(\App\Enums\PermissionEnum::REGISTRATION_DOWNLOAD->value);
+
+        if (!$canDownload) {
+            abort(403, "Vous n'avez pas la permission de télécharger la liste des inscriptions.");
+        }
+
+        $canViewAll = $isAdmin || $user->can(\App\Enums\PermissionEnum::REGISTRATION_VIEW->value);
+        $canViewOwn = $user->can(\App\Enums\PermissionEnum::REGISTRATION_VIEW_OWN->value);
 
         // Filter valid registrations (non-waitlisted, status PRESENT or UNCERTAIN)
-        $registrations = $activity->registrations()
+        $query = $activity->registrations()
             ->where('registrations.is_waitlisted', false)
             ->whereIn('registrations.status', [\App\Enums\RegistrationStatus::PRESENT->value, \App\Enums\RegistrationStatus::UNCERTAIN->value])
             ->join('users', 'registrations.user_id', '=', 'users.id')
             ->orderBy('users.name')
             ->orderBy('users.first_name')
-            ->select('registrations.*')
-            ->get();
+            ->select('registrations.*');
+
+        if (!$canViewAll && $canViewOwn) {
+            $userGroupIds = $user->ledGroups()->pluck('groups.id')
+                ->merge($user->groups()->wherePivotNull('left_at')->pluck('groups.id'))
+                ->unique()
+                ->filter()
+                ->values()
+                ->toArray();
+            $query->whereHas('user.groups', function ($q) use ($userGroupIds) {
+                $q->whereIn('groups.id', $userGroupIds);
+            });
+        }
+
+        $registrations = $query->with('user.groups')->get();
 
         $church = $activity->church ?? (session('tenant_church_id') ? \App\Models\Church::find(session('tenant_church_id')) : auth()->user()?->church) ?? \App\Models\Church::first();
 
@@ -160,7 +216,8 @@ class ActivityController extends Controller
         $logoJeunesseBase64 = $this->getLogoBase64($logo2Path);
 
         $pdf = Pdf::loadView('admin.activities.registrations-pdf', compact('activity', 'registrations', 'logoUeebBase64', 'logoJeunesseBase64', 'church'));
-        return $pdf->download("Liste_Inscriptions_{$activity->id}_{$activity->title}.pdf");
+        $safeTitle = Str::slug($activity->title, '_');
+        return $pdf->download("Liste_Inscriptions_{$activity->id}_{$safeTitle}.pdf");
     }
 
     /**
@@ -169,16 +226,38 @@ class ActivityController extends Controller
     public function downloadAttendancePdf(Activity $activity)
     {
         $this->authorize('view', $activity);
+        $user = auth()->user();
 
-        $activity->load(['responsible', 'group', 'role', 'attendances.user.groups', 'church']);
+        $isAdmin = $user->hasRole('Administrateur');
+        $canDownload = $isAdmin || $user->can(\App\Enums\PermissionEnum::ATTENDANCE_DOWNLOAD->value);
+
+        if (!$canDownload) {
+            abort(403, "Vous n'avez pas la permission de télécharger la liste de présence.");
+        }
+
+        $canViewAll = $isAdmin || $user->can(\App\Enums\PermissionEnum::ATTENDANCE_VIEW->value);
+        $canViewOwn = $user->can(\App\Enums\PermissionEnum::ATTENDANCE_VIEW_OWN->value);
 
         // Retrieve valid attendances (Present or Late or Excused or Absent)
-        $attendances = $activity->attendances()
+        $query = $activity->attendances()
             ->join('users', 'attendances.user_id', '=', 'users.id')
             ->orderBy('users.name')
             ->orderBy('users.first_name')
-            ->select('attendances.*')
-            ->get();
+            ->select('attendances.*');
+
+        if (!$canViewAll && $canViewOwn) {
+            $userGroupIds = $user->ledGroups()->pluck('groups.id')
+                ->merge($user->groups()->wherePivotNull('left_at')->pluck('groups.id'))
+                ->unique()
+                ->filter()
+                ->values()
+                ->toArray();
+            $query->whereHas('user.groups', function ($q) use ($userGroupIds) {
+                $q->whereIn('groups.id', $userGroupIds);
+            });
+        }
+
+        $attendances = $query->with('user.groups')->get();
 
         $church = $activity->church ?? (session('tenant_church_id') ? \App\Models\Church::find(session('tenant_church_id')) : auth()->user()?->church) ?? \App\Models\Church::first();
 
@@ -194,7 +273,8 @@ class ActivityController extends Controller
         $logoJeunesseBase64 = $this->getLogoBase64($logo2Path);
 
         $pdf = Pdf::loadView('admin.activities.attendance-pdf', compact('activity', 'attendances', 'logoUeebBase64', 'logoJeunesseBase64', 'church'));
-        return $pdf->download("Liste_Presence_{$activity->id}_{$activity->title}.pdf");
+        $safeTitle = Str::slug($activity->title, '_');
+        return $pdf->download("Liste_Presence_{$activity->id}_{$safeTitle}.pdf");
     }
 
     private function getLogoBase64(?string $path): string

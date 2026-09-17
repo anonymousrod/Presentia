@@ -7,6 +7,16 @@ use Illuminate\Http\Request;
 
 class ActivityTypeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!auth()->user()?->hasRole('Administrateur')) {
+                abort(403, "Accès réservé aux administrateurs.");
+            }
+            return $next($request);
+        });
+    }
+
     /**
      * Display a listing of the resource.
      */
